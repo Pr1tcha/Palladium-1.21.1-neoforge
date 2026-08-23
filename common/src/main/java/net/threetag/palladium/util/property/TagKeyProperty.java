@@ -21,7 +21,7 @@ public class TagKeyProperty<T> extends PalladiumProperty<TagKey<T>> {
 
     @Override
     public TagKey<T> fromJSON(JsonElement jsonElement) {
-        return TagKey.create(this.registry, new ResourceLocation(jsonElement.getAsString()));
+        return TagKey.create(this.registry, ResourceLocation.parse(jsonElement.getAsString()));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class TagKeyProperty<T> extends PalladiumProperty<TagKey<T>> {
     @Override
     public TagKey<T> fromNBT(Tag tag, TagKey<T> defaultValue) {
         if (tag instanceof StringTag stringTag) {
-            return TagKey.create(this.registry, new ResourceLocation(stringTag.getAsString()));
+            return TagKey.create(this.registry, ResourceLocation.parse(stringTag.getAsString()));
         }
         return defaultValue;
     }

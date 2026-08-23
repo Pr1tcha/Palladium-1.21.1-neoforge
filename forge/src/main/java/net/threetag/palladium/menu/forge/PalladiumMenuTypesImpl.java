@@ -3,8 +3,8 @@ package net.threetag.palladium.menu.forge;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.network.NetworkHooks;
 import net.threetag.palladium.menu.ExtendedMenuProvider;
 import net.threetag.palladium.menu.PalladiumMenuTypes;
 

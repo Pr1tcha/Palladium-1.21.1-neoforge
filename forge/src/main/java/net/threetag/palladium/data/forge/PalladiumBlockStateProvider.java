@@ -5,14 +5,14 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladiumcore.registry.RegistrySupplier;
 
-import static net.minecraftforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+import static net.neoforged.neoforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
 
 public class PalladiumBlockStateProvider extends BlockStateProvider {
 
@@ -38,8 +38,8 @@ public class PalladiumBlockStateProvider extends BlockStateProvider {
         this.simpleBlock(PalladiumBlocks.RAW_LEAD_BLOCK.get());
         this.simpleBlock(PalladiumBlocks.RAW_TITANIUM_BLOCK.get());
         this.simpleBlock(PalladiumBlocks.RAW_VIBRANIUM_BLOCK.get());
-        this.simpleBlock(PalladiumBlocks.HEART_SHAPED_HERB.get(), models().cross("heart_shaped_herb", new ResourceLocation(Palladium.MOD_ID, "block/heart_shaped_herb")));
-        this.simpleBlock(PalladiumBlocks.POTTED_HEART_SHAPED_HERB.get(), models().withExistingParent("potted_heart_shaped_herb", BLOCK_FOLDER + "/flower_pot_cross").texture("plant", new ResourceLocation(Palladium.MOD_ID, "block/heart_shaped_herb")));
+        this.simpleBlock(PalladiumBlocks.HEART_SHAPED_HERB.get(), models().cross("heart_shaped_herb", ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "block/heart_shaped_herb")));
+        this.simpleBlock(PalladiumBlocks.POTTED_HEART_SHAPED_HERB.get(), models().withExistingParent("potted_heart_shaped_herb", BLOCK_FOLDER + "/flower_pot_cross").texture("plant", ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "block/heart_shaped_herb")));
         this.horizontalBlock(PalladiumBlocks.TAILORING_BENCH.get(), this.models().cube("tailoring_bench",
                 Palladium.id("block/tailoring_bench_bottom"),
                 Palladium.id("block/tailoring_bench_top"),
@@ -59,7 +59,7 @@ public class PalladiumBlockStateProvider extends BlockStateProvider {
     }
 
     public void crystal(RegistrySupplier<Block> block) {
-        ModelFile modelFile = models().cross(block.getId().getPath(), new ResourceLocation(block.getId().getNamespace(), "block/" + block.getId().getPath()));
+        ModelFile modelFile = models().cross(block.getId().getPath(), ResourceLocation.fromNamespaceAndPath(block.getId().getNamespace(), "block/" + block.getId().getPath()));
         this.getVariantBuilder(block.get())
                 .partialState().with(AmethystClusterBlock.FACING, Direction.DOWN).modelForState().rotationX(180).modelFile(modelFile).addModel()
                 .partialState().with(AmethystClusterBlock.FACING, Direction.EAST).modelForState().rotationX(90).rotationY(90).modelFile(modelFile).addModel()

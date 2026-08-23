@@ -180,7 +180,7 @@ public class TreePowerTab extends PowerTab {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate((float) x, (float) y, 0.0F);
         TextureReference backgroundTexture = this.powerHolder.getPower().getBackground();
-        var texture = backgroundTexture != null ? backgroundTexture.getTexture(DataContext.forPower(minecraft.player, this.powerHolder)) : new ResourceLocation("textures/block/red_wool.png");
+        var texture = backgroundTexture != null ? backgroundTexture.getTexture(DataContext.forPower(minecraft.player, this.powerHolder)) : ResourceLocation.parse("textures/block/red_wool.png");
 
         int i = Mth.floor(this.scrollX);
         int j = Mth.floor(this.scrollY);

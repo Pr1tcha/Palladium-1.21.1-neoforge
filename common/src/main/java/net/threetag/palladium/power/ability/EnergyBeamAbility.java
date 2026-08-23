@@ -55,7 +55,7 @@ public class EnergyBeamAbility extends Ability implements AnimationTimer, Comman
     public static final PalladiumProperty<Float> PREV_VALUE = new FloatProperty("prev_value").sync(SyncType.NONE).disablePersistence();
 
     public EnergyBeamAbility() {
-        this.withProperty(BEAM, new ResourceLocation("example:energy_beam"))
+        this.withProperty(BEAM, ResourceLocation.parse("example:energy_beam"))
                 .withProperty(DAMAGE_TYPE, null)
                 .withProperty(DAMAGE, 5F)
                 .withProperty(MAX_DISTANCE, 30F)

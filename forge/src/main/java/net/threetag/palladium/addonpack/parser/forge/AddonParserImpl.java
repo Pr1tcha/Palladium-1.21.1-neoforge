@@ -2,9 +2,9 @@ package net.threetag.palladium.addonpack.parser.forge;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.builder.AddonBuilder;
 

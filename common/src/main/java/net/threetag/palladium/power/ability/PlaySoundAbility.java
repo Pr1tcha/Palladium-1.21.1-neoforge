@@ -25,7 +25,7 @@ public class PlaySoundAbility extends Ability {
     public static final PalladiumProperty<Boolean> PLAY_OTHERS = new BooleanProperty("play_others").configurable("If 'play_self' is disabled, this determines whether or not the sound should be played to the players around the player executing the ability");
 
     public PlaySoundAbility() {
-        this.withProperty(SOUND, new ResourceLocation("item.elytra.flying"))
+        this.withProperty(SOUND, ResourceLocation.parse("item.elytra.flying"))
                 .withProperty(VOLUME, 1F)
                 .withProperty(PITCH, 1F)
                 .withProperty(LOOPING, false)

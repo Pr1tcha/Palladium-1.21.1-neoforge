@@ -40,10 +40,10 @@ public class TextureReference {
 
     public static TextureReference parse(String path) {
         if (path.startsWith("#")) {
-            return dynamic(new ResourceLocation(path.substring(1)));
+            return dynamic(ResourceLocation.parse(path.substring(1)));
         }
 
-        return normal(new ResourceLocation(path));
+        return normal(ResourceLocation.parse(path));
     }
 
     public void toBuffer(FriendlyByteBuf buf) {

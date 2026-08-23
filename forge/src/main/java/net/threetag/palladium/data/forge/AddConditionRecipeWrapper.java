@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.crafting.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class AddConditionRecipeWrapper {
         }
 
         public void build(Consumer<FinishedRecipe> consumer, String namespace, String path) {
-            build(consumer, new ResourceLocation(namespace, path));
+            build(consumer, ResourceLocation.fromNamespaceAndPath(namespace, path));
         }
 
         public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {

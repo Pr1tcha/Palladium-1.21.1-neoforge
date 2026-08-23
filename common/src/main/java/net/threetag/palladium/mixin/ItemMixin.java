@@ -36,7 +36,7 @@ public class ItemMixin {
                 tooltipComponents.add(Component.translatable("item.palladium.knowledge_book.grants").withStyle(ChatFormatting.GRAY));
 
                 for (Tag tag : listTag) {
-                    var id = new ResourceLocation(tag.getAsString());
+                    var id = ResourceLocation.parse(tag.getAsString());
                     recipeManager.byKey(id).ifPresent(recipe -> {
                         if (recipe instanceof TailoringRecipe tailoringRecipe) {
                             tooltipComponents.add(CommonComponents.space().append(tailoringRecipe.getTitle().copy().withStyle(ChatFormatting.BLUE)));

@@ -1,7 +1,7 @@
 package net.threetag.palladium.energy.forge;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.threetag.palladium.item.EnergyItem;
 
 public class ItemEnergyStorage implements IEnergyStorage {

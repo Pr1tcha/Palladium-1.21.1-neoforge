@@ -35,7 +35,7 @@ public class Accessories {
             () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "fedora"), "elton_hat").slot(AccessorySlot.HAT).setExclusive());
 
     public static final RegistrySupplier<Accessory> STRAWHAT = ACCESSORIES.register("strawhat",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "strawhat"), new ResourceLocation("textures/entity/villager/profession/farmer.png")).slot(AccessorySlot.HAT));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "strawhat"), ResourceLocation.parse("textures/entity/villager/profession/farmer.png")).slot(AccessorySlot.HAT));
 
     public static final RegistrySupplier<Accessory> FEZ = ACCESSORIES.register("fez",
             () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "fez"), "fez").slot(AccessorySlot.HAT).setExclusive());

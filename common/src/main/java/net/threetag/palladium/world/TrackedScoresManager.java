@@ -36,7 +36,7 @@ public class TrackedScoresManager extends SimplePreparableReloadListener<List<St
 
         for (String namespace : resourceManager.getNamespaces()) {
             profiler.push(namespace);
-            List<Resource> list = resourceManager.getResourceStack(new ResourceLocation(namespace, "tracked_scores.json"));
+            List<Resource> list = resourceManager.getResourceStack(ResourceLocation.fromNamespaceAndPath(namespace, "tracked_scores.json"));
 
             for (Resource resource : list) {
                 profiler.push(resource.sourcePackId());

@@ -39,13 +39,13 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
-        registerArmorMaterial(new ResourceLocation("leather"), ArmorMaterials.LEATHER);
-        registerArmorMaterial(new ResourceLocation("chainmail"), ArmorMaterials.CHAIN);
-        registerArmorMaterial(new ResourceLocation("iron"), ArmorMaterials.IRON);
-        registerArmorMaterial(new ResourceLocation("gold"), ArmorMaterials.GOLD);
-        registerArmorMaterial(new ResourceLocation("diamond"), ArmorMaterials.DIAMOND);
-        registerArmorMaterial(new ResourceLocation("turtle"), ArmorMaterials.TURTLE);
-        registerArmorMaterial(new ResourceLocation("netherite"), ArmorMaterials.NETHERITE);
+        registerArmorMaterial(ResourceLocation.parse("leather"), ArmorMaterials.LEATHER);
+        registerArmorMaterial(ResourceLocation.parse("chainmail"), ArmorMaterials.CHAIN);
+        registerArmorMaterial(ResourceLocation.parse("iron"), ArmorMaterials.IRON);
+        registerArmorMaterial(ResourceLocation.parse("gold"), ArmorMaterials.GOLD);
+        registerArmorMaterial(ResourceLocation.parse("diamond"), ArmorMaterials.DIAMOND);
+        registerArmorMaterial(ResourceLocation.parse("turtle"), ArmorMaterials.TURTLE);
+        registerArmorMaterial(ResourceLocation.parse("netherite"), ArmorMaterials.NETHERITE);
 
         AtomicInteger i = new AtomicInteger();
         object.forEach((id, jsonElement) -> {
@@ -151,7 +151,7 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
                 .description("Ingredient definition for repairing the item in an anvil. Can be defined like in recipes.")
                 .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(Ingredient.of(ItemTags.DIRT).toJson());
 
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "armor_materials"), "Armor Materials").add(HTMLBuilder.heading("Armor Materials")).addDocumentation(builder);
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "armor_materials"), "Armor Materials").add(HTMLBuilder.heading("Armor Materials")).addDocumentation(builder);
     }
 
 }

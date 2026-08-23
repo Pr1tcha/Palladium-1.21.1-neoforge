@@ -155,7 +155,7 @@ public class FluxCapacitorItem extends EnergyItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "flux_capacitor");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "flux_capacitor");
         }
     }
 }

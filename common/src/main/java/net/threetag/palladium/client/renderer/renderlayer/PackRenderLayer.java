@@ -152,7 +152,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
     }
 
     public static PackRenderLayer parse(JsonObject json) {
-        var renderType = PackRenderLayerManager.getRenderType(new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")));
+        var renderType = PackRenderLayerManager.getRenderType(ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")));
 
         SkinTypedValue<ModelTypes.Model> model;
         String modelTypeKey = "model_type";
@@ -164,7 +164,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
 
         if (GsonHelper.isValidNode(json, modelTypeKey)) {
             model = SkinTypedValue.fromJSON(json.get(modelTypeKey), jsonElement -> {
-                ResourceLocation modelId = new ResourceLocation(jsonElement.getAsString());
+                ResourceLocation modelId = ResourceLocation.parse(jsonElement.getAsString());
                 ModelTypes.Model m = ModelTypes.get(modelId);
 
                 if (m == null) {
@@ -178,7 +178,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
         }
 
         if (renderType == null) {
-            throw new JsonParseException("Unknown render type '" + new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
+            throw new JsonParseException("Unknown render type '" + ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
         }
 
         List<Condition> enchantmentGlint = json.has("enchantment_glint") ? ConditionSerializer.listFromJSON(json.get("enchantment_glint"), ConditionEnvironment.ASSETS) : Collections.singletonList(new FalseCondition());

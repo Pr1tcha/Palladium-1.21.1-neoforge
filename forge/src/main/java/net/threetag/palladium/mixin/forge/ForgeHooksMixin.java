@@ -2,7 +2,7 @@ package net.threetag.palladium.mixin.forge;
 
 import com.google.gson.JsonObject;
 import net.minecraft.util.GsonHelper;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.ForgeHooks;
 import net.threetag.palladium.loot.LootTableModificationManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

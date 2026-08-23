@@ -26,7 +26,7 @@ import java.awt.*;
 
 public record TexturedIcon(TextureReference texture, Color tint) implements IIcon {
 
-    public static final ResourceLocation LOCK = new ResourceLocation(Palladium.MOD_ID, "textures/icons/lock.png");
+    public static final ResourceLocation LOCK = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/icons/lock.png");
 
     public TexturedIcon(TextureReference texture) {
         this(texture, null);

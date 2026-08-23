@@ -16,7 +16,7 @@ public class PlayerAnimationAbility extends Ability {
     public static final PalladiumProperty<ResourceLocation> ANIMATION = new ResourceLocationProperty("animation").configurable("ID of the animation");
 
     public PlayerAnimationAbility() {
-        this.withProperty(ANIMATION, new ResourceLocation("example:animation"));
+        this.withProperty(ANIMATION, ResourceLocation.parse("example:animation"));
     }
 
     @Override

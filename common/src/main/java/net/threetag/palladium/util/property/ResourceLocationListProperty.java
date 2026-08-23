@@ -24,12 +24,12 @@ public class ResourceLocationListProperty extends PalladiumProperty<List<Resourc
     @Override
     public List<ResourceLocation> fromJSON(JsonElement jsonElement) {
         if (jsonElement.isJsonPrimitive()) {
-            return Collections.singletonList(new ResourceLocation(jsonElement.getAsString()));
+            return Collections.singletonList(ResourceLocation.parse(jsonElement.getAsString()));
         } else {
             JsonArray jsonArray = jsonElement.getAsJsonArray();
             List<ResourceLocation> resourceLocations = new ArrayList<>();
             for (int i = 0; i < jsonArray.size(); i++) {
-                resourceLocations.add(new ResourceLocation(jsonArray.get(i).getAsString()));
+                resourceLocations.add(ResourceLocation.parse(jsonArray.get(i).getAsString()));
             }
             return resourceLocations;
         }
@@ -53,7 +53,7 @@ public class ResourceLocationListProperty extends PalladiumProperty<List<Resourc
         if (tag instanceof ListTag listTag) {
             List<ResourceLocation> list = new ArrayList<>();
             for (int i = 0; i < listTag.size(); i++) {
-                list.add(new ResourceLocation(listTag.getString(i)));
+                list.add(ResourceLocation.parse(listTag.getString(i)));
             }
             return list;
         }

@@ -73,7 +73,7 @@ public class TrailRendererManager extends SimpleJsonResourceReloadListener {
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "trails"), "Trails")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "trails"), "Trails")
                 .add(HTMLBuilder.heading("Trails"))
                 .addDocumentationSettings(PARSERS.values().stream().sorted(Comparator.comparing(o -> o.getId().toString())).collect(Collectors.toList()));
     }

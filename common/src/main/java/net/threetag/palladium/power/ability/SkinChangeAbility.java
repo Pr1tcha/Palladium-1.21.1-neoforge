@@ -21,7 +21,7 @@ public class SkinChangeAbility extends Ability {
     public static final PalladiumProperty<Integer> PRIORITY = new IntegerProperty("priority").configurable("Priority for the skin (in case multiple skin changes are applied, the one with the highest priority will be used)");
 
     public SkinChangeAbility() {
-        this.withProperty(TEXTURE, new SkinTypedValue<>(TextureReference.normal(new ResourceLocation("textures/entity/zombie/drowned.png"))));
+        this.withProperty(TEXTURE, new SkinTypedValue<>(TextureReference.normal(ResourceLocation.parse("textures/entity/zombie/drowned.png"))));
         this.withProperty(MODEL_TYPE, ChangedPlayerModelTypeProperty.ChangedModelType.KEEP);
         this.withProperty(PRIORITY, 50);
     }

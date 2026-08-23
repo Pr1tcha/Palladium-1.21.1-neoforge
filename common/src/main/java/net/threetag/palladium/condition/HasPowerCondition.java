@@ -38,7 +38,7 @@ public class HasPowerCondition extends Condition {
         public static final PalladiumProperty<ResourceLocation> POWER = new ResourceLocationProperty("power").configurable("ID of the power that is required");
 
         public Serializer() {
-            this.withProperty(POWER, new ResourceLocation("example:power_id"));
+            this.withProperty(POWER, ResourceLocation.parse("example:power_id"));
         }
 
         @Override

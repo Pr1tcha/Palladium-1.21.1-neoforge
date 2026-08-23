@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FlatIconButton extends Button {
 
-    public static final ResourceLocation WIDGETS_LOCATION = new ResourceLocation(Palladium.MOD_ID, "textures/gui/widgets.png");
+    public static final ResourceLocation WIDGETS_LOCATION = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/gui/widgets.png");
 
     private final IIcon icon;
 

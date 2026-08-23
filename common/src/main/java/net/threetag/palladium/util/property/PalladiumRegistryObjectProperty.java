@@ -22,7 +22,7 @@ public class PalladiumRegistryObjectProperty<T> extends PalladiumProperty<T> {
 
     @Override
     public T fromJSON(JsonElement jsonElement) {
-        ResourceLocation id = new ResourceLocation(jsonElement.getAsString());
+        ResourceLocation id = ResourceLocation.parse(jsonElement.getAsString());
 
         if (this.registry.get(id) != null) {
             return this.registry.get(id);
@@ -39,7 +39,7 @@ public class PalladiumRegistryObjectProperty<T> extends PalladiumProperty<T> {
     @Override
     public T fromNBT(Tag tag, T defaultValue) {
         if (tag instanceof StringTag stringTag) {
-            ResourceLocation id = new ResourceLocation(stringTag.getAsString());
+            ResourceLocation id = ResourceLocation.parse(stringTag.getAsString());
 
             if (this.registry.get(id) != null) {
                 return this.registry.get(id);

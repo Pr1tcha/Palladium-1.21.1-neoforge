@@ -84,7 +84,7 @@ public class ItemParser extends AddonParser<Item> {
                 for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                     String key = entry.getKey();
                     GsonUtil.forEachInListOrPrimitive(entry.getValue(), idElement -> {
-                        container.addLayer(key, new ResourceLocation(idElement.getAsString()));
+                        container.addLayer(key, ResourceLocation.parse(idElement.getAsString()));
                     });
                 }
                 builder.setRenderLayerContainer(container);
@@ -134,7 +134,7 @@ public class ItemParser extends AddonParser<Item> {
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "items"), "Items")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "items"), "Items")
                 .add(HTMLBuilder.heading("Items"))
                 .add(HTMLBuilder.subHeading("Global Settings"))
                 .addDocumentation(getDefaultDocumentationBuilder())
@@ -213,7 +213,7 @@ public class ItemParser extends AddonParser<Item> {
 
         builder.addProperty("type", ResourceLocation.class)
                 .description("Item Type, each come with new different settings. Listed below on this page.")
-                .fallback(new ResourceLocation("palladium:default"));
+                .fallback(ResourceLocation.parse("palladium:default"));
         builder.addProperty("max_stack_size", Integer.class)
                 .description("Max stack size for an itemstack. Range: 1-64")
                 .fallback(64)

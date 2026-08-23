@@ -28,7 +28,7 @@ public class TagKeyListProperty<T> extends PalladiumProperty<List<TagKey<T>>> {
 
     @Override
     public List<TagKey<T>> fromJSON(JsonElement jsonElement) {
-        return GsonUtil.fromListOrPrimitive(jsonElement, j -> TagKey.create(this.registry, new ResourceLocation(j.getAsString())));
+        return GsonUtil.fromListOrPrimitive(jsonElement, j -> TagKey.create(this.registry, ResourceLocation.parse(j.getAsString())));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TagKeyListProperty<T> extends PalladiumProperty<List<TagKey<T>>> {
             List<TagKey<T>> list = new ArrayList<>();
 
             for (int i = 0; i < listTag.size(); i++) {
-                list.add(TagKey.create(this.registry, new ResourceLocation(listTag.getString(i))));
+                list.add(TagKey.create(this.registry, ResourceLocation.parse(listTag.getString(i))));
             }
 
             return list;

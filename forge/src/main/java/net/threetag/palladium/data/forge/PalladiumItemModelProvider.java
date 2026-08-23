@@ -3,8 +3,8 @@ package net.threetag.palladium.data.forge;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.item.PalladiumItems;
 import net.threetag.palladiumcore.registry.RegistrySupplier;
@@ -38,7 +38,7 @@ public class PalladiumItemModelProvider extends ItemModelProvider {
         this.defaultBlockItem(PalladiumItems.RAW_VIBRANIUM_BLOCK);
 
         this.defaultBlockItem(PalladiumItems.TAILORING_BENCH);
-        this.singleTexture(PalladiumItems.HEART_SHAPED_HERB.getId().getPath(), new ResourceLocation("item/generated"), "layer0", new ResourceLocation(Palladium.MOD_ID, "block/heart_shaped_herb"));
+        this.singleTexture(PalladiumItems.HEART_SHAPED_HERB.getId().getPath(), ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "block/heart_shaped_herb"));
         this.defaultBlockItem(PalladiumItems.MULTIVERSAL_ITERATOR);
 
         this.defaultItem(PalladiumItems.RAW_LEAD);
@@ -57,7 +57,7 @@ public class PalladiumItemModelProvider extends ItemModelProvider {
         this.fluxCapacitor(PalladiumItems.LEAD_FLUX_CAPACITOR);
         this.fluxCapacitor(PalladiumItems.QUARTZ_FLUX_CAPACITOR);
         this.fluxCapacitor(PalladiumItems.VIBRANIUM_FLUX_CAPACITOR);
-        this.withExistingParent(PalladiumItems.VIBRANIUM_WEAVE_BOOTS.getId().getPath(), new ResourceLocation("item/generated")).texture("layer0", new ResourceLocation("item/leather_boots")).texture("layer1", new ResourceLocation(Palladium.MOD_ID, "item/vibranium_weave_boots_overlay"));
+        this.withExistingParent(PalladiumItems.VIBRANIUM_WEAVE_BOOTS.getId().getPath(), ResourceLocation.parse("item/generated")).texture("layer0", ResourceLocation.parse("item/leather_boots")).texture("layer1", ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "item/vibranium_weave_boots_overlay"));
 
         this.defaultItem(PalladiumItems.WHITE_FABRIC);
         this.defaultItem(PalladiumItems.ORANGE_FABRIC);
@@ -82,25 +82,25 @@ public class PalladiumItemModelProvider extends ItemModelProvider {
     }
 
     public void defaultItem(RegistrySupplier<Item> item, String parent) {
-        this.singleTexture(item.getId().getPath(), new ResourceLocation(parent), "layer0", new ResourceLocation(item.getId().getNamespace(), "item/" + item.getId().getPath()));
+        this.singleTexture(item.getId().getPath(), ResourceLocation.parse(parent), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "item/" + item.getId().getPath()));
     }
 
     public void defaultBlockItem(RegistrySupplier<Item> item) {
-        this.withExistingParent(item.getId().getPath(), new ResourceLocation(item.getId().getNamespace(), "block/" + item.getId().getPath()));
+        this.withExistingParent(item.getId().getPath(), ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "block/" + item.getId().getPath()));
     }
 
     public void defaultBlockItem2d(RegistrySupplier<Item> item) {
-        this.singleTexture(item.getId().getPath(), new ResourceLocation("item/generated"), "layer0", new ResourceLocation(item.getId().getNamespace(), "block/" + item.getId().getPath()));
+        this.singleTexture(item.getId().getPath(), ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "block/" + item.getId().getPath()));
     }
 
     public void multiversalExtrapolator(RegistrySupplier<? extends Item> item) {
-        var inactive = this.singleTexture(item.getId().getPath() + "_inactive", new ResourceLocation("item/generated"), "layer0", new ResourceLocation(item.getId().getNamespace(), "item/" + item.getId().getPath() + "_inactive"));
-        this.singleTexture(item.getId().getPath(), new ResourceLocation("item/generated"), "layer0", new ResourceLocation(item.getId().getNamespace(), "item/" + item.getId().getPath())).override().predicate(Palladium.id("inactive"), 1F).model(inactive).end();
+        var inactive = this.singleTexture(item.getId().getPath() + "_inactive", ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "item/" + item.getId().getPath() + "_inactive"));
+        this.singleTexture(item.getId().getPath(), ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "item/" + item.getId().getPath())).override().predicate(Palladium.id("inactive"), 1F).model(inactive).end();
     }
 
     public void fluxCapacitor(RegistrySupplier<? extends Item> item) {
-        var charged = this.singleTexture(item.getId().getPath() + "_charged", new ResourceLocation("item/generated"), "layer0", new ResourceLocation(item.getId().getNamespace(), "item/" + item.getId().getPath() + "_charged"));
-        this.singleTexture(item.getId().getPath(), new ResourceLocation("item/generated"), "layer0", new ResourceLocation(item.getId().getNamespace(), "item/" + item.getId().getPath())).override().predicate(Palladium.id("charged"), 1F).model(charged).end();
+        var charged = this.singleTexture(item.getId().getPath() + "_charged", ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "item/" + item.getId().getPath() + "_charged"));
+        this.singleTexture(item.getId().getPath(), ResourceLocation.parse("item/generated"), "layer0", ResourceLocation.fromNamespaceAndPath(item.getId().getNamespace(), "item/" + item.getId().getPath())).override().predicate(Palladium.id("charged"), 1F).model(charged).end();
     }
 
     @Override

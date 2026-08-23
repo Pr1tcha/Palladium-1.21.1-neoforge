@@ -36,7 +36,7 @@ import java.util.List;
 
 public class AbilityBarRenderer implements OverlayRegistry.IngameOverlay {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(Palladium.MOD_ID, "textures/gui/ability_bar.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/gui/ability_bar.png");
     public static List<AbilityList> ABILITY_LISTS = new ArrayList<>();
     public static int SELECTED = 0;
 

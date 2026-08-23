@@ -13,7 +13,7 @@ public record AlphaMaskTextureTransformer(String maskLocation) implements ITextu
 
     @Override
     public NativeImage transform(DataContext context, NativeImage texture, ResourceManager manager, Function<String, String> stringConverter) throws IOException {
-        NativeImage overlay = NativeImage.read(manager.getResource(new ResourceLocation(stringConverter.apply(this.maskLocation))).get().open());
+        NativeImage overlay = NativeImage.read(manager.getResource(ResourceLocation.parse(stringConverter.apply(this.maskLocation))).get().open());
 
         for (int y = 0; y < overlay.getHeight(); ++y) {
             for (int x = 0; x < overlay.getWidth(); ++x) {

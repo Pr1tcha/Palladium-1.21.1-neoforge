@@ -15,7 +15,7 @@ public class PalladiumBlockTags {
     }
 
     private static TagKey<Block> tag(String domain, String path) {
-        return TagKey.create(Registries.BLOCK, new ResourceLocation(domain, path));
+        return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(domain, path));
     }
 
     private static TagKey<Block> forgeTag(String path) {

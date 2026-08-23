@@ -46,7 +46,7 @@ public class SuitSetParser extends AddonParser<SuitSet> {
                 }
 
                 String name = GsonHelper.isValidNode(json, "item_name") ? GsonHelper.getAsString(json, "item_name") : id.getPath() + "_" + slot.getName();
-                var itemBuilder = AddonPackManager.ITEM_PARSER.parse(new ResourceLocation(id.getNamespace(), name), json);
+                var itemBuilder = AddonPackManager.ITEM_PARSER.parse(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), name), json);
 
                 if (slot == EquipmentSlot.MAINHAND)
                     builder.mainHand(itemBuilder);

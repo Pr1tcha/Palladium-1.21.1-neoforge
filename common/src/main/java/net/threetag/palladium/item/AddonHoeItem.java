@@ -112,7 +112,7 @@ public class AddonHoeItem extends HoeItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "hoe");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "hoe");
         }
     }
 }

@@ -83,9 +83,9 @@ public abstract class DynamicModelLayerLocation {
             String[] s = model.split("#", 2);
 
             if (s.length == 1) {
-                return new ModelLayerLocation(new ResourceLocation(s[0]), "main");
+                return new ModelLayerLocation(ResourceLocation.parse(s[0]), "main");
             } else {
-                return new ModelLayerLocation(new ResourceLocation(s[0]), s[1]);
+                return new ModelLayerLocation(ResourceLocation.parse(s[0]), s[1]);
             }
         }
     }

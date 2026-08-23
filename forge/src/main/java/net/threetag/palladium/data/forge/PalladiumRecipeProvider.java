@@ -15,8 +15,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.crafting.conditions.IConditionBuilder;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladium.item.PalladiumItems;
@@ -57,7 +57,7 @@ public class PalladiumRecipeProvider extends RecipeProvider implements IConditio
         nineBlockStorageRecipes(consumer, RecipeCategory.MISC, PalladiumItems.RAW_TITANIUM.get(), RecipeCategory.BUILDING_BLOCKS, PalladiumItems.RAW_TITANIUM_BLOCK.get());
         nineBlockStorageRecipes(consumer, RecipeCategory.MISC, PalladiumItems.RAW_VIBRANIUM.get(), RecipeCategory.BUILDING_BLOCKS, PalladiumItems.RAW_VIBRANIUM_BLOCK.get());
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.PURPLE_DYE).requires(PalladiumBlocks.HEART_SHAPED_HERB.get()).group("purple_dye").unlockedBy("has_flower", has(PalladiumBlocks.HEART_SHAPED_HERB.get())).save(consumer, new ResourceLocation(Palladium.MOD_ID, "purple_dye_from_heart_shaped_herb"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.PURPLE_DYE).requires(PalladiumBlocks.HEART_SHAPED_HERB.get()).group("purple_dye").unlockedBy("has_flower", has(PalladiumBlocks.HEART_SHAPED_HERB.get())).save(consumer, ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "purple_dye_from_heart_shaped_herb"));
 
         SmithingTransformRecipeBuilder.smithing(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.of(Items.LEATHER_BOOTS), Ingredient.of(PalladiumItemTags.VIBRANIUM_INGOTS), RecipeCategory.COMBAT, PalladiumItems.VIBRANIUM_WEAVE_BOOTS.get()).unlocks(getHasName(PalladiumItems.VIBRANIUM_INGOT.get()), has(PalladiumItemTags.VIBRANIUM_INGOTS)).save(consumer, Palladium.id("vibranium_weave_boots_smithing"));
 
@@ -115,6 +115,6 @@ public class PalladiumRecipeProvider extends RecipeProvider implements IConditio
     }
 
     private static Item getWoolBlockByColor(DyeColor color) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(color.getName() + "_wool"));
+        return ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(color.getName() + "_wool"));
     }
 }

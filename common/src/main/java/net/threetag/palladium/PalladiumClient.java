@@ -189,11 +189,11 @@ public class PalladiumClient {
             }
 
             if (item instanceof AddonShieldItem) {
-                ItemPropertyRegistry.register(item, new ResourceLocation("blocking"), (itemStack, clientLevel, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F);
+                ItemPropertyRegistry.register(item, ResourceLocation.parse("blocking"), (itemStack, clientLevel, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F);
             }
 
             if (item instanceof AddonBowItem) {
-                ItemPropertyRegistry.register(item, new ResourceLocation("pull"), (itemStack, clientLevel, livingEntity, i) -> {
+                ItemPropertyRegistry.register(item, ResourceLocation.parse("pull"), (itemStack, clientLevel, livingEntity, i) -> {
                     if (livingEntity == null) {
                         return 0.0F;
                     } else {
@@ -203,7 +203,7 @@ public class PalladiumClient {
 
                 ItemPropertyRegistry.register(
                         item,
-                        new ResourceLocation("pulling"),
+                        ResourceLocation.parse("pulling"),
                         (itemStack, clientLevel, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1.0F : 0.0F
                 );
             }
@@ -211,7 +211,7 @@ public class PalladiumClient {
             if (item instanceof AddonCrossbowItem) {
                 ItemPropertyRegistry.register(
                         item,
-                        new ResourceLocation("pull"),
+                        ResourceLocation.parse("pull"),
                         (itemStack, clientLevel, livingEntity, i) -> {
                             if (livingEntity == null) {
                                 return 0.0F;
@@ -224,7 +224,7 @@ public class PalladiumClient {
                 );
                 ItemPropertyRegistry.register(
                         item,
-                        new ResourceLocation("pulling"),
+                        ResourceLocation.parse("pulling"),
                         (itemStack, clientLevel, livingEntity, i) -> livingEntity != null
                                 && livingEntity.isUsingItem()
                                 && livingEntity.getUseItem() == itemStack
@@ -234,12 +234,12 @@ public class PalladiumClient {
                 );
                 ItemPropertyRegistry.register(
                         item,
-                        new ResourceLocation("charged"),
+                        ResourceLocation.parse("charged"),
                         (itemStack, clientLevel, livingEntity, i) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
                 );
                 ItemPropertyRegistry.register(
                         item,
-                        new ResourceLocation("firework"),
+                        ResourceLocation.parse("firework"),
                         (itemStack, clientLevel, livingEntity, i) -> livingEntity != null
                                 && CrossbowItem.isCharged(itemStack)
                                 && CrossbowItem.containsChargedProjectile(itemStack, Items.FIREWORK_ROCKET)

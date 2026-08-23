@@ -95,7 +95,7 @@ public class AccessoryPlayerData {
             ListTag listNBT = nbt.getList(slot.getName().toString(), 8);
             List<Accessory> accessories = new ArrayList<>();
             for (int i = 0; i < listNBT.size(); i++) {
-                Accessory accessory = Accessory.REGISTRY.get(new ResourceLocation(listNBT.getString(i)));
+                Accessory accessory = Accessory.REGISTRY.get(ResourceLocation.parse(listNBT.getString(i)));
                 if (accessory != null) {
                     accessories.add(accessory);
                 }

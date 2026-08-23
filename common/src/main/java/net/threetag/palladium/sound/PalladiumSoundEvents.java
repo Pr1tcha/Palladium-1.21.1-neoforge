@@ -16,7 +16,7 @@ public class PalladiumSoundEvents {
     public static final RegistrySupplier<SoundEvent> MULTIVERSAL_VARIANT_CRAFTED = make("entity.generic.multiversal_variant_crafted");
 
     public static RegistrySupplier<SoundEvent> make(String name) {
-        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Palladium.MOD_ID, name)));
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, name)));
     }
 
 }

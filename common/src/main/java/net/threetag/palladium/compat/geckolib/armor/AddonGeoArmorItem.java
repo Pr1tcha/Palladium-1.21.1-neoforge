@@ -128,7 +128,7 @@ public class AddonGeoArmorItem extends AddonArmorItem implements GeoItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(GeckoLib.MOD_ID, "armor");
+            return ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "armor");
         }
     }
 }

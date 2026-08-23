@@ -28,7 +28,7 @@ public class RenderLayerAnimationAbility extends Ability {
     public static final PalladiumProperty<String> ANIMATION_TRIGGER = new StringProperty("animation_trigger").configurable("Name of the animation trigger");
 
     public RenderLayerAnimationAbility() {
-        this.withProperty(RENDER_LAYER, new ResourceLocation("test", "example_layer"));
+        this.withProperty(RENDER_LAYER, ResourceLocation.fromNamespaceAndPath("test", "example_layer"));
         this.withProperty(CONTROLLER, "main");
         this.withProperty(ANIMATION_TRIGGER, "animation_trigger_name");
     }

@@ -112,7 +112,7 @@ public class AddonAxeItem extends AxeItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "axe");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "axe");
         }
     }
 }

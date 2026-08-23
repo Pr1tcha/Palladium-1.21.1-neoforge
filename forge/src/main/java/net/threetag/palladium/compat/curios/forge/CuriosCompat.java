@@ -7,14 +7,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.threetag.palladium.addonpack.AddonPackManager;
 import net.threetag.palladium.addonpack.PackData;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
@@ -44,7 +44,7 @@ public class CuriosCompat {
 
     public static void init() {
         CuriosTrinketsUtil.setInstance(new CuriosUtil());
-        MinecraftForge.EVENT_BUS.register(CuriosTrinketsUtil.getInstance());
+        NeoForge.EVENT_BUS.register(CuriosTrinketsUtil.getInstance());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosCompat::interModQueue);
         FACTORIES.register();
     }
@@ -141,7 +141,7 @@ public class CuriosCompat {
 
         @NotNull
         @Override
-        public <T> LazyOptional<T> getCapability(@NotNull net.minecraftforge.common.capabilities.Capability<T> cap, @Nullable Direction side) {
+        public <T> LazyOptional<T> getCapability(@NotNull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @Nullable Direction side) {
             return CuriosCapability.ITEM.orEmpty(cap, this.capability);
         }
     }

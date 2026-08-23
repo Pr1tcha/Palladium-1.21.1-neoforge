@@ -83,7 +83,7 @@ public abstract class ConditionSerializer implements IDefaultDocumentedConfigura
             return result ? new TrueCondition() : new FalseCondition();
         } else {
             var json = GsonHelper.convertToJsonObject(jsonElement, "conditions");
-            var id = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+            var id = ResourceLocation.parse(GsonHelper.getAsString(json, "type"));
             ConditionSerializer conditionSerializer = ConditionSerializer.REGISTRY.get(id);
 
             if (conditionSerializer == null && id.equals(Palladium.id("under_water"))) {
@@ -124,7 +124,7 @@ public abstract class ConditionSerializer implements IDefaultDocumentedConfigura
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "conditions"), "Conditions")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "conditions"), "Conditions")
                 .add(HTMLBuilder.heading("Conditions"))
                 .addDocumentationSettings(REGISTRY.getValues().stream().sorted(Comparator.comparing(o -> o.getId().toString())).collect(Collectors.toList()));
     }

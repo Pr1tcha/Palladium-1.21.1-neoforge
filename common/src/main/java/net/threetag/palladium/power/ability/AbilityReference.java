@@ -21,7 +21,7 @@ public record AbilityReference(@Nullable ResourceLocation powerId, @NotNull Stri
         if (s.length == 1) {
             return new AbilityReference(null, s[0]);
         } else {
-            return new AbilityReference(new ResourceLocation(s[0]), s[1]);
+            return new AbilityReference(ResourceLocation.parse(s[0]), s[1]);
         }
     }
 

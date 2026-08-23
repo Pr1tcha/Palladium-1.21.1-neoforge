@@ -186,7 +186,7 @@ public class AbilityConfiguration {
 
         if (ability == null) {
             if (GsonHelper.isValidNode(json, "ability")) {
-                ability = Ability.REGISTRY.get(new ResourceLocation(GsonHelper.getAsString(json, "ability")));
+                ability = Ability.REGISTRY.get(ResourceLocation.parse(GsonHelper.getAsString(json, "ability")));
                 AddonPackLog.warning("Usage of 'ability' in ability declarations is deprecated!");
 
                 if (ability == null) {

@@ -112,7 +112,7 @@ public class AddonSwordItem extends SwordItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "sword");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "sword");
         }
     }
 }

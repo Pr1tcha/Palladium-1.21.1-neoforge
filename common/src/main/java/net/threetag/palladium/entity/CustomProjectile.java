@@ -248,7 +248,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("DamageType", Tag.TAG_STRING))
-            this.damageType = new ResourceLocation(compound.getString("DamageType"));
+            this.damageType = ResourceLocation.parse(compound.getString("DamageType"));
         if (compound.contains("Damage", Tag.TAG_ANY_NUMERIC))
             this.damage = compound.getFloat("Damage");
         if (compound.contains("Gravity", Tag.TAG_ANY_NUMERIC))
@@ -342,7 +342,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
 
         public ParticleAppearance(CompoundTag tag) {
             super(tag);
-            this.type = tag.contains("ParticleType") ? BuiltInRegistries.PARTICLE_TYPE.get(new ResourceLocation(tag.getString("ParticleType"))) : ParticleTypes.FLAME;
+            this.type = tag.contains("ParticleType") ? BuiltInRegistries.PARTICLE_TYPE.get(ResourceLocation.parse(tag.getString("ParticleType"))) : ParticleTypes.FLAME;
             this.amount = tag.contains("Amount") ? tag.getInt("Amount") : 1;
             this.spread = tag.contains("Spread") ? tag.getFloat("Spread") : 1;
             this.options = tag.contains("Options") ? tag.getString("Options") : "";
@@ -413,7 +413,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
             if (itemTag instanceof CompoundTag compoundTag) {
                 this.item = ItemStack.of(compoundTag);
             } else if (itemTag instanceof StringTag stringTag) {
-                this.item = new ItemStack(BuiltInRegistries.ITEM.get(new ResourceLocation(stringTag.getAsString())));
+                this.item = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(stringTag.getAsString())));
             } else {
                 this.item = ItemStack.EMPTY;
             }
@@ -485,11 +485,11 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
             var layerTag = tag.get("RenderLayer");
 
             if (layerTag instanceof StringTag stringTag) {
-                this.renderLayers.add(new ResourceLocation(stringTag.getAsString()));
+                this.renderLayers.add(ResourceLocation.parse(stringTag.getAsString()));
             } else if (layerTag instanceof ListTag list) {
                 for (Tag t : list) {
                     if (t instanceof StringTag stringTag) {
-                        this.renderLayers.add(new ResourceLocation(stringTag.getAsString()));
+                        this.renderLayers.add(ResourceLocation.parse(stringTag.getAsString()));
                     }
                 }
             }
@@ -525,11 +525,11 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
             var trailTag = tag.get("Trail");
 
             if (trailTag instanceof StringTag stringTag) {
-                this.trails.add(new ResourceLocation(stringTag.getAsString()));
+                this.trails.add(ResourceLocation.parse(stringTag.getAsString()));
             } else if (trailTag instanceof ListTag list) {
                 for (Tag t : list) {
                     if (t instanceof StringTag stringTag) {
-                        this.trails.add(new ResourceLocation(stringTag.getAsString()));
+                        this.trails.add(ResourceLocation.parse(stringTag.getAsString()));
                     }
                 }
             }

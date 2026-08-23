@@ -23,7 +23,7 @@ public class RegistryObjectProperty<T> extends PalladiumProperty<T> {
 
     @Override
     public T fromJSON(JsonElement jsonElement) {
-        ResourceLocation id = RegistrySynonymsHandler.getReplacement(this.registry, new ResourceLocation(jsonElement.getAsString()));
+        ResourceLocation id = RegistrySynonymsHandler.getReplacement(this.registry, ResourceLocation.parse(jsonElement.getAsString()));
 
         if (this.registry.containsKey(id)) {
             return this.registry.get(id);
@@ -40,7 +40,7 @@ public class RegistryObjectProperty<T> extends PalladiumProperty<T> {
     @Override
     public T fromNBT(Tag tag, T defaultValue) {
         if (tag instanceof StringTag stringTag) {
-            ResourceLocation id = RegistrySynonymsHandler.getReplacement(this.registry, new ResourceLocation(stringTag.getAsString()));
+            ResourceLocation id = RegistrySynonymsHandler.getReplacement(this.registry, ResourceLocation.parse(stringTag.getAsString()));
 
             if (this.registry.containsKey(id)) {
                 return this.registry.get(id);

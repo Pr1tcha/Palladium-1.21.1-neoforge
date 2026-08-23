@@ -167,7 +167,7 @@ public class PowerHandler implements IPowerHandler {
     public void cleanPowerData() {
         List<String> toRemove = new ArrayList<>();
         for (String key : this.powerData.getAllKeys()) {
-            if (PowerManager.getInstance(this.entity.level()).getPower(new ResourceLocation(key)) == null) {
+            if (PowerManager.getInstance(this.entity.level()).getPower(ResourceLocation.parse(key)) == null) {
                 toRemove.add(key);
             }
         }

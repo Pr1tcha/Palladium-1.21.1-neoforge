@@ -17,7 +17,7 @@ public class ShaderEffectAbility extends Ability {
     public static final PalladiumProperty<ResourceLocation> SHADER = new ResourceLocationProperty("shader").configurable("ID of the shader that shall be applied").sync(SyncType.SELF);
 
     public ShaderEffectAbility() {
-        this.withProperty(SHADER, new ResourceLocation("shaders/post/creeper.json"));
+        this.withProperty(SHADER, ResourceLocation.parse("shaders/post/creeper.json"));
     }
 
     @Override

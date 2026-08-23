@@ -1,7 +1,7 @@
 package net.threetag.palladium.mixin.forge;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.extensions.IForgeItem;
+import net.neoforged.neoforge.common.extensions.IForgeItem;
 import net.threetag.palladium.item.MultiversalExtrapolatorItem;
 import org.spongepowered.asm.mixin.Mixin;
 

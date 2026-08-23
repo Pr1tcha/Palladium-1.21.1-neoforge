@@ -101,7 +101,7 @@ public class EffectEntity extends Entity implements ExtendedEntitySpawnData {
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compound) {
-        this.entityEffect = EntityEffect.REGISTRY.get(new ResourceLocation(compound.getString("EntityEffect")));
+        this.entityEffect = EntityEffect.REGISTRY.get(ResourceLocation.parse(compound.getString("EntityEffect")));
         this.anchorId = compound.getInt("AnchorId");
     }
 

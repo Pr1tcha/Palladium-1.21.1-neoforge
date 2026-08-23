@@ -112,7 +112,7 @@ public class AddonPickaxeItem extends PickaxeItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "pickaxe");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "pickaxe");
         }
     }
 }

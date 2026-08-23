@@ -66,6 +66,6 @@ public class CreativeModeTabParser extends AddonParser<CreativeModeTab> {
                 .description("You can list your items for the tab in the correct order here.")
                 .fallback(null).exampleJson(jsonArray);
 
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "creative_mode_tabs"), "Creative Mode Tabs").add(HTMLBuilder.heading("Creative Mode Tabs")).addDocumentation(builder);
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "creative_mode_tabs"), "Creative Mode Tabs").add(HTMLBuilder.heading("Creative Mode Tabs")).addDocumentation(builder);
     }
 }

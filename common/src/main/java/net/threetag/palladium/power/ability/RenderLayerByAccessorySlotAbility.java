@@ -22,7 +22,7 @@ public class RenderLayerByAccessorySlotAbility extends Ability implements Render
     public static final PalladiumProperty<AccessorySlot> SLOT = new AccessorySlotProperty("accessory_slot").configurable("ID of the slot that will be looked in for to get a render layer. There must be a render_layer accessory in it to get it from.");
 
     public RenderLayerByAccessorySlotAbility() {
-        this.withProperty(DEFAULT, new ResourceLocation("namespace", "render_layer_id"));
+        this.withProperty(DEFAULT, ResourceLocation.fromNamespaceAndPath("namespace", "render_layer_id"));
         this.withProperty(SLOT, AccessorySlot.CHEST);
     }
 

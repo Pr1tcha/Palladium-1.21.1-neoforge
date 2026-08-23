@@ -63,7 +63,7 @@ public class EnergyBeamManager extends SimpleJsonResourceReloadListener {
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "energy_beam_renderers"), "Energy Beam Renderers")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "energy_beam_renderers"), "Energy Beam Renderers")
                 .add(HTMLBuilder.heading("Energy Beam Renderers"))
                 .addDocumentationSettings(RENDERERS.values().stream().sorted(Comparator.comparing(o -> o.getId().toString())).collect(Collectors.toList()));
     }

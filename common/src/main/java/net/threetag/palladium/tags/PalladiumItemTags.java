@@ -63,7 +63,7 @@ public class PalladiumItemTags {
     public static final TagKey<Item> YELLOW_DYES = dyeConnector(DyeColor.YELLOW);
 
     private static TagKey<Item> tag(String domain, String path) {
-        return TagKey.create(Registries.ITEM, new ResourceLocation(domain, path));
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(domain, path));
     }
 
     private static TagKey<Item> tag(String path) {

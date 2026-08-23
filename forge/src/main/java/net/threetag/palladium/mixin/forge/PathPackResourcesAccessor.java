@@ -1,6 +1,6 @@
 package net.threetag.palladium.mixin.forge;
 
-import net.minecraftforge.resource.PathPackResources;
+import net.minecraft.server.packs.PathPackResources;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 

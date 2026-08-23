@@ -103,7 +103,7 @@ public class AddonBlockItem extends BlockItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "block_item");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "block_item");
         }
     }
 }

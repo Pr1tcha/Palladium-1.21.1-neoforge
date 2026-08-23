@@ -112,7 +112,7 @@ public class AddonShovelItem extends ShovelItem implements IAddonItem {
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "shovel");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "shovel");
         }
     }
 }

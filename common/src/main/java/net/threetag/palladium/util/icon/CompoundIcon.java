@@ -93,7 +93,7 @@ public class CompoundIcon implements IIcon {
 
             JsonArray jsonArray = new JsonArray();
             jsonArray.add(IconSerializer.serializeJSON(new ItemIcon(Items.APPLE)));
-            jsonArray.add(IconSerializer.serializeJSON(new TexturedIcon(new ResourceLocation("example:textures/icons/my_icon.png"))));
+            jsonArray.add(IconSerializer.serializeJSON(new TexturedIcon(ResourceLocation.parse("example:textures/icons/my_icon.png"))));
             builder.addProperty("icons", IIcon[].class)
                     .description("Array of the icons you want to merge")
                     .required().exampleJson(jsonArray);

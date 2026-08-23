@@ -43,7 +43,7 @@ public class SuperpowerCommand {
         }
         for (Entity entity : entities) {
             for (ResourceLocation id : PalladiumProperties.SUPERPOWER_IDS.get(entity)) {
-                var allId = new ResourceLocation(id.getNamespace(), "all");
+                var allId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "all");
                 if (!superpowers.contains(allId)) {
                     superpowers.add(allId);
                 }
@@ -223,7 +223,7 @@ public class SuperpowerCommand {
         Iterator<? extends Entity> iterator = entities.iterator();
         int i = 0;
         boolean no = false;
-        Predicate<ResourceLocation> predicate = filter.equalsIgnoreCase("all") ? id -> true : (filter.endsWith(":all") ? id -> id.getNamespace().equals(filter.split(":")[0]) : id -> id.equals(new ResourceLocation(filter)));
+        Predicate<ResourceLocation> predicate = filter.equalsIgnoreCase("all") ? id -> true : (filter.endsWith(":all") ? id -> id.getNamespace().equals(filter.split(":")[0]) : id -> id.equals(ResourceLocation.parse(filter)));
 
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
@@ -256,7 +256,7 @@ public class SuperpowerCommand {
         Iterator<? extends Entity> iterator = entities.iterator();
         int i = 0;
         boolean no = false;
-        Predicate<ResourceLocation> predicate = replacedFilter.equalsIgnoreCase("all") ? id -> true : (replacedFilter.endsWith(":all") ? id -> id.getNamespace().equals(replacedFilter.split(":")[0]) : id -> id.equals(new ResourceLocation(replacedFilter)));
+        Predicate<ResourceLocation> predicate = replacedFilter.equalsIgnoreCase("all") ? id -> true : (replacedFilter.endsWith(":all") ? id -> id.getNamespace().equals(replacedFilter.split(":")[0]) : id -> id.equals(ResourceLocation.parse(replacedFilter)));
 
         while (iterator.hasNext()) {
             Entity entity = iterator.next();

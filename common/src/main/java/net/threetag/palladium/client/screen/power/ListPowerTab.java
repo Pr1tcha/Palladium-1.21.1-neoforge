@@ -57,7 +57,7 @@ public class ListPowerTab extends PowerTab {
     @Override
     public void drawContents(GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY, float partialTick) {
         TextureReference backgroundTexture = this.powerHolder.getPower().getBackground();
-        var texture = backgroundTexture != null ? backgroundTexture.getTexture(DataContext.forPower(minecraft.player, this.powerHolder)) : new ResourceLocation("textures/block/red_wool.png");
+        var texture = backgroundTexture != null ? backgroundTexture.getTexture(DataContext.forPower(minecraft.player, this.powerHolder)) : ResourceLocation.parse("textures/block/red_wool.png");
 
         for (int m = -1; m <= 13; ++m) {
             for (int n = -1; n <= 9; ++n) {

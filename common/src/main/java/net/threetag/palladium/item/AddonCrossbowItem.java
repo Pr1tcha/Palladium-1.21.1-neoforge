@@ -135,7 +135,7 @@ public class AddonCrossbowItem extends CrossbowItem implements IAddonItem {
             float velocityMultiplier = GsonHelper.getAsFloat(json, "velocity_multiplier", 1F);
             float inaccuracy = GsonHelper.getAsFloat(json, "inaccuracy", 1F);
             int useDuration = GsonHelper.getAsInt(json, "use_duration", 72000);
-            TagKey<Item> projectiles = TagKey.create(Registries.ITEM, GsonUtil.getAsResourceLocation(json, "projectiles", new ResourceLocation("minecraft:arrows")));
+            TagKey<Item> projectiles = TagKey.create(Registries.ITEM, GsonUtil.getAsResourceLocation(json, "projectiles", ResourceLocation.parse("minecraft:arrows")));
             TagKey<Item> heldProjectiles = json.has("held_projectiles") ? TagKey.create(Registries.ITEM, GsonUtil.getAsResourceLocation(json, "held_projectiles")) : null;
 
             return new AddonCrossbowItem(velocityMultiplier, inaccuracy, useDuration, stack -> stack.is(projectiles), heldProjectiles == null ? null : stack -> stack.is(heldProjectiles), properties);
@@ -159,7 +159,7 @@ public class AddonCrossbowItem extends CrossbowItem implements IAddonItem {
 
             builder.addProperty("projectiles", ResourceLocation.class)
                     .description("Item tag which contains all items that can be shot. By default all Minecraft arrows")
-                    .fallback(new ResourceLocation("arrows")).exampleJson(new JsonPrimitive("minecraft:arrows"));
+                    .fallback(ResourceLocation.parse("arrows")).exampleJson(new JsonPrimitive("minecraft:arrows"));
 
             builder.addProperty("held_projectiles", ResourceLocation.class)
                     .description("Item tag which contains all items that can be shot by being in the off hand. Can be left out to fallback to the 'projectiles' option")

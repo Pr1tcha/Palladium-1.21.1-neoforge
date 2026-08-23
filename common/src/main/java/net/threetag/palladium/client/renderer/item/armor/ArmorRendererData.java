@@ -54,7 +54,7 @@ public class ArmorRendererData {
     }
 
     public static ArmorRendererData fromJson(JsonObject json) {
-        var modelType = ModelTypes.get(GsonUtil.getAsResourceLocation(json, "model_type", new ResourceLocation("humanoid")));
+        var modelType = ModelTypes.get(GsonUtil.getAsResourceLocation(json, "model_type", ResourceLocation.parse("humanoid")));
         var textures = ArmorTextureData.fromJson(json.get("textures"));
         var modelLayers = ArmorModelData.fromJson(json.get("model_layers"));
         var conditions = ArmorRendererConditions.fromJson(json.has("conditions") ? GsonHelper.getAsJsonArray(json, "conditions") : null);

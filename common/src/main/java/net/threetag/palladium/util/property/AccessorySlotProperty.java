@@ -35,7 +35,7 @@ public class AccessorySlotProperty extends PalladiumProperty<AccessorySlot> {
     @Override
     public AccessorySlot fromNBT(Tag tag, AccessorySlot defaultValue) {
         if (tag instanceof StringTag stringTag) {
-            return AccessorySlot.getSlotByName(new ResourceLocation(stringTag.getAsString()));
+            return AccessorySlot.getSlotByName(ResourceLocation.parse(stringTag.getAsString()));
         }
 
         return defaultValue;

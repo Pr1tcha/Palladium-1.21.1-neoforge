@@ -34,7 +34,7 @@ public class DimensionCondition extends Condition {
         public static final PalladiumProperty<ResourceLocation> DIMENSION = new ResourceLocationProperty("dimension").configurable("ID of the dimension the player must be in. Example values: minecraft:overworld, minecraft:the_nether, minecraft:the_end");
 
         public Serializer() {
-            this.withProperty(DIMENSION, new ResourceLocation("minecraft:overworld"));
+            this.withProperty(DIMENSION, ResourceLocation.parse("minecraft:overworld"));
         }
 
         @Override

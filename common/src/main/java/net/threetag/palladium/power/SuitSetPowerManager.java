@@ -39,7 +39,7 @@ public class SuitSetPowerManager extends SimpleJsonResourceReloadListener {
 
                 List<Power> powers = new ArrayList<>();
                 if (jsonObject.get("power").isJsonPrimitive()) {
-                    var power = PowerManager.getInstance(null).getPower(new ResourceLocation(jsonObject.get("power").getAsString()));
+                    var power = PowerManager.getInstance(null).getPower(ResourceLocation.parse(jsonObject.get("power").getAsString()));
 
                     if (power == null) {
                         AddonPackLog.warning("Unknown power used for suit set '" + jsonObject.get("power").getAsString() + "'");
@@ -48,7 +48,7 @@ public class SuitSetPowerManager extends SimpleJsonResourceReloadListener {
                     }
                 } else if (jsonObject.get("power").isJsonArray()) {
                     for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "power")) {
-                        var power = PowerManager.getInstance(null).getPower(new ResourceLocation(jsonElement.getAsString()));
+                        var power = PowerManager.getInstance(null).getPower(ResourceLocation.parse(jsonElement.getAsString()));
 
                         if (power == null) {
                             AddonPackLog.warning("Unknown power used for suit set '" + jsonElement.getAsString() + "'");
@@ -62,7 +62,7 @@ public class SuitSetPowerManager extends SimpleJsonResourceReloadListener {
 
                 List<SuitSet> suitSets = new ArrayList<>();
                 if (jsonObject.get("suit_set").isJsonPrimitive()) {
-                    ResourceLocation suitSetId = new ResourceLocation(jsonObject.get("suit_set").getAsString());
+                    ResourceLocation suitSetId = ResourceLocation.parse(jsonObject.get("suit_set").getAsString());
 
                     if (!SuitSet.REGISTRY.containsKey(suitSetId)) {
                         throw new JsonParseException("Unknown suit set '" + suitSetId + "'");
@@ -71,7 +71,7 @@ public class SuitSetPowerManager extends SimpleJsonResourceReloadListener {
                     suitSets = List.of(Objects.requireNonNull(SuitSet.REGISTRY.get(suitSetId)));
                 } else if (jsonObject.get("suit_set").isJsonArray()) {
                     for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "suit_set")) {
-                        ResourceLocation suitSetId = new ResourceLocation(jsonElement.getAsString());
+                        ResourceLocation suitSetId = ResourceLocation.parse(jsonElement.getAsString());
 
                         if (!SuitSet.REGISTRY.containsKey(suitSetId)) {
                             throw new JsonParseException("Unknown suit set '" + suitSetId + "'");

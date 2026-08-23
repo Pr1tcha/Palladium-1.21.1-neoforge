@@ -91,15 +91,15 @@ public class PackRenderLayerManager extends SimpleJsonResourceReloadListener {
             }
         });
 
-        registerParser(new ResourceLocation(Palladium.MOD_ID, "default"), PackRenderLayer::parse);
-        registerParser(new ResourceLocation(Palladium.MOD_ID, "compound"), CompoundPackRenderLayer::parse);
-        registerParser(new ResourceLocation(Palladium.MOD_ID, "skin_overlay"), SkinOverlayPackRenderLayer::parse);
-        registerParser(new ResourceLocation(Palladium.MOD_ID, "lightning_sparks"), LightningSparksRenderLayer::parse);
-        registerParser(new ResourceLocation(Palladium.MOD_ID, "thrusters"), ThrusterPackRenderLayer::parse);
+        registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "default"), PackRenderLayer::parse);
+        registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "compound"), CompoundPackRenderLayer::parse);
+        registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "skin_overlay"), SkinOverlayPackRenderLayer::parse);
+        registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "lightning_sparks"), LightningSparksRenderLayer::parse);
+        registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "thrusters"), ThrusterPackRenderLayer::parse);
 
-        registerRenderType(new ResourceLocation("minecraft", "solid"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityTranslucent(texture), false, glint));
-        registerRenderType(new ResourceLocation("minecraft", "cutout"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityCutout(texture), false, glint));
-        registerRenderType(new ResourceLocation("minecraft", "glow"), new RenderTypeFunction() {
+        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "solid"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityTranslucent(texture), false, glint));
+        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "cutout"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityCutout(texture), false, glint));
+        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "glow"), new RenderTypeFunction() {
             @Override
             public VertexConsumer createVertexConsumer(MultiBufferSource buffer, ResourceLocation texture, boolean withGlint) {
                 return ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getGlowing(texture), false, withGlint);
@@ -141,7 +141,7 @@ public class PackRenderLayerManager extends SimpleJsonResourceReloadListener {
     }
 
     public static IPackRenderLayer parseLayer(JsonObject json) {
-        ResourceLocation parserId = GsonUtil.getAsResourceLocation(json, "type", new ResourceLocation(Palladium.MOD_ID, "default"));
+        ResourceLocation parserId = GsonUtil.getAsResourceLocation(json, "type", ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "default"));
 
         if (!RENDER_LAYERS_PARSERS.containsKey(parserId)) {
             throw new JsonParseException("Unknown render layer type '" + parserId + "'");

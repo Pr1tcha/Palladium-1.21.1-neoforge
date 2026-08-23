@@ -37,12 +37,12 @@ public class ToolTierParser extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
-        registerToolTier(new ResourceLocation("wood"), Tiers.WOOD);
-        registerToolTier(new ResourceLocation("stone"), Tiers.STONE);
-        registerToolTier(new ResourceLocation("iron"), Tiers.IRON);
-        registerToolTier(new ResourceLocation("gold"), Tiers.GOLD);
-        registerToolTier(new ResourceLocation("diamond"), Tiers.DIAMOND);
-        registerToolTier(new ResourceLocation("netherite"), Tiers.NETHERITE);
+        registerToolTier(ResourceLocation.parse("wood"), Tiers.WOOD);
+        registerToolTier(ResourceLocation.parse("stone"), Tiers.STONE);
+        registerToolTier(ResourceLocation.parse("iron"), Tiers.IRON);
+        registerToolTier(ResourceLocation.parse("gold"), Tiers.GOLD);
+        registerToolTier(ResourceLocation.parse("diamond"), Tiers.DIAMOND);
+        registerToolTier(ResourceLocation.parse("netherite"), Tiers.NETHERITE);
 
         AtomicInteger i = new AtomicInteger();
         object.forEach((id, jsonElement) -> {
@@ -114,7 +114,7 @@ public class ToolTierParser extends SimpleJsonResourceReloadListener {
                 .description("Ingredient definition for repairing the item in an anvil. Can be defined like in recipes.")
                 .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(Ingredient.of(ItemTags.DIRT).toJson());
 
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "tool_tiers"), "Tool Tiers").add(HTMLBuilder.heading("Tool Tiers")).addDocumentation(builder);
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "tool_tiers"), "Tool Tiers").add(HTMLBuilder.heading("Tool Tiers")).addDocumentation(builder);
     }
 
 }

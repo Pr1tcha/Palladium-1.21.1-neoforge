@@ -27,7 +27,7 @@ public class GuiOverlayAbility extends Ability {
     public static final PalladiumProperty<TextureAlignmentProperty.TextureAlignment> ALIGNMENT = new TextureAlignmentProperty("alignment").sync(SyncType.SELF).configurable("Determines how the image is aligned on the screen");
 
     public GuiOverlayAbility() {
-        this.withProperty(TEXTURE, TextureReference.normal(new ResourceLocation("textures/gui/presets/isles.png")));
+        this.withProperty(TEXTURE, TextureReference.normal(ResourceLocation.parse("textures/gui/presets/isles.png")));
         this.withProperty(TEXTURE_WIDTH, 256);
         this.withProperty(TEXTURE_HEIGHT, 256);
         this.withProperty(TRANSLATE, Vec3.ZERO);

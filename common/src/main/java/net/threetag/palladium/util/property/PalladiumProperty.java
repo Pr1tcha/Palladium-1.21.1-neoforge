@@ -114,7 +114,7 @@ public abstract class PalladiumProperty<T> {
         } else if (property instanceof DoubleProperty && value instanceof Number number) {
             value = number.doubleValue();
         } else if (property instanceof ResourceLocationProperty && value instanceof String string) {
-            value = new ResourceLocation(string);
+            value = ResourceLocation.parse(string);
         } else if (property instanceof EnumPalladiumProperty<?> && value instanceof String string) {
             value = ((EnumPalladiumProperty<?>) property).getByName(string);
         } else if (property instanceof StringArrayProperty && value instanceof List<?> list) {

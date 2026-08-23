@@ -61,15 +61,15 @@ public class GeckoArmorRenderer<T extends AddonGeoArmorItem> extends GeoArmorRen
             this.animationsPath = animationsPath;
 
             if (this.modelPath == null) {
-                this.modelPath = new ResourceLocation(itemId.getNamespace(), "geo/armor/" + itemId.getPath() + ".geo.json");
+                this.modelPath = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "geo/armor/" + itemId.getPath() + ".geo.json");
             }
 
             if (this.texturePath == null) {
-                this.texturePath = TextureReference.normal(new ResourceLocation(itemId.getNamespace(), "textures/armor/" + itemId.getPath() + ".png"));
+                this.texturePath = TextureReference.normal(ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "textures/armor/" + itemId.getPath() + ".png"));
             }
 
             if (this.animationsPath == null) {
-                this.animationsPath = new ResourceLocation(itemId.getNamespace(), "animations/armor/" + itemId.getPath() + ".animation.json");
+                this.animationsPath = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "animations/armor/" + itemId.getPath() + ".animation.json");
             }
         }
 

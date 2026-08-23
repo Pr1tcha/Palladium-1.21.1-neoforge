@@ -21,7 +21,7 @@ public record EnergyBarReference(@Nullable ResourceLocation powerId, @NotNull St
         if (s.length == 1) {
             return new EnergyBarReference(null, s[0]);
         } else {
-            return new EnergyBarReference(new ResourceLocation(s[0]), s[1]);
+            return new EnergyBarReference(ResourceLocation.parse(s[0]), s[1]);
         }
     }
 

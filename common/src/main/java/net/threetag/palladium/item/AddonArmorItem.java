@@ -250,7 +250,7 @@ public class AddonArmorItem extends ArmorItem implements IAddonItem, ArmorWithRe
 
         @Override
         public ResourceLocation getId() {
-            return new ResourceLocation(Palladium.MOD_ID, "armor");
+            return ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "armor");
         }
     }
 

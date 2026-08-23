@@ -28,7 +28,7 @@ public class ParticleAbility extends Ability {
     public static final PalladiumProperty<String> OPTIONS = new StringProperty("options").configurable("Additional options for the particle (like color of a dust particle)");
 
     public ParticleAbility() {
-        this.withProperty(PARTICLE_EMITTER, Collections.singletonList(new ResourceLocation("example:emitter")))
+        this.withProperty(PARTICLE_EMITTER, Collections.singletonList(ResourceLocation.parse("example:emitter")))
                 .withProperty(PARTICLE, ParticleTypes.DUST)
                 .withProperty(OPTIONS, "");
     }

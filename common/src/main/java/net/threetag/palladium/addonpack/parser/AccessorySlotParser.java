@@ -82,6 +82,6 @@ public class AccessorySlotParser extends SimpleJsonResourceReloadListener {
                 .description("Determines if the slot is visible in the menu. Can be ignored, set to 'false' or defined by conditions")
                 .fallback(null).exampleJson(new JsonPrimitive(true));
 
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "accessory_slots"), "Accessory Slots").add(HTMLBuilder.heading("Accessory Slots")).addDocumentation(builder);
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "accessory_slots"), "Accessory Slots").add(HTMLBuilder.heading("Accessory Slots")).addDocumentation(builder);
     }
 }

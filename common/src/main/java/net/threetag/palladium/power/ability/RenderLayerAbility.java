@@ -14,7 +14,7 @@ public class RenderLayerAbility extends Ability implements RenderLayerProviderAb
     public static final PalladiumProperty<ResourceLocation> RENDER_LAYER = new ResourceLocationProperty("render_layer").configurable("ID of the render layer that will be rendered");
 
     public RenderLayerAbility() {
-        this.withProperty(RENDER_LAYER, new ResourceLocation("namespace", "render_layer_id"));
+        this.withProperty(RENDER_LAYER, ResourceLocation.fromNamespaceAndPath("namespace", "render_layer_id"));
     }
 
     @Override

@@ -45,7 +45,7 @@ public class EntityDynamicTexture extends DynamicTexture {
             }
         }
 
-        ResourceLocation output = new ResourceLocation(DefaultDynamicTexture.replaceVariables(this.output, context, this.textureVariableMap));
+        ResourceLocation output = ResourceLocation.parse(DefaultDynamicTexture.replaceVariables(this.output, context, this.textureVariableMap));
 
         if (!Minecraft.getInstance().getTextureManager().byPath.containsKey(output)) {
             Minecraft.getInstance().getTextureManager().register(output, new TransformedTexture(texture, getNativeImageIfPossible(texture), this.transformers, context, transformerPath -> DefaultDynamicTexture.replaceVariables(transformerPath, context, this.textureVariableMap)));

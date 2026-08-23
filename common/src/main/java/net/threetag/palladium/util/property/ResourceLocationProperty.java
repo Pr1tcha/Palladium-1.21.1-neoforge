@@ -15,7 +15,7 @@ public class ResourceLocationProperty extends PalladiumProperty<ResourceLocation
 
     @Override
     public ResourceLocation fromJSON(JsonElement jsonElement) {
-        return new ResourceLocation(jsonElement.getAsString());
+        return ResourceLocation.parse(jsonElement.getAsString());
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ResourceLocationProperty extends PalladiumProperty<ResourceLocation
     @Override
     public ResourceLocation fromNBT(Tag tag, ResourceLocation defaultValue) {
         if (tag instanceof StringTag stringTag) {
-            return new ResourceLocation(stringTag.getAsString());
+            return ResourceLocation.parse(stringTag.getAsString());
         }
         return defaultValue;
     }

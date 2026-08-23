@@ -18,11 +18,11 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.threetag.palladium.compat.geckolib.ability.ArmorAnimationAbility;
 import net.threetag.palladium.compat.geckolib.ability.RenderLayerAnimationAbility;
 import net.threetag.palladium.compat.geckolib.armor.AddonGeoArmorItem;
@@ -47,8 +47,8 @@ public class GeckoLibCompatImpl {
     }
 
     public static void registerAbility(RegisterEvent e) {
-        e.register(Ability.REGISTRY.getRegistryKey(), new ResourceLocation(GeckoLib.MOD_ID, "render_layer_animation"), RenderLayerAnimationAbility::new);
-        e.register(Ability.REGISTRY.getRegistryKey(), new ResourceLocation(GeckoLib.MOD_ID, "armor_animation"), ArmorAnimationAbility::new);
+        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "render_layer_animation"), RenderLayerAnimationAbility::new);
+        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "armor_animation"), ArmorAnimationAbility::new);
     }
 
     public static AddonGeoArmorItem createArmorItem(ArmorMaterial materialIn, ArmorItem.Type type, Item.Properties builder) {

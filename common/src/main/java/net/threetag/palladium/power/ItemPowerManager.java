@@ -44,7 +44,7 @@ public class ItemPowerManager extends SimpleJsonResourceReloadListener {
 
                 List<Power> powers = new ArrayList<>();
                 if (jsonObject.get("power").isJsonPrimitive()) {
-                    var power = PowerManager.getInstance(null).getPower(new ResourceLocation(jsonObject.get("power").getAsString()));
+                    var power = PowerManager.getInstance(null).getPower(ResourceLocation.parse(jsonObject.get("power").getAsString()));
 
                     if (power == null) {
                         AddonPackLog.warning("Unknown power used for item '" + jsonObject.get("power").getAsString() + "'");
@@ -53,7 +53,7 @@ public class ItemPowerManager extends SimpleJsonResourceReloadListener {
                     }
                 } else if (jsonObject.get("power").isJsonArray()) {
                     for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "power")) {
-                        var power = PowerManager.getInstance(null).getPower(new ResourceLocation(jsonElement.getAsString()));
+                        var power = PowerManager.getInstance(null).getPower(ResourceLocation.parse(jsonElement.getAsString()));
 
                         if (power == null) {
                             AddonPackLog.warning("Unknown power used for item '" + jsonElement.getAsString() + "'");
@@ -67,7 +67,7 @@ public class ItemPowerManager extends SimpleJsonResourceReloadListener {
 
                 List<Item> items = new ArrayList<>();
                 if (jsonObject.get("item").isJsonPrimitive()) {
-                    ResourceLocation itemId = new ResourceLocation(jsonObject.get("item").getAsString());
+                    ResourceLocation itemId = ResourceLocation.parse(jsonObject.get("item").getAsString());
 
                     if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
                         throw new JsonParseException("Unknown item '" + itemId + "'");
@@ -76,7 +76,7 @@ public class ItemPowerManager extends SimpleJsonResourceReloadListener {
                     items = List.of(BuiltInRegistries.ITEM.get(itemId));
                 } else if (jsonObject.get("item").isJsonArray()) {
                     for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "item")) {
-                        ResourceLocation itemId = new ResourceLocation(jsonElement.getAsString());
+                        ResourceLocation itemId = ResourceLocation.parse(jsonElement.getAsString());
 
                         if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
                             throw new JsonParseException("Unknown item '" + itemId + "'");

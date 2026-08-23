@@ -142,7 +142,7 @@ public class SupporterHandler {
             JsonArray data = GsonHelper.getAsJsonArray(json, "accessoires", new JsonArray());
 
             for (int i = 0; i < data.size(); i++) {
-                ResourceLocation id = new ResourceLocation(data.get(i).getAsString());
+                ResourceLocation id = ResourceLocation.parse(data.get(i).getAsString());
 
                 if (id.getNamespace().equalsIgnoreCase("threecore")) {
                     id = Palladium.id(id.getPath());

@@ -2,8 +2,8 @@ package net.threetag.palladium.data.forge;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.sound.PalladiumSoundEvents;
 import net.threetag.palladiumcore.registry.RegistrySupplier;

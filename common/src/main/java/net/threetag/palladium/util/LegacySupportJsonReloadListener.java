@@ -47,7 +47,7 @@ public abstract class LegacySupportJsonReloadListener extends SimplePreparableRe
                 }
                 ResourceLocation resourcelocation = entry.getKey();
                 String s = resourcelocation.getPath();
-                ResourceLocation id = new ResourceLocation(resourcelocation.getNamespace(), s.substring(i, s.length() - PATH_SUFFIX_LENGTH));
+                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(resourcelocation.getNamespace(), s.substring(i, s.length() - PATH_SUFFIX_LENGTH));
 
                 try {
                     Reader reader = entry.getValue().openAsReader();

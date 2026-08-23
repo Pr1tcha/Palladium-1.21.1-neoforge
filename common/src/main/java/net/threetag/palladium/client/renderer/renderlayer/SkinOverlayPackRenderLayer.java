@@ -99,10 +99,10 @@ public class SkinOverlayPackRenderLayer extends AbstractPackRenderLayer {
     }
 
     public static SkinOverlayPackRenderLayer parse(JsonObject json) {
-        var renderType = PackRenderLayerManager.getRenderType(new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")));
+        var renderType = PackRenderLayerManager.getRenderType(ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")));
 
         if (renderType == null) {
-            throw new JsonParseException("Unknown render type '" + new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
+            throw new JsonParseException("Unknown render type '" + ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
         }
 
         return new SkinOverlayPackRenderLayer(

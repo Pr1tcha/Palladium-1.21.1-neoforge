@@ -39,9 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class PowersScreen extends Screen {
 
-    public static final ResourceLocation WINDOW = new ResourceLocation(Palladium.MOD_ID, "textures/gui/powers/window.png");
-    public static final ResourceLocation TABS = new ResourceLocation(Palladium.MOD_ID, "textures/gui/powers/tabs.png");
-    public static final ResourceLocation WIDGETS = new ResourceLocation(Palladium.MOD_ID, "textures/gui/powers/widgets.png");
+    public static final ResourceLocation WINDOW = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/gui/powers/window.png");
+    public static final ResourceLocation TABS = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/gui/powers/tabs.png");
+    public static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "textures/gui/powers/widgets.png");
 
     public static final int WINDOW_WIDTH = 252;
     public static final int WINDOW_HEIGHT = 196;

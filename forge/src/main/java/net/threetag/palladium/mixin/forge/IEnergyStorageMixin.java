@@ -4,7 +4,7 @@ import net.threetag.palladium.energy.IEnergyStorage;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(IEnergyStorage.class)
-public interface IEnergyStorageMixin extends net.minecraftforge.energy.IEnergyStorage {
+public interface IEnergyStorageMixin extends net.neoforged.neoforge.energy.IEnergyStorage {
 
     default IEnergyStorage cast() {
         return (IEnergyStorage) this;

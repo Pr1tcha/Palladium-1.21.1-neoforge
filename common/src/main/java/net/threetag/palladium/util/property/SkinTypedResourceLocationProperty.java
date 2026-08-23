@@ -28,7 +28,7 @@ public class SkinTypedResourceLocationProperty extends PalladiumProperty<SkinTyp
     @Override
     public SkinTypedValue<ResourceLocation> fromNBT(Tag tag, SkinTypedValue<ResourceLocation> defaultValue) {
         if (tag instanceof CompoundTag compoundTag) {
-            return new SkinTypedValue<>(new ResourceLocation(compoundTag.getString("Normal"), compoundTag.getString("Slim")));
+            return new SkinTypedValue<>(ResourceLocation.fromNamespaceAndPath(compoundTag.getString("Normal"), compoundTag.getString("Slim")));
         }
         return defaultValue;
     }

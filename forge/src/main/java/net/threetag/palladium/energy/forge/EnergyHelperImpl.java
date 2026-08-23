@@ -5,13 +5,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.energy.IEnergyStorage;
 import net.threetag.palladium.item.EnergyItem;
@@ -70,7 +70,7 @@ public class EnergyHelperImpl {
         return result.get();
     }
 
-    public record Wrapper(net.minecraftforge.energy.IEnergyStorage forgeStorage) implements IEnergyStorage {
+    public record Wrapper(net.neoforged.neoforge.energy.IEnergyStorage forgeStorage) implements IEnergyStorage {
 
         @Override
         public boolean canInsert() {

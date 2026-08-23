@@ -21,7 +21,7 @@ public class ArmorAnimationAbility extends Ability {
     public static final PalladiumProperty<String> ANIMATION_TRIGGER = new StringProperty("animation_trigger").configurable("Name of the animation trigger");
 
     public ArmorAnimationAbility() {
-        this.withProperty(ITEM, new ResourceLocation("test", "example_item"));
+        this.withProperty(ITEM, ResourceLocation.fromNamespaceAndPath("test", "example_item"));
         this.withProperty(CONTROLLER, "main");
         this.withProperty(ANIMATION_TRIGGER, "animation_trigger_name");
     }

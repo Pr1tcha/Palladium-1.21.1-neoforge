@@ -81,7 +81,7 @@ public class Ability implements IDefaultDocumentedConfigurable {
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "abilities"), "Abilities")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "abilities"), "Abilities")
                 .add(HTMLBuilder.heading("Abilities"))
                 .addDocumentationSettings(REGISTRY.getValues().stream().filter(ab -> !ab.isExperimental()).sorted(Comparator.comparing(o -> o.getId().toString())).collect(Collectors.toList()));
     }

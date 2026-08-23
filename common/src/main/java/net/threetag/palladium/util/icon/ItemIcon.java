@@ -90,7 +90,7 @@ public record ItemIcon(ItemStack stack) implements IIcon {
 
             builder.addProperty("item", ResourceLocation.class)
                     .description("ID of the item that's supposed to be displayed. If you leave it out, it will display the item from the current context (if given).")
-                    .fallback(new ResourceLocation("minecraft:air")).exampleJson(new JsonPrimitive("minecraft:apple"));
+                    .fallback(ResourceLocation.parse("minecraft:air")).exampleJson(new JsonPrimitive("minecraft:apple"));
         }
     }
 

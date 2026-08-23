@@ -91,8 +91,8 @@ public class CuriosTrinketsUtil {
     public record Slot(TagKey<Item> forge, TagKey<Item> fabric) {
 
         public Slot(String forge, String fabric) {
-            this(TagKey.create(Registries.ITEM, new ResourceLocation("curios:" + forge)),
-                    TagKey.create(Registries.ITEM, new ResourceLocation("trinkets:" + fabric)));
+            this(TagKey.create(Registries.ITEM, ResourceLocation.parse("curios:" + forge)),
+                    TagKey.create(Registries.ITEM, ResourceLocation.parse("trinkets:" + fabric)));
         }
     }
 

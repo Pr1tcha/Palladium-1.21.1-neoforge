@@ -30,11 +30,11 @@ public abstract class IconSerializer<T extends IIcon> implements IDocumentedConf
             String input = json.getAsString();
 
             if (input.endsWith(".png")) {
-                return new TexturedIcon(new ResourceLocation(input));
+                return new TexturedIcon(ResourceLocation.parse(input));
             } else if (input.startsWith("#")) {
                 return new TexturedIcon(TextureReference.parse(input));
             } else {
-                ResourceLocation id = new ResourceLocation(json.getAsString());
+                ResourceLocation id = ResourceLocation.parse(json.getAsString());
 
                 if (!BuiltInRegistries.ITEM.containsKey(id)) {
                     throw new JsonParseException("Unknown item '" + json.getAsString() + "'");
@@ -43,7 +43,7 @@ public abstract class IconSerializer<T extends IIcon> implements IDocumentedConf
                 return new ItemIcon(BuiltInRegistries.ITEM.get(id));
             }
         } else if (json.isJsonObject()) {
-            ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json.getAsJsonObject(), "type"));
+            ResourceLocation id = ResourceLocation.parse(GsonHelper.getAsString(json.getAsJsonObject(), "type"));
 
             if (!REGISTRY.containsKey(id)) {
                 throw new JsonParseException("Unknown icon type '" + id + "'");
@@ -72,7 +72,7 @@ public abstract class IconSerializer<T extends IIcon> implements IDocumentedConf
     }
 
     public static IIcon parseNBT(CompoundTag tag) {
-        ResourceLocation id = new ResourceLocation(tag.getString("Type"));
+        ResourceLocation id = ResourceLocation.parse(tag.getString("Type"));
 
         if (!REGISTRY.containsKey(id)) {
             return null;
@@ -91,7 +91,7 @@ public abstract class IconSerializer<T extends IIcon> implements IDocumentedConf
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "icons"), "Icons")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "icons"), "Icons")
                 .add(HTMLBuilder.heading("Icons"))
                 .addDocumentationSettings(REGISTRY.getValues().stream().sorted(Comparator.comparing(o -> o.getId().toString())).collect(Collectors.toList()));
     }

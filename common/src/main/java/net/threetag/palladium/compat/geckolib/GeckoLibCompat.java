@@ -26,7 +26,7 @@ public class GeckoLibCompat {
 
     @Environment(EnvType.CLIENT)
     public static void initClient() {
-        PackRenderLayerManager.registerParser(new ResourceLocation(GeckoLib.MOD_ID, "default"), GeckoRenderLayer::parse);
+        PackRenderLayerManager.registerParser(ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "default"), GeckoRenderLayer::parse);
     }
 
     @ExpectPlatform

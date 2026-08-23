@@ -59,7 +59,7 @@ public class AccessoryParser extends AddonParser<Accessory> {
     }
 
     public static HTMLBuilder documentationBuilder() {
-        return new HTMLBuilder(new ResourceLocation(Palladium.MOD_ID, "accessories"), "Accessories")
+        return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "accessories"), "Accessories")
                 .add(HTMLBuilder.heading("Accessories"))
                 .addDocumentationSettings(new ArrayList<>(TYPE_SERIALIZERS.values()));
     }

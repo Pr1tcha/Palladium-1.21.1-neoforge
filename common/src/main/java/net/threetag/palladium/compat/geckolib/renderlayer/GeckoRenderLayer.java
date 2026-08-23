@@ -136,10 +136,10 @@ public class GeckoRenderLayer extends AbstractPackRenderLayer {
     public static GeckoRenderLayer parse(JsonObject json) {
         SkinTypedValue<DynamicTexture> modelLocation = SkinTypedValue.fromJSON(json.get("model"), DynamicTextureManager::fromJson);
         var texture = SkinTypedValue.fromJSON(json.get("texture"), DynamicTextureManager::fromJson);
-        var renderType = PackRenderLayerManager.getRenderType(new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")));
+        var renderType = PackRenderLayerManager.getRenderType(ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")));
 
         if (renderType == null) {
-            throw new JsonParseException("Unknown render type '" + new ResourceLocation(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
+            throw new JsonParseException("Unknown render type '" + ResourceLocation.parse(GsonHelper.getAsString(json, "render_type", "solid")) + "'");
         }
 
         var layer = new GeckoRenderLayer(
