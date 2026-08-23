@@ -34,6 +34,7 @@ import net.threetag.palladium.datacondition.forge.PalladiumFeatureFlagEnabledCon
 import net.threetag.palladium.mixin.ReloadableResourceManagerMixin;
 import net.threetag.palladiumcore.event.ClientEventBridge;
 import net.threetag.palladiumcore.event.EventBridge;
+import net.threetag.palladiumcore.network.NetworkRegistration;
 import net.threetag.palladiumcore.registry.ModEventBusRegistry;
 import net.threetag.palladiumcore.registry.RegistrationEvents;
 import net.threetag.palladiumcore.registry.client.ClientRegistrationEvents;
@@ -48,6 +49,7 @@ public class PalladiumForge {
         ModEventBusRegistry.register(Palladium.MOD_ID, modEventBus);
         RegistrationEvents.register(modEventBus);
         EventBridge.register(modEventBus);
+        NetworkRegistration.register(modEventBus);
         if (dist == Dist.CLIENT) {
             ClientRegistrationEvents.register(modEventBus);
             ClientEventBridge.register(modEventBus);

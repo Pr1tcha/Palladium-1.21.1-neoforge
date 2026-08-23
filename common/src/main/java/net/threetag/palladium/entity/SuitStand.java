@@ -6,8 +6,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,8 +28,6 @@ import net.threetag.palladium.item.PalladiumItems;
 import net.threetag.palladium.power.ability.Abilities;
 import net.threetag.palladium.power.ability.AbilityUtil;
 import net.threetag.palladiumcore.network.ExtendedEntitySpawnData;
-import net.threetag.palladiumcore.network.NetworkManager;
-import org.jetbrains.annotations.NotNull;
 
 public class SuitStand extends ArmorStand implements ExtendedEntitySpawnData {
 
@@ -164,11 +160,6 @@ public class SuitStand extends ArmorStand implements ExtendedEntitySpawnData {
     public void setDyeColor(DyeColor color) {
         byte b0 = this.entityData.get(DYE_COLOR);
         this.entityData.set(DYE_COLOR, (byte) (b0 & 240 | color.getId() & 15));
-    }
-
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkManager.createAddEntityPacket(this);
     }
 
     @Override

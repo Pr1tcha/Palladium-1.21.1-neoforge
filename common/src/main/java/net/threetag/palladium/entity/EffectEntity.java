@@ -2,8 +2,6 @@ package net.threetag.palladium.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -11,7 +9,6 @@ import net.minecraft.world.level.Level;
 import net.threetag.palladium.entity.effect.EntityEffect;
 import net.threetag.palladium.util.property.EntityPropertyHandler;
 import net.threetag.palladiumcore.network.ExtendedEntitySpawnData;
-import net.threetag.palladiumcore.network.NetworkManager;
 
 import java.util.Objects;
 
@@ -111,8 +108,4 @@ public class EffectEntity extends Entity implements ExtendedEntitySpawnData {
         compound.putInt("AnchorId", this.anchorId);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkManager.createAddEntityPacket(this);
-    }
 }

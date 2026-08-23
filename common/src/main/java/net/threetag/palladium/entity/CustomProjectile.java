@@ -12,8 +12,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.threetag.palladium.util.SizeUtil;
 import net.threetag.palladiumcore.network.ExtendedEntitySpawnData;
-import net.threetag.palladiumcore.network.NetworkManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -69,11 +66,6 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
 
     public CustomProjectile(EntityType<? extends ThrowableProjectile> entityType, Level level) {
         super(entityType, level);
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkManager.createAddEntityPacket(this);
     }
 
     @Override
