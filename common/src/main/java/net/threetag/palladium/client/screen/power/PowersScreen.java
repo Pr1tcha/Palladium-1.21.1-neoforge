@@ -74,8 +74,9 @@ public class PowersScreen extends Screen {
     public static void register() {
         ScreenEvents.INIT_POST.register((screen, addListener) -> {
             var guiPos = RotatingIconButton.getPos(screen);
+            boolean hasPower = PowerManager.getPowerHandler(Minecraft.getInstance().player).map(handler -> !handler.getPowerHolders().isEmpty()).orElse(false);
 
-            if (guiPos != null) {
+            if (guiPos != null && hasPower) {
                 IconButton button;
                 addListener.accept(button = new RotatingIconButton(guiPos.x, guiPos.y, screen, new ItemIcon(ItemStack.EMPTY), b -> Minecraft.getInstance().setScreen(new PowersScreen())));
                 button.setTooltip(Tooltip.create(TITLE));
