@@ -70,16 +70,17 @@ public class ItemPowerManager extends SimpleJsonResourceReloadListener {
                     ResourceLocation itemId = ResourceLocation.parse(jsonObject.get("item").getAsString());
 
                     if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
-                        throw new JsonParseException("Unknown item '" + itemId + "'");
+                        AddonPackLog.warning("Unknown item '{}' used for item powers '{}'; skipping it", itemId, id);
+                    } else {
+                        items.add(BuiltInRegistries.ITEM.get(itemId));
                     }
-
-                    items = List.of(BuiltInRegistries.ITEM.get(itemId));
                 } else if (jsonObject.get("item").isJsonArray()) {
                     for (JsonElement jsonElement : GsonHelper.getAsJsonArray(jsonObject, "item")) {
                         ResourceLocation itemId = ResourceLocation.parse(jsonElement.getAsString());
 
                         if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
-                            throw new JsonParseException("Unknown item '" + itemId + "'");
+                            AddonPackLog.warning("Unknown item '{}' used for item powers '{}'; skipping it", itemId, id);
+                            continue;
                         }
 
                         items.add(BuiltInRegistries.ITEM.get(itemId));
