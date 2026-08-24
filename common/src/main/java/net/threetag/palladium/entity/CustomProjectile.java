@@ -118,7 +118,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
                 }
 
                 if (this.setEntityOnFireSeconds > 0) {
-                    entity.setSecondsOnFire(this.setEntityOnFireSeconds);
+                    entity.igniteForSeconds(this.setEntityOnFireSeconds);
                 }
 
                 if (this.explosionRadius > 0F) {

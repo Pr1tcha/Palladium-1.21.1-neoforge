@@ -31,7 +31,7 @@ public class SuitSetParser extends AddonParser<SuitSet> {
             GsonUtil.ifHasObject(jsonElement.getAsJsonObject(), slot.getName(), jsonObject -> {
                 JsonObject json = GsonUtil.merge(copy, jsonObject);
 
-                if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                if (slot.isArmor()) {
                     if (!GsonHelper.isValidNode(json, "type")) {
                         json.addProperty("type", "palladium:armor");
                     }

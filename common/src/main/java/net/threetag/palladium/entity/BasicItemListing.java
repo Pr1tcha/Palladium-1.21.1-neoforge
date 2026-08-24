@@ -1,12 +1,16 @@
 package net.threetag.palladium.entity;
 
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class BasicItemListing implements VillagerTrades.ItemListing {
 
@@ -41,6 +45,10 @@ public class BasicItemListing implements VillagerTrades.ItemListing {
     @Nullable
     @Override
     public MerchantOffer getOffer(Entity entity, RandomSource randomSource) {
-        return new MerchantOffer(price, price2, forSale, maxTrades, xp, priceMult);
+        return new MerchantOffer(toItemCost(price), price2.isEmpty() ? Optional.empty() : Optional.of(toItemCost(price2)), forSale, maxTrades, xp, priceMult);
+    }
+
+    private static ItemCost toItemCost(ItemStack stack) {
+        return new ItemCost(stack.getItemHolder(), stack.getCount(), DataComponentPredicate.allOf(stack.getComponents()), stack);
     }
 }

@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -107,7 +107,7 @@ public class EnergyBeamAbility extends Ability implements AnimationTimer, Comman
                 var fireSecs = entry.getProperty(SET_ON_FIRE_SECONDS);
 
                 if (fireSecs > 0) {
-                    entityHitResult.getEntity().setSecondsOnFire(fireSecs);
+                    entityHitResult.getEntity().igniteForSeconds(fireSecs);
                 }
 
                 var dmg = entry.getProperty(DAMAGE);
@@ -135,9 +135,9 @@ public class EnergyBeamAbility extends Ability implements AnimationTimer, Comman
 
                 if (!blockState.isAir()) {
                     if (entry.getProperty(SMELT_BLOCKS)) {
-                        SimpleContainer simpleContainer = new SimpleContainer(new ItemStack(blockState.getBlock()));
-                        entity.level().getRecipeManager().getRecipeFor(RecipeType.SMELTING, simpleContainer, entity.level()).ifPresent(recipe -> {
-                            ItemStack result = recipe.assemble(simpleContainer, entity.level().registryAccess());
+                        SingleRecipeInput recipeInput = new SingleRecipeInput(new ItemStack(blockState.getBlock()));
+                        entity.level().getRecipeManager().getRecipeFor(RecipeType.SMELTING, recipeInput, entity.level()).ifPresent(recipe -> {
+                            ItemStack result = recipe.value().assemble(recipeInput, entity.level().registryAccess());
 
                             if (!result.isEmpty() && Block.byItem(result.getItem()) != Blocks.AIR) {
                                 entity.level().setBlockAndUpdate(blockHitResult.getBlockPos(), Block.byItem(result.getItem()).defaultBlockState());
