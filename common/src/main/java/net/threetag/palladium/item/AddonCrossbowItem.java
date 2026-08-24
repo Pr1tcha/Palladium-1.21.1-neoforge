@@ -1,8 +1,8 @@
 package net.threetag.palladium.item;
 
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -10,19 +10,18 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.parser.ItemParser;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
-import net.threetag.palladium.util.PlayerSlot;
 import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +50,7 @@ public class AddonCrossbowItem extends CrossbowItem implements IAddonItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return this.useDuration;
     }
 
@@ -68,9 +67,10 @@ public class AddonCrossbowItem extends CrossbowItem implements IAddonItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
-        if (isCharged(itemStack)) {
-            performShooting(level, player, usedHand, itemStack, getShootingPower(itemStack) * this.velocityMultiplier, this.inaccuracy);
-            setCharged(itemStack, false);
+        ChargedProjectiles chargedProjectiles = itemStack.get(DataComponents.CHARGED_PROJECTILES);
+        if (chargedProjectiles != null && !chargedProjectiles.isEmpty()) {
+            float shootingPower = chargedProjectiles.contains(Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+            performShooting(level, player, usedHand, itemStack, shootingPower * this.velocityMultiplier, this.inaccuracy, null);
             return InteractionResultHolder.consume(itemStack);
         } else if (!player.getProjectile(itemStack).isEmpty()) {
             if (!isCharged(itemStack)) {

@@ -1,30 +1,25 @@
 package net.threetag.palladium.item;
 
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.EventHooks;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.parser.ItemParser;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
-import net.threetag.palladium.util.PlayerSlot;
 import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +48,7 @@ public class AddonBowItem extends BowItem implements IAddonItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return this.useDuration;
     }
 
@@ -70,84 +65,42 @@ public class AddonBowItem extends BowItem implements IAddonItem {
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
         if (livingEntity instanceof Player player) {
-            boolean bl = player.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, stack) > 0;
-            ItemStack itemStack = player.getProjectile(stack);
-            if (!itemStack.isEmpty() || bl) {
-                if (itemStack.isEmpty()) {
-                    itemStack = new ItemStack(Items.ARROW);
-                }
+            ItemStack ammo = player.getProjectile(stack);
+            if (ammo.isEmpty()) {
+                return;
+            }
 
-                int i = this.getUseDuration(stack) - timeCharged;
-                float f = getPowerForTime(i);
-                if (!((double) f < 0.1)) {
-                    boolean bl2 = bl && itemStack.is(Items.ARROW);
-                    if (!level.isClientSide) {
-                        var item = itemStack.getItem();
+            int charge = this.getUseDuration(stack, livingEntity) - timeCharged;
+            charge = EventHooks.onArrowLoose(stack, level, player, charge, true);
+            if (charge < 0) {
+                return;
+            }
 
-                        if (item instanceof AddonProjectileItem projectileItem) {
-                            var entity = projectileItem.createProjectile(level, itemStack, livingEntity);
+            float power = getPowerForTime(charge);
+            if (power < 0.1F) {
+                return;
+            }
 
-                            if (entity != null) {
-                                entity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * this.velocity, this.inaccuracy);
+            List<ItemStack> projectiles = draw(stack, ammo, player);
+            if (level instanceof ServerLevel serverLevel && !projectiles.isEmpty()) {
+                this.shoot(serverLevel, player, player.getUsedItemHand(), stack, projectiles, power * this.velocity, this.inaccuracy, power == 1.0F, null);
+            }
 
-                                if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {
-                                    entity.setSecondsOnFire(100);
-                                }
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS,
+                    1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F);
+            player.awardStat(Stats.ITEM_USED.get(this));
+        }
+    }
 
-                                level.addFreshEntity(entity);
-                            }
-                        } else {
-                            ArrowItem arrowItem = (ArrowItem) (itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-                            AbstractArrow abstractArrow = arrowItem.createArrow(level, itemStack, player);
-                            abstractArrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * this.velocity, this.inaccuracy);
-                            if (f == 1.0F) {
-                                abstractArrow.setCritArrow(true);
-                            }
-
-                            int j = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, stack);
-                            if (j > 0) {
-                                abstractArrow.setBaseDamage(abstractArrow.getBaseDamage() + (double) j * 0.5 + 0.5);
-                            }
-
-                            int k = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, stack);
-                            if (k > 0) {
-                                abstractArrow.setKnockback(k);
-                            }
-
-                            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, stack) > 0) {
-                                abstractArrow.setSecondsOnFire(100);
-                            }
-
-                            stack.hurtAndBreak(1, player, player2 -> player2.broadcastBreakEvent(player.getUsedItemHand()));
-                            if (bl2 || player.getAbilities().instabuild && (itemStack.is(Items.SPECTRAL_ARROW) || itemStack.is(Items.TIPPED_ARROW))) {
-                                abstractArrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                            }
-
-                            level.addFreshEntity(abstractArrow);
-                        }
-                    }
-
-                    level.playSound(
-                            null,
-                            player.getX(),
-                            player.getY(),
-                            player.getZ(),
-                            SoundEvents.ARROW_SHOOT,
-                            SoundSource.PLAYERS,
-                            1.0F,
-                            1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F
-                    );
-                    if (!bl2 && !player.getAbilities().instabuild) {
-                        itemStack.shrink(1);
-                        if (itemStack.isEmpty()) {
-                            player.getInventory().removeItem(itemStack);
-                        }
-                    }
-
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                }
+    @Override
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+        if (ammo.getItem() instanceof AddonProjectileItem projectileItem) {
+            Projectile projectile = projectileItem.createProjectile(level, ammo, shooter);
+            if (projectile != null) {
+                return projectile;
             }
         }
+        return super.createProjectile(level, shooter, weapon, ammo, isCrit);
     }
 
     @Override
