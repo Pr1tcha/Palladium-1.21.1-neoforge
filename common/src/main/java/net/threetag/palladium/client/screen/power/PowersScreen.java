@@ -356,7 +356,7 @@ public class PowersScreen extends Screen {
 
         public static Vector2i getPos(Screen screen) {
             if (screen instanceof InventoryScreen || screen.getClass().toString().equals("class top.theillusivec4.curios.client.gui.CuriosScreen")) {
-                return new Vector2i(((AbstractContainerScreen<?>) screen).getGuiLeft() + 134, screen.height / 2 - 23);
+                return new Vector2i(((AbstractContainerScreen<?>) screen).getGuiLeft() - 22, screen.height / 2 - 23);
             } else if (screen instanceof CreativeModeInventoryScreen) {
                 return new Vector2i(((AbstractContainerScreen<?>) screen).getGuiLeft() + 148, screen.height / 2 - 50);
             }
