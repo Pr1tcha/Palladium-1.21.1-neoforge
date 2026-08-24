@@ -14,9 +14,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Set;
 
 public class LegacyAddonPackResources implements PackResources {
+
+    private static final String ITEM_MODIFIER_DIRECTORY = "item_modifier";
+    private static final String LEGACY_ITEM_MODIFIER_DIRECTORY = "item_modifiers";
 
     private final PackResources delegate;
 
@@ -31,11 +35,30 @@ public class LegacyAddonPackResources implements PackResources {
 
     @Override
     public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
-        return this.wrap(type, location, this.delegate.getResource(type, location));
+        IoSupplier<InputStream> supplier = this.delegate.getResource(type, location);
+        if (supplier == null && isItemModifier(type, location.getPath())) {
+            supplier = this.delegate.getResource(type, toLegacyItemModifier(location));
+        }
+        return this.wrap(type, location, supplier);
     }
 
     @Override
     public void listResources(PackType type, String namespace, String path, ResourceOutput output) {
+        if (type == PackType.SERVER_DATA && ITEM_MODIFIER_DIRECTORY.equals(path)) {
+            Set<ResourceLocation> resources = new HashSet<>();
+            this.delegate.listResources(type, namespace, path, (location, supplier) -> {
+                resources.add(location);
+                output.accept(location, this.wrap(type, location, supplier));
+            });
+            this.delegate.listResources(type, namespace, LEGACY_ITEM_MODIFIER_DIRECTORY, (location, supplier) -> {
+                ResourceLocation migrated = toModernItemModifier(location);
+                if (resources.add(migrated)) {
+                    output.accept(migrated, this.wrap(type, migrated, supplier));
+                }
+            });
+            return;
+        }
+
         this.delegate.listResources(type, namespace, path,
                 (location, supplier) -> output.accept(location, this.wrap(type, location, supplier)));
     }
@@ -61,11 +84,13 @@ public class LegacyAddonPackResources implements PackResources {
     }
 
     private IoSupplier<InputStream> wrap(PackType type, ResourceLocation location, IoSupplier<InputStream> supplier) {
-        boolean damageType = location.getPath().startsWith("damage_type/");
-        boolean dimensionType = location.getPath().startsWith("dimension_type/");
-        boolean commandFunction = location.getPath().startsWith("functions/") && location.getPath().endsWith(".mcfunction");
-        if (supplier == null || type != PackType.SERVER_DATA
-                || (!damageType && !dimensionType && !commandFunction)) {
+        boolean serverData = type == PackType.SERVER_DATA;
+        boolean damageType = serverData && location.getPath().startsWith("damage_type/") && location.getPath().endsWith(".json");
+        boolean dimensionType = serverData && location.getPath().startsWith("dimension_type/") && location.getPath().endsWith(".json");
+        boolean itemModifier = isItemModifier(type, location.getPath()) && location.getPath().endsWith(".json");
+        boolean commandFunction = serverData && location.getPath().startsWith("functions/") && location.getPath().endsWith(".mcfunction");
+        boolean kubeJsScript = location.getPath().startsWith("kubejs_scripts/") && location.getPath().endsWith(".js");
+        if (supplier == null || (!damageType && !dimensionType && !itemModifier && !commandFunction && !kubeJsScript)) {
             return supplier;
         }
 
@@ -75,13 +100,23 @@ public class LegacyAddonPackResources implements PackResources {
                 original = stream.readAllBytes();
             }
 
-            if (commandFunction) {
-                String commands = new String(original, StandardCharsets.UTF_8);
-                String normalized = LegacyCommandCompatibility.normalize(commands);
+            String text = new String(original, StandardCharsets.UTF_8);
+            if (kubeJsScript) {
+                String normalized = LegacyKubeJsCompatibility.normalize(text);
                 return new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8));
             }
 
-            JsonObject json = JsonParser.parseString(new String(original, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (commandFunction) {
+                String normalized = LegacyCommandCompatibility.normalize(text);
+                return new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8));
+            }
+
+            if (itemModifier) {
+                String normalized = LegacyItemModifierCompatibility.normalize(text);
+                return new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8));
+            }
+
+            JsonObject json = JsonParser.parseString(text).getAsJsonObject();
             boolean changed = false;
 
             if (damageType && json.has("effects") && json.get("effects").isJsonPrimitive()
@@ -107,6 +142,20 @@ public class LegacyAddonPackResources implements PackResources {
             byte[] result = changed ? AddonParser.GSON.toJson(json).getBytes(StandardCharsets.UTF_8) : original;
             return new ByteArrayInputStream(result);
         };
+    }
+
+    private static boolean isItemModifier(PackType type, String path) {
+        return type == PackType.SERVER_DATA && path.startsWith(ITEM_MODIFIER_DIRECTORY + "/");
+    }
+
+    private static ResourceLocation toLegacyItemModifier(ResourceLocation location) {
+        return location.withPath(LEGACY_ITEM_MODIFIER_DIRECTORY
+                + location.getPath().substring(ITEM_MODIFIER_DIRECTORY.length()));
+    }
+
+    private static ResourceLocation toModernItemModifier(ResourceLocation location) {
+        return location.withPath(ITEM_MODIFIER_DIRECTORY
+                + location.getPath().substring(LEGACY_ITEM_MODIFIER_DIRECTORY.length()));
     }
 
 }
