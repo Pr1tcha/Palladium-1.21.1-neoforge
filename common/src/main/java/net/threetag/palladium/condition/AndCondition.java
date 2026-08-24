@@ -1,9 +1,12 @@
 package net.threetag.palladium.condition;
 
 import com.google.gson.JsonObject;
+import net.minecraft.world.entity.LivingEntity;
+import net.threetag.palladium.power.ability.AbilityInstance;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.property.ConditionArrayProperty;
 import net.threetag.palladium.util.property.PalladiumProperty;
+import net.threetag.palladium.util.property.PropertyManager;
 
 public class AndCondition extends Condition {
 
@@ -11,6 +14,20 @@ public class AndCondition extends Condition {
 
     public AndCondition(Condition[] conditions) {
         this.conditions = conditions;
+    }
+
+    @Override
+    public void registerAbilityProperties(AbilityInstance entry, PropertyManager manager) {
+        for (Condition condition : this.conditions) {
+            condition.registerAbilityProperties(entry, manager);
+        }
+    }
+
+    @Override
+    public void init(LivingEntity entity, AbilityInstance entry, PropertyManager manager) {
+        for (Condition condition : this.conditions) {
+            condition.init(entity, entry, manager);
+        }
     }
 
     @Override
