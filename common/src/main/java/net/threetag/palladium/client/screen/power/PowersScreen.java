@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -302,6 +303,14 @@ public class PowersScreen extends Screen {
         this.closeOverlayScreen();
         this.overlayScreen = screen;
         this.overlayScreen.init(Objects.requireNonNull(this.minecraft), this.width, this.height);
+    }
+
+    public <T extends GuiEventListener & NarratableEntry> T addTabWidget(T widget) {
+        return this.addWidget(widget);
+    }
+
+    public void removeTabWidget(GuiEventListener widget) {
+        this.removeWidget(widget);
     }
 
     public boolean isOverOverlayScreen(double mouseX, double mouseY) {

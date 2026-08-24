@@ -45,13 +45,13 @@ public class ListPowerTab extends PowerTab {
         this.populate();
 
         if (this.list != null)
-            this.screen.addWidget(this.list);
+            this.screen.addTabWidget(this.list);
     }
 
     @Override
     public void onClosed() {
         if (this.list != null)
-            this.screen.removeWidget(this.list);
+            this.screen.removeTabWidget(this.list);
     }
 
     @Override
@@ -112,12 +112,9 @@ public class ListPowerTab extends PowerTab {
         private final int listWidth;
 
         public AbilityList(Minecraft minecraft, ListPowerTab screen, int width, int height, int x, int y, int itemHeight) {
-            super(minecraft, width, height, y, y + height, itemHeight);
-            this.setLeftPos(x);
+            super(minecraft, width, height, y, itemHeight);
+            this.setX(x);
             this.populate(screen.powerHolder);
-            this.setRenderBackground(false);
-            this.setRenderTopAndBottom(false);
-            this.setRenderSelection(false);
             this.parent = screen;
             this.listWidth = width;
         }
@@ -139,11 +136,19 @@ public class ListPowerTab extends PowerTab {
 
         @Override
         protected int getScrollbarPosition() {
-            return this.x0 + this.listWidth - 9;
+            return this.getX() + this.listWidth - 9;
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        protected void renderListBackground(GuiGraphics guiGraphics) {
+        }
+
+        @Override
+        protected void renderListSeparators(GuiGraphics guiGraphics) {
+        }
+
+        @Override
+        protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
         }
     }
