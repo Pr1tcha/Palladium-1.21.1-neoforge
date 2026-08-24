@@ -49,7 +49,6 @@ public class WatcherRenderer implements ClientTickEvents.ClientLevelTick {
             RenderSystem.blendFuncSeparate(
                     GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
             );
-            BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
             poseStack.mulPose(Axis.YP.rotationDegrees(-135.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(60F));
             Matrix4f matrix4f2 = poseStack.last().pose();
@@ -59,12 +58,12 @@ public class WatcherRenderer implements ClientTickEvents.ClientLevelTick {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, visibility);
             RenderSystem.setShaderTexture(0, TEXTURE);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-            bufferBuilder.vertex(matrix4f2, -f, g, -f).uv(1.0F, 0.0F).endVertex();
-            bufferBuilder.vertex(matrix4f2, f, g, -f).uv(0.0F, 0.0F).endVertex();
-            bufferBuilder.vertex(matrix4f2, f, g, f).uv(0.0F, 1.0F).endVertex();
-            bufferBuilder.vertex(matrix4f2, -f, g, f).uv(1.0F, 1.0F).endVertex();
-            BufferUploader.drawWithShader(bufferBuilder.end());
+            BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            bufferBuilder.addVertex(matrix4f2, -f, g, -f).setUv(1.0F, 0.0F);
+            bufferBuilder.addVertex(matrix4f2, f, g, -f).setUv(0.0F, 0.0F);
+            bufferBuilder.addVertex(matrix4f2, f, g, f).setUv(0.0F, 1.0F);
+            bufferBuilder.addVertex(matrix4f2, -f, g, f).setUv(1.0F, 1.0F);
+            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.disableBlend();
             RenderSystem.defaultBlendFunc();

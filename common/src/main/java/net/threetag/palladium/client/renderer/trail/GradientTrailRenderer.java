@@ -60,10 +60,10 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
                     Vec3 endPos = livingEntity.getPosition(partialTick).subtract(segment.position());
                     Matrix4f matrix = poseStack.last().pose();
 
-                    vertexConsumer.vertex(matrix, 0, 0, 0).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
-                    vertexConsumer.vertex(matrix, 0, segment.getBbHeight(), 0).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
-                    vertexConsumer.vertex(matrix, (float) endPos.x, (float) (endPos.y + livingEntity.getBbHeight()), (float) endPos.z).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
-                    vertexConsumer.vertex(matrix, (float) endPos.x, (float) endPos.y, (float) endPos.z).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
+                    vertexConsumer.addVertex(matrix, 0, 0, 0).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
+                    vertexConsumer.addVertex(matrix, 0, segment.getBbHeight(), 0).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
+                    vertexConsumer.addVertex(matrix, (float) endPos.x, (float) (endPos.y + livingEntity.getBbHeight()), (float) endPos.z).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
+                    vertexConsumer.addVertex(matrix, (float) endPos.x, (float) endPos.y, (float) endPos.z).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
 
                     poseStack.popPose();
                 }
@@ -80,10 +80,10 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
                 poseStack.pushPose();
                 Matrix4f matrix = poseStack.last().pose();
 
-                vertexConsumer.vertex(matrix, 0, 0, 0).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
-                vertexConsumer.vertex(matrix, 0, segment.getBbHeight(), 0).color(r, g, b, this.opacity * segmentOpacity).uv2(packedLight).endVertex();
-                vertexConsumer.vertex(matrix, (float) endPos.x, (float) (endPos.y + prev.getBbHeight()), (float) endPos.z).color(r, g, b, this.opacity * prevOpacity).uv2(packedLight).endVertex();
-                vertexConsumer.vertex(matrix, (float) endPos.x, (float) endPos.y, (float) endPos.z).color(r, g, b, this.opacity * prevOpacity).uv2(packedLight).endVertex();
+                vertexConsumer.addVertex(matrix, 0, 0, 0).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
+                vertexConsumer.addVertex(matrix, 0, segment.getBbHeight(), 0).setColor(r, g, b, this.opacity * segmentOpacity).setLight(packedLight);
+                vertexConsumer.addVertex(matrix, (float) endPos.x, (float) (endPos.y + prev.getBbHeight()), (float) endPos.z).setColor(r, g, b, this.opacity * prevOpacity).setLight(packedLight);
+                vertexConsumer.addVertex(matrix, (float) endPos.x, (float) endPos.y, (float) endPos.z).setColor(r, g, b, this.opacity * prevOpacity).setLight(packedLight);
 
                 poseStack.popPose();
             }
