@@ -17,6 +17,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.client.model.animation.PalladiumAnimationRegistry;
 import net.threetag.palladium.entity.BodyPart;
+import net.threetag.palladium.mixin.client.LivingEntityRendererInvoker;
 import net.threetag.palladium.entity.PlayerModelCacheExtension;
 import net.threetag.palladium.mixin.client.AgeableListModelInvoker;
 import net.threetag.palladium.power.ability.Abilities;
@@ -100,10 +101,11 @@ public class HumanoidRendererModifications {
         if (vibrate > 0F) {
             ALPHA_MULTIPLIER = 0.3F;
             var minecraft = Minecraft.getInstance();
-            boolean bl = renderer.isBodyVisible(entity);
+            var rendererInvoker = (LivingEntityRendererInvoker) renderer;
+            boolean bl = rendererInvoker.palladium$isBodyVisible(entity);
             boolean bl2 = !bl && !entity.isInvisibleTo(minecraft.player);
             boolean bl3 = minecraft.shouldEntityAppearGlowing(entity);
-            RenderType renderType = renderer.getRenderType(entity, bl, true, bl3);
+            RenderType renderType = rendererInvoker.palladium$getRenderType(entity, bl, true, bl3);
             int intensity = VibrateAbility.getIntensity(entity);
             var rand = RandomSource.create();
 
@@ -113,7 +115,7 @@ public class HumanoidRendererModifications {
 
                 if (renderType != null) {
                     VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
-                    int m = LivingEntityRenderer.getOverlayCoords(entity, renderer.getWhiteOverlayProgress(entity, partialTick));
+                    int m = LivingEntityRenderer.getOverlayCoords(entity, rendererInvoker.palladium$getWhiteOverlayProgress(entity, partialTick));
                     renderer.getModel().renderToBuffer(poseStack, vertexConsumer, packedLight, m, FastColor.ARGB32.colorFromFloat(bl2 ? 0.15F : 1.0F, 1.0F, 1.0F, 1.0F));
                 }
 

@@ -27,6 +27,7 @@ import net.threetag.palladium.client.renderer.renderlayer.IPackRenderLayer;
 import net.threetag.palladium.client.renderer.trail.AfterImageTrailRenderer;
 import net.threetag.palladium.client.renderer.trail.TrailRenderer;
 import net.threetag.palladium.entity.TrailSegmentEntity;
+import net.threetag.palladium.mixin.client.LivingEntityRendererInvoker;
 import net.threetag.palladium.util.context.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +106,7 @@ public class TrailSegmentEntityRenderer extends LivingEntityRenderer<TrailSegmen
         }
 
         i = this.getBob(entity, partialTicks);
-        this.setupRotations(entity, poseStack, i, f, partialTicks);
+        this.setupRotations(entity, poseStack, i, f, partialTicks, entity.getScale());
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(entity, poseStack, partialTicks);
         poseStack.translate(0.0F, -1.501F, 0.0F);
@@ -175,7 +176,7 @@ public class TrailSegmentEntityRenderer extends LivingEntityRenderer<TrailSegmen
     @Override
     public void scale(TrailSegmentEntity livingEntity, PoseStack poseStack, float partialTickTime) {
         if (livingEntity.renderer instanceof LivingEntityRenderer entityRenderer && livingEntity.parent instanceof LivingEntity living) {
-            entityRenderer.scale(living, poseStack, partialTickTime);
+            ((LivingEntityRendererInvoker) entityRenderer).palladium$scale(living, poseStack, partialTickTime);
             poseStack.scale(livingEntity.scaleWidth, livingEntity.scaleHeight, livingEntity.scaleWidth);
         }
     }

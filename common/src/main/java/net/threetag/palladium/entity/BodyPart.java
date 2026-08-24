@@ -329,7 +329,7 @@ public enum BodyPart {
                 }
             }
 
-            invoker.invokeSetupRotations(player, poseStack, player.tickCount + partialTicks, f, partialTicks);
+            invoker.invokeSetupRotations(player, poseStack, player.tickCount + partialTicks, f, partialTicks, player.getScale());
 
             if (bodyAnimation != null) {
                 bodyAnimation.apply(poseStack);
