@@ -68,6 +68,10 @@ public record ItemIcon(ItemStack stack) implements IIcon {
 
         @Override
         public ItemIcon fromNBT(CompoundTag nbt) {
+            if (!nbt.contains("id")) {
+                return new ItemIcon(ItemStack.EMPTY);
+            }
+
             return new ItemIcon(ItemStack.parseOptional(ComponentUtil.registryProvider(), nbt));
         }
 
@@ -81,9 +85,7 @@ public record ItemIcon(ItemStack stack) implements IIcon {
 
         @Override
         public CompoundTag toNBT(ItemIcon icon) {
-            CompoundTag tag = new CompoundTag();
-            icon.stack.save(ComponentUtil.registryProvider(), tag);
-            return tag;
+            return (CompoundTag) icon.stack.saveOptional(ComponentUtil.registryProvider());
         }
 
         @Override
