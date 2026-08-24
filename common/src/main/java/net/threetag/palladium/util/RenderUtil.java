@@ -74,7 +74,7 @@ public class RenderUtil {
     }
 
     public static boolean isIrisShaderActive() {
-        return Platform.isModLoaded("iris") || Platform.isModLoaded("oculus") && IrisCompat.isShaderPackActive();
+        return (Platform.isModLoaded("iris") || Platform.isModLoaded("oculus")) && IrisCompat.isShaderPackActive();
     }
 
 }

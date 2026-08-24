@@ -28,7 +28,6 @@
     "client.PlayerRendererMixin",
     "client.RenderTypeMixin",
     "client.ScreenEffectRendererMixin",
-    "client.SodiumFixMixin",
     "client.SplashManagerMixin",
     "client.TextureManagerMixin"
   ],
