@@ -8,17 +8,17 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.DyeableArmorItem;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.threetag.palladium.client.renderer.PalladiumRenderTypes;
 import net.threetag.palladium.client.renderer.item.armor.ArmorRendererData;
 import net.threetag.palladium.compat.geckolib.armor.CancelGeckoArmorBuffer;
 import net.threetag.palladium.item.ArmorWithRenderer;
 import net.threetag.palladium.util.context.DataContext;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -60,9 +60,9 @@ public abstract class HumanoidArmorLayerMixin {
                     this.setPartVisibility(model, slot);
                     boolean innerModel = this.usesInnerModel(slot);
                     boolean foil = item.hasFoil();
-                    if (armorItem instanceof DyeableArmorItem) {
+                    if (item.is(ItemTags.DYEABLE)) {
                         var overlayTexture = renderer.getTexture(context, "overlay");
-                        int j = ((DyeableArmorItem) armorItem).getColor(item);
+                        int j = DyedItemColor.getOrDefault(item, DyedItemColor.LEATHER_COLOR);
                         float f = (float) (j >> 16 & 255) / 255.0F;
                         float g = (float) (j >> 8 & 255) / 255.0F;
                         float h = (float) (j & 255) / 255.0F;
@@ -93,9 +93,9 @@ public abstract class HumanoidArmorLayerMixin {
     }
 
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
-    private void renderModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmorItem armorItem, HumanoidModel model, boolean withGlint, float red, float green, float blue, @Nullable String armorSuffix, CallbackInfo ci) {
+    private void renderModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight, HumanoidModel model, int color, ResourceLocation texture, CallbackInfo ci) {
         if (model instanceof CancelGeckoArmorBuffer) {
-            model.renderToBuffer(poseStack, null, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(1.0F, red, green, blue));
+            model.renderToBuffer(poseStack, null, packedLight, OverlayTexture.NO_OVERLAY, color);
             ci.cancel();
         }
     }
