@@ -27,8 +27,8 @@ public class MultiversalExtrapolatorItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        var universe = getUniverse(stack, level);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        var universe = getUniverse(stack, context.level());
 
         if (universe != null) {
             tooltipComponents.add(universe.getTitle().copy().withStyle(ChatFormatting.GOLD));

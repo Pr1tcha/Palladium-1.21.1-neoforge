@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ArmorItem;
@@ -37,7 +38,7 @@ public class AddonGeoArmorItem extends AddonArmorItem implements GeoItem {
     public TextureReference texturePath;
     public ResourceLocation animationsPath;
 
-    public AddonGeoArmorItem(ArmorMaterial materialIn, ArmorItem.Type type, Properties builder) {
+    public AddonGeoArmorItem(Holder<ArmorMaterial> materialIn, ArmorItem.Type type, Properties builder) {
         super(materialIn, type, builder);
         SingletonGeoAnimatable.registerSyncedAnimatable(this);
     }
@@ -63,10 +64,11 @@ public class AddonGeoArmorItem extends AddonArmorItem implements GeoItem {
 
         @Override
         public IAddonItem parse(JsonObject json, Item.Properties properties) {
-            ArmorMaterial armorMaterial = ArmorMaterialParser.getArmorMaterial(GsonUtil.getAsResourceLocation(json, "armor_material"));
+            ResourceLocation materialId = GsonUtil.getAsResourceLocation(json, "armor_material");
+            Holder<ArmorMaterial> armorMaterial = ArmorMaterialParser.getArmorMaterial(materialId);
 
             if (armorMaterial == null) {
-                throw new JsonParseException("Unknown armor material '" + GsonUtil.getAsResourceLocation(json, "armor_material") + "'");
+                throw new JsonParseException("Unknown armor material '" + materialId + "'");
             }
 
             ArmorItem.Type type = AddonArmorItem.Parser.getArmorType(GsonHelper.getAsString(json, "slot"));
@@ -75,6 +77,7 @@ public class AddonGeoArmorItem extends AddonArmorItem implements GeoItem {
                 throw new JsonParseException("Armor slot must be one of the following: " + Arrays.toString(Arrays.stream(ArmorItem.Type.values()).map(ArmorItem.Type::getName).toArray()));
             }
 
+            properties.durability(type.getDurability(ArmorMaterialParser.getDurabilityMultiplier(materialId)));
             var item = GeckoLibCompat.createArmorItem(armorMaterial, type, properties);
             item.modelPath = GsonUtil.getAsResourceLocation(json, "armor_model", null);
             item.texturePath = GsonUtil.getAsTextureReference(json, "armor_texture", null);

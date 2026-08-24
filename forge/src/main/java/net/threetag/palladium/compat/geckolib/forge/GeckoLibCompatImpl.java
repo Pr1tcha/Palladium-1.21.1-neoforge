@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,7 +52,7 @@ public class GeckoLibCompatImpl {
         e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "armor_animation"), ArmorAnimationAbility::new);
     }
 
-    public static AddonGeoArmorItem createArmorItem(ArmorMaterial materialIn, ArmorItem.Type type, Item.Properties builder) {
+    public static AddonGeoArmorItem createArmorItem(Holder<ArmorMaterial> materialIn, ArmorItem.Type type, Item.Properties builder) {
         return new ArmorItemImpl(materialIn, type, builder);
     }
 
@@ -107,7 +108,7 @@ public class GeckoLibCompatImpl {
 
     public static class ArmorItemImpl extends AddonGeoArmorItem {
 
-        public ArmorItemImpl(ArmorMaterial materialIn, Type type, Properties builder) {
+        public ArmorItemImpl(Holder<ArmorMaterial> materialIn, Type type, Properties builder) {
             super(materialIn, type, builder);
         }
 

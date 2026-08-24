@@ -1,14 +1,14 @@
 package net.threetag.palladium.item;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.DyeableArmorItem;
 
-public class VibraniumWeaveArmorItem extends DyeableArmorItem implements ArmorWithRenderer {
+public class VibraniumWeaveArmorItem extends ArmorItem implements ArmorWithRenderer {
 
     private Object renderer;
 
-    public VibraniumWeaveArmorItem(ArmorMaterial armorMaterial, ArmorItem.Type type, Properties properties) {
+    public VibraniumWeaveArmorItem(Holder<ArmorMaterial> armorMaterial, ArmorItem.Type type, Properties properties) {
         super(armorMaterial, type, properties);
     }
 

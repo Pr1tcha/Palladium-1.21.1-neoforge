@@ -91,12 +91,12 @@ public record SizedIngredient(Ingredient ingredient, int count) {
     }
 
     public static SizedIngredient fromJson(JsonObject json, boolean canBeEmpty) {
-        return new SizedIngredient(Ingredient.fromJson(json.get("ingredient"), canBeEmpty), GsonUtil.getAsIntMin(json, "count", 1, 1));
+        return new SizedIngredient(GsonUtil.parseIngredient(json.get("ingredient"), canBeEmpty), GsonUtil.getAsIntMin(json, "count", 1, 1));
     }
 
     public JsonObject toJson() {
         var json = new JsonObject();
-        json.add("ingredient", this.ingredient.toJson());
+        json.add("ingredient", GsonUtil.ingredientToJson(this.ingredient));
         json.addProperty("count", this.count);
         return json;
     }

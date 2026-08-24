@@ -38,7 +38,7 @@ public class FluxCapacitorItem extends EnergyItem implements IAddonItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         var stored = EnergyHelper.getEnergyStoredInItem(stack);
         tooltipComponents.add(Component.translatable("item.palladium.flux_capacitor.desc",
                 Component.literal(Utils.getFormattedNumber(stored)).withStyle(ChatFormatting.GOLD),
@@ -72,8 +72,8 @@ public class FluxCapacitorItem extends EnergyItem implements IAddonItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        return this.attributeContainer.get(PlayerSlot.get(slot), super.getDefaultAttributeModifiers(slot));
+    public net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        return this.attributeContainer.apply(super.getDefaultAttributeModifiers(stack));
     }
 
     @Override

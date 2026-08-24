@@ -1,11 +1,13 @@
 package net.threetag.palladium.item;
 
 import net.minecraft.Util;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladium.multiverse.MultiverseManager;
@@ -23,14 +25,14 @@ public class PalladiumItems {
 
     public static final EnumMap<DyeColor, RegistrySupplier<Item>> FABRIC_BY_COLOR = new EnumMap<>(DyeColor.class);
 
-    public static final SimpleArmorMaterial VIBRANIUM_WEAVE = new SimpleArmorMaterial("vibranium_weave", 8,
+    public static final SimpleArmorMaterial VIBRANIUM_WEAVE = new SimpleArmorMaterial(Palladium.id("vibranium_weave"), 8,
             Util.make(new EnumMap<>(ArmorItem.Type.class), (enumMap) -> {
                 enumMap.put(ArmorItem.Type.BOOTS, 2);
                 enumMap.put(ArmorItem.Type.LEGGINGS, 2);
                 enumMap.put(ArmorItem.Type.CHESTPLATE, 3);
                 enumMap.put(ArmorItem.Type.HELMET, 1);
-            }), 12, () -> SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F,
-            () -> Ingredient.of(PalladiumItemTags.VIBRANIUM_INGOTS));
+            }), 12, () -> SoundEvents.ARMOR_EQUIP_LEATHER.value(), 0.0F, 0.0F,
+            () -> Ingredient.of(PalladiumItemTags.VIBRANIUM_INGOTS), true);
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Palladium.MOD_ID, Registries.ITEM);
 
@@ -78,7 +80,11 @@ public class PalladiumItems {
     public static final RegistrySupplier<FluxCapacitorItem> QUARTZ_FLUX_CAPACITOR = ITEMS.register("quartz_flux_capacitor", () -> new FluxCapacitorItem(new Item.Properties().stacksTo(1), 1000000, 5000, 5000));
     public static final RegistrySupplier<FluxCapacitorItem> VIBRANIUM_FLUX_CAPACITOR = ITEMS.register("vibranium_flux_capacitor", () -> new FluxCapacitorItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), 2000000, 10000, 10000));
 
-    public static final RegistrySupplier<Item> VIBRANIUM_WEAVE_BOOTS = ITEMS.register("vibranium_weave_boots", () -> new VibraniumWeaveArmorItem(VIBRANIUM_WEAVE, ArmorItem.Type.BOOTS, (new Item.Properties())));
+    public static final RegistrySupplier<Item> VIBRANIUM_WEAVE_BOOTS = ITEMS.register("vibranium_weave_boots", () ->
+            new VibraniumWeaveArmorItem(VIBRANIUM_WEAVE.holder(), ArmorItem.Type.BOOTS,
+                    new Item.Properties()
+                            .durability(ArmorItem.Type.BOOTS.getDurability(VIBRANIUM_WEAVE.durabilityMultiplier()))
+                            .component(DataComponents.DYED_COLOR, new DyedItemColor(DyedItemColor.LEATHER_COLOR, false))));
 
     public static final RegistrySupplier<Item> WHITE_FABRIC = registerFabric(DyeColor.WHITE);
     public static final RegistrySupplier<Item> ORANGE_FABRIC = registerFabric(DyeColor.ORANGE);

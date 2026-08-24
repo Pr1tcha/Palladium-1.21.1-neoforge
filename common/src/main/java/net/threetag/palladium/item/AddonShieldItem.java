@@ -19,6 +19,7 @@ import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.parser.ItemParser;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
 import net.threetag.palladium.util.PlayerSlot;
+import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -50,16 +51,16 @@ public class AddonShieldItem extends ShieldItem implements IAddonItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
         if (this.tooltipLines != null) {
             tooltipComponents.addAll(this.tooltipLines);
         }
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        return this.attributeContainer.get(PlayerSlot.get(slot), super.getDefaultAttributeModifiers(slot));
+    public net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        return this.attributeContainer.apply(super.getDefaultAttributeModifiers(stack));
     }
 
     @Override
@@ -97,7 +98,7 @@ public class AddonShieldItem extends ShieldItem implements IAddonItem {
         @Override
         public IAddonItem parse(JsonObject json, Properties properties) {
             int useDuration = GsonHelper.getAsInt(json, "use_duration", 72000);
-            Supplier<Ingredient> repairIngredient = () -> json.has("repair_ingredient") ? Ingredient.fromJson(json.get("repair_ingredient")) : Ingredient.EMPTY;
+            Supplier<Ingredient> repairIngredient = () -> json.has("repair_ingredient") ? GsonUtil.parseIngredient(json.get("repair_ingredient")) : Ingredient.EMPTY;
             return new AddonShieldItem(useDuration, repairIngredient, properties);
         }
 
@@ -113,7 +114,7 @@ public class AddonShieldItem extends ShieldItem implements IAddonItem {
             builder.addProperty("repair_ingredient", Ingredient.class)
                     .description("The ingredient needed to repair the shield in an anvil. Can be null for making it non-repairable")
                     .fallback(null)
-                    .exampleJson(Ingredient.of(ItemTags.WOOL).toJson());
+                    .exampleJson(GsonUtil.ingredientToJson(Ingredient.of(ItemTags.WOOL)));
         }
 
         @Override

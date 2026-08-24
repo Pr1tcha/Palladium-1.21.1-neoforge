@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -45,7 +46,7 @@ public class AddonArmorItem extends ArmorItem implements IAddonItem, ArmorWithRe
     private int openingTime = 0;
     private ResourceLocation openedSound, closedSound, toggleSound;
 
-    public AddonArmorItem(ArmorMaterial armorMaterial, ArmorItem.Type type, Properties properties) {
+    public AddonArmorItem(Holder<ArmorMaterial> armorMaterial, ArmorItem.Type type, Properties properties) {
         super(armorMaterial, type, properties);
     }
 
@@ -79,16 +80,16 @@ public class AddonArmorItem extends ArmorItem implements IAddonItem, ArmorWithRe
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
         if (this.tooltipLines != null) {
             tooltipComponents.addAll(this.tooltipLines);
         }
     }
 
     @Override
-    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        return this.attributeContainer.get(PlayerSlot.get(slot), super.getDefaultAttributeModifiers(slot));
+    public @NotNull net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        return this.attributeContainer.apply(super.getDefaultAttributeModifiers(stack));
     }
 
     @Override
@@ -170,10 +171,11 @@ public class AddonArmorItem extends ArmorItem implements IAddonItem, ArmorWithRe
 
         @Override
         public IAddonItem parse(JsonObject json, Properties properties) {
-            ArmorMaterial armorMaterial = ArmorMaterialParser.getArmorMaterial(GsonUtil.getAsResourceLocation(json, "armor_material"));
+            ResourceLocation materialId = GsonUtil.getAsResourceLocation(json, "armor_material");
+            Holder<ArmorMaterial> armorMaterial = ArmorMaterialParser.getArmorMaterial(materialId);
 
             if (armorMaterial == null) {
-                throw new JsonParseException("Unknown armor material '" + GsonUtil.getAsResourceLocation(json, "armor_material") + "'");
+                throw new JsonParseException("Unknown armor material '" + materialId + "'");
             }
 
             ArmorItem.Type type = getArmorType(GsonHelper.getAsString(json, "slot"));
@@ -182,6 +184,7 @@ public class AddonArmorItem extends ArmorItem implements IAddonItem, ArmorWithRe
                 throw new JsonParseException("Armor slot must be one of the following: " + Arrays.toString(Arrays.stream(ArmorItem.Type.values()).map(ArmorItem.Type::getName).toArray()));
             }
 
+            properties.durability(type.getDurability(ArmorMaterialParser.getDurabilityMultiplier(materialId)));
             var item = new AddonArmorItem(armorMaterial, type, properties);
 
             item.rendererFile = GsonUtil.getAsResourceLocation(json, "armor_renderer", null);

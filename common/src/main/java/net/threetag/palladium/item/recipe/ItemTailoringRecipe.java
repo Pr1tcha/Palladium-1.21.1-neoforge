@@ -66,7 +66,7 @@ public class ItemTailoringRecipe extends TailoringRecipe {
                 throw new JsonParseException("No ingredients for shapeless recipe");
             }
 
-            var toolIngredient = Ingredient.fromJson(serializedRecipe.get("tool"));
+            var toolIngredient = GsonUtil.parseIngredient(serializedRecipe.get("tool"));
 
             if (toolIngredient.isEmpty()) {
                 throw new JsonParseException("Valid tool ingredient required");

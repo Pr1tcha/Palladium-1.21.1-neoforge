@@ -2,12 +2,16 @@ package net.threetag.palladium.item;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.threetag.palladium.util.PlayerSlot;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class AddonAttributeContainer {
@@ -25,6 +29,34 @@ public class AddonAttributeContainer {
         }
 
         return finalMap;
+    }
+
+    public ItemAttributeModifiers apply(ItemAttributeModifiers original) {
+        var entries = new ArrayList<>(original.modifiers());
+
+        for (var entry : this.allSlots.entries()) {
+            entries.add(new ItemAttributeModifiers.Entry(
+                    BuiltInRegistries.ATTRIBUTE.wrapAsHolder(entry.getKey()),
+                    entry.getValue(),
+                    EquipmentSlotGroup.ANY));
+        }
+
+        for (var slotEntry : this.attributeModifiers.entrySet()) {
+            var equipmentSlot = slotEntry.getKey().getEquipmentSlot();
+            if (equipmentSlot == null) {
+                continue;
+            }
+
+            var slotGroup = EquipmentSlotGroup.bySlot(equipmentSlot);
+            for (var entry : slotEntry.getValue().entries()) {
+                entries.add(new ItemAttributeModifiers.Entry(
+                        BuiltInRegistries.ATTRIBUTE.wrapAsHolder(entry.getKey()),
+                        entry.getValue(),
+                        slotGroup));
+            }
+        }
+
+        return new ItemAttributeModifiers(entries, original.showInTooltip());
     }
 
     public AddonAttributeContainer add(@Nullable PlayerSlot slot, Attribute attribute, AttributeModifier modifier) {

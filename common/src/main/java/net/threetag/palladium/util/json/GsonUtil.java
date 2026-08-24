@@ -1,6 +1,7 @@
 package net.threetag.palladium.util.json;
 
 import com.google.gson.*;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.accessory.AccessorySlot;
 import net.threetag.palladium.client.dynamictexture.TextureReference;
@@ -27,6 +29,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class GsonUtil {
+
+    public static Ingredient parseIngredient(JsonElement json) {
+        return parseIngredient(json, true);
+    }
+
+    public static Ingredient parseIngredient(JsonElement json, boolean allowEmpty) {
+        return (allowEmpty ? Ingredient.CODEC : Ingredient.CODEC_NONEMPTY)
+                .parse(JsonOps.INSTANCE, json)
+                .getOrThrow(JsonParseException::new);
+    }
+
+    public static JsonElement ingredientToJson(Ingredient ingredient) {
+        return Ingredient.CODEC.encodeStart(JsonOps.INSTANCE, ingredient).getOrThrow(JsonParseException::new);
+    }
 
     public static int[] getIntArray(JsonObject jsonObject, int fields, String key) {
         if (!GsonHelper.isValidNode(jsonObject, key))

@@ -83,7 +83,7 @@ public class ToolTierParser extends SimpleJsonResourceReloadListener {
                 GsonUtil.getAsFloatMin(json, "speed", 0),
                 GsonUtil.getAsFloatMin(json, "attack_damage_bonus", 0),
                 GsonUtil.getAsIntMin(json, "enchantment_value", 0),
-                () -> json.has("repair_ingredient") ? Ingredient.fromJson(json.get("repair_ingredient")) : Ingredient.EMPTY);
+                () -> json.has("repair_ingredient") ? GsonUtil.parseIngredient(json.get("repair_ingredient")) : Ingredient.EMPTY);
     }
 
     public static HTMLBuilder documentationBuilder() {
@@ -112,7 +112,7 @@ public class ToolTierParser extends SimpleJsonResourceReloadListener {
 
         builder.addProperty("repair_ingredient", Ingredient.class)
                 .description("Ingredient definition for repairing the item in an anvil. Can be defined like in recipes.")
-                .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(Ingredient.of(ItemTags.DIRT).toJson());
+                .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(GsonUtil.ingredientToJson(Ingredient.of(ItemTags.DIRT)));
 
         return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "tool_tiers"), "Tool Tiers").add(HTMLBuilder.heading("Tool Tiers")).addDocumentation(builder);
     }

@@ -13,9 +13,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -251,7 +251,7 @@ public class PalladiumClient {
     }
 
     public static void colorHandlers() {
-        ColorHandlerRegistry.registerItemColors((itemStack, i) -> i > 0 ? -1 : ((DyeableLeatherItem) itemStack.getItem()).getColor(itemStack), PalladiumItems.VIBRANIUM_WEAVE_BOOTS);
+        ColorHandlerRegistry.registerItemColors((itemStack, i) -> i > 0 ? -1 : DyedItemColor.getOrDefault(itemStack, DyedItemColor.LEATHER_COLOR), PalladiumItems.VIBRANIUM_WEAVE_BOOTS);
     }
 
     public static void setupDevLogButton() {

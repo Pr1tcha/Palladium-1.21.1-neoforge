@@ -31,23 +31,25 @@ public class AddonHoeItem extends HoeItem implements IAddonItem {
     private List<Component> tooltipLines;
     private RenderLayerContainer renderLayerContainer = null;
     private final AddonAttributeContainer attributeContainer = new AddonAttributeContainer();
+    private final net.minecraft.world.item.component.ItemAttributeModifiers baseModifiers;
     private boolean shouldRenderModel = true;
 
     public AddonHoeItem(Tier tier, int baseDamage, float attackSpeed, Properties properties) {
-        super(tier, baseDamage, attackSpeed, properties);
+        super(tier, properties);
+        this.baseModifiers = net.minecraft.world.item.DiggerItem.createAttributes(tier, baseDamage, attackSpeed);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
         if (this.tooltipLines != null) {
             tooltipComponents.addAll(this.tooltipLines);
         }
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        return this.attributeContainer.get(PlayerSlot.get(slot), super.getDefaultAttributeModifiers(slot));
+    public net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        return this.attributeContainer.apply(this.baseModifiers);
     }
 
     @Override

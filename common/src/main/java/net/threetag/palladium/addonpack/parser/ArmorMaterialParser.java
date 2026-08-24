@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
 
-    private static final Map<ResourceLocation, ArmorMaterial> ARMOR_MATERIALS = new HashMap<>();
+    private static final Map<ResourceLocation, MaterialEntry> ARMOR_MATERIALS = new HashMap<>();
 
     public ArmorMaterialParser() {
         super(AddonParser.GSON, "armor_materials");
@@ -39,20 +40,20 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
-        registerArmorMaterial(ResourceLocation.parse("leather"), ArmorMaterials.LEATHER);
-        registerArmorMaterial(ResourceLocation.parse("chainmail"), ArmorMaterials.CHAIN);
-        registerArmorMaterial(ResourceLocation.parse("iron"), ArmorMaterials.IRON);
-        registerArmorMaterial(ResourceLocation.parse("gold"), ArmorMaterials.GOLD);
-        registerArmorMaterial(ResourceLocation.parse("diamond"), ArmorMaterials.DIAMOND);
-        registerArmorMaterial(ResourceLocation.parse("turtle"), ArmorMaterials.TURTLE);
-        registerArmorMaterial(ResourceLocation.parse("netherite"), ArmorMaterials.NETHERITE);
+        registerArmorMaterial(ResourceLocation.parse("leather"), ArmorMaterials.LEATHER, 5);
+        registerArmorMaterial(ResourceLocation.parse("chainmail"), ArmorMaterials.CHAIN, 15);
+        registerArmorMaterial(ResourceLocation.parse("iron"), ArmorMaterials.IRON, 15);
+        registerArmorMaterial(ResourceLocation.parse("gold"), ArmorMaterials.GOLD, 7);
+        registerArmorMaterial(ResourceLocation.parse("diamond"), ArmorMaterials.DIAMOND, 33);
+        registerArmorMaterial(ResourceLocation.parse("turtle"), ArmorMaterials.TURTLE, 25);
+        registerArmorMaterial(ResourceLocation.parse("netherite"), ArmorMaterials.NETHERITE, 37);
 
         AtomicInteger i = new AtomicInteger();
         object.forEach((id, jsonElement) -> {
             try {
                 JsonObject json = GsonHelper.convertToJsonObject(jsonElement, "$");
                 SimpleArmorMaterial armorMaterial = parse(id, json);
-                registerArmorMaterial(id, armorMaterial);
+                registerArmorMaterial(id, armorMaterial.holder(), armorMaterial.durabilityMultiplier());
                 i.getAndIncrement();
             } catch (Exception e) {
                 CrashReport crashReport = CrashReport.forThrowable(e, "Error while parsing addonpack armor material " + " '" + id + "'");
@@ -67,12 +68,18 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
         AddonPackLog.info("Registered " + i.get() + " addonpack armor materials");
     }
 
-    public static void registerArmorMaterial(ResourceLocation id, ArmorMaterial armorMaterial) {
-        ARMOR_MATERIALS.put(id, armorMaterial);
+    public static void registerArmorMaterial(ResourceLocation id, Holder<ArmorMaterial> armorMaterial, int durabilityMultiplier) {
+        ARMOR_MATERIALS.put(id, new MaterialEntry(armorMaterial, durabilityMultiplier));
     }
 
-    public static ArmorMaterial getArmorMaterial(ResourceLocation id) {
-        return ARMOR_MATERIALS.get(id);
+    public static Holder<ArmorMaterial> getArmorMaterial(ResourceLocation id) {
+        MaterialEntry entry = ARMOR_MATERIALS.get(id);
+        return entry == null ? null : entry.material();
+    }
+
+    public static int getDurabilityMultiplier(ResourceLocation id) {
+        MaterialEntry entry = ARMOR_MATERIALS.get(id);
+        return entry == null ? 0 : entry.durabilityMultiplier();
     }
 
     public static Set<ResourceLocation> getIds() {
@@ -80,14 +87,14 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
     }
 
     public static SimpleArmorMaterial parse(ResourceLocation id, JsonObject json) {
-        return new SimpleArmorMaterial(id.getPath(),
+        return new SimpleArmorMaterial(id,
                 GsonUtil.getAsIntMin(json, "durability_multiplier", 0),
                 parseArmorProtectionMap(json.get("slot_protections")),
                 GsonUtil.getAsIntMin(json, "enchantment_value", 0),
                 () -> BuiltInRegistries.SOUND_EVENT.get(GsonUtil.getAsResourceLocation(json, "equip_sound")),
                 GsonHelper.getAsFloat(json, "toughness", 0),
                 GsonHelper.getAsFloat(json, "knockback_resistance", 0),
-                () -> json.has("repair_ingredient") ? Ingredient.fromJson(json.get("repair_ingredient")) : Ingredient.EMPTY);
+                () -> json.has("repair_ingredient") ? GsonUtil.parseIngredient(json.get("repair_ingredient")) : Ingredient.EMPTY);
     }
 
     public static EnumMap<ArmorItem.Type, Integer> parseArmorProtectionMap(JsonElement jsonElement) {
@@ -137,7 +144,7 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
 
         builder.addProperty("equip_sound", ResourceLocation.class)
                 .description("Sound that is played when equipping the item into the slot.")
-                .required().exampleJson(new JsonPrimitive(Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.ARMOR_EQUIP_IRON)).toString()));
+                .required().exampleJson(new JsonPrimitive(Objects.requireNonNull(BuiltInRegistries.SOUND_EVENT.getKey(SoundEvents.ARMOR_EQUIP_IRON.value())).toString()));
 
         builder.addProperty("toughness", Float.class)
                 .description("Adds additional armor toughness. For reference: diamond has 2.0, netherite has 3.0, rest has 0.")
@@ -149,9 +156,12 @@ public class ArmorMaterialParser extends SimpleJsonResourceReloadListener {
 
         builder.addProperty("repair_ingredient", Ingredient.class)
                 .description("Ingredient definition for repairing the item in an anvil. Can be defined like in recipes.")
-                .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(Ingredient.of(ItemTags.DIRT).toJson());
+                .fallback(Ingredient.EMPTY, "empty ingredient").exampleJson(GsonUtil.ingredientToJson(Ingredient.of(ItemTags.DIRT)));
 
         return new HTMLBuilder(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "armor_materials"), "Armor Materials").add(HTMLBuilder.heading("Armor Materials")).addDocumentation(builder);
+    }
+
+    private record MaterialEntry(Holder<ArmorMaterial> material, int durabilityMultiplier) {
     }
 
 }

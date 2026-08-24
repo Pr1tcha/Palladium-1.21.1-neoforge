@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -30,7 +31,7 @@ public class GeckoLibCompat {
     }
 
     @ExpectPlatform
-    public static AddonGeoArmorItem createArmorItem(ArmorMaterial materialIn, ArmorItem.Type type, Item.Properties builder) {
+    public static AddonGeoArmorItem createArmorItem(Holder<ArmorMaterial> materialIn, ArmorItem.Type type, Item.Properties builder) {
         throw new AssertionError();
     }
 
