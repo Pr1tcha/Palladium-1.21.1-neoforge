@@ -28,13 +28,15 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
 
     private final float spacing;
     private final int lifetime;
+    private final boolean requiresMovement;
     private final DynamicColor color;
     private final float opacity;
     private final boolean normalTransparency;
 
-    public GradientTrailRenderer(float spacing, int lifetime, DynamicColor color, float opacity, boolean normalTransparency) {
+    public GradientTrailRenderer(float spacing, int lifetime, boolean requiresMovement, DynamicColor color, float opacity, boolean normalTransparency) {
         this.spacing = spacing;
         this.lifetime = lifetime;
+        this.requiresMovement = requiresMovement;
         this.color = color;
         this.opacity = opacity;
         this.normalTransparency = normalTransparency;
@@ -101,6 +103,11 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
     }
 
     @Override
+    public boolean requiresMovement() {
+        return this.requiresMovement;
+    }
+
+    @Override
     public DynamicColor getColor() {
         return this.color;
     }
@@ -112,9 +119,10 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
             var color = DynamicColor.getFromJson(json, "color", DynamicColor.WHITE);
             float spacing = GsonUtil.getAsFloatMin(json, "spacing", 0.1F, 1F);
             int lifetime = GsonUtil.getAsIntMin(json, "lifetime", 1, 20);
+            boolean requiresMovement = GsonHelper.getAsBoolean(json, "requires_movement", true);
             float opacity = GsonUtil.getAsFloatRanged(json, "opacity", 0F, 1F, 0.5F);
             boolean normalTransparency = GsonHelper.getAsBoolean(json, "normal_transparency", false);
-            return new GradientTrailRenderer(spacing, lifetime, color, opacity, normalTransparency);
+            return new GradientTrailRenderer(spacing, lifetime, requiresMovement, color, opacity, normalTransparency);
         }
 
         @Override
@@ -131,6 +139,9 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
             builder.addProperty("lifetime", Integer.class)
                     .description("Determines how long one trail segment stays alive (in ticks)")
                     .fallback(20).exampleJson(new JsonPrimitive(20));
+            builder.addProperty("requires_movement", Boolean.class)
+                    .description("Determines if new trail segments only spawn when the entity is moving")
+                    .fallback(true).exampleJson(new JsonPrimitive(true));
             builder.addProperty("opacity", Float.class)
                     .description("Determines the (initial) opacity of the after image.")
                     .fallback(0.5F).exampleJson(new JsonPrimitive(0.5F));

@@ -26,13 +26,15 @@ public class AfterImageTrailRenderer extends TrailRenderer<TrailRenderer.Segment
     public final boolean mimicPlayer;
     private final float spacing;
     private final int lifetime;
+    private final boolean requiresMovement;
     private final float opacity;
 
-    public AfterImageTrailRenderer(DynamicColor color, boolean mimicPlayer, float spacing, int lifetime, float opacity) {
+    public AfterImageTrailRenderer(DynamicColor color, boolean mimicPlayer, float spacing, int lifetime, boolean requiresMovement, float opacity) {
         this.color = color;
         this.mimicPlayer = mimicPlayer;
         this.spacing = spacing;
         this.lifetime = lifetime;
+        this.requiresMovement = requiresMovement;
         this.opacity = opacity;
     }
 
@@ -58,6 +60,11 @@ public class AfterImageTrailRenderer extends TrailRenderer<TrailRenderer.Segment
         return this.lifetime;
     }
 
+    @Override
+    public boolean requiresMovement() {
+        return this.requiresMovement;
+    }
+
     public static class Serializer implements TrailRendererManager.TypeSerializer {
 
         @Override
@@ -66,8 +73,9 @@ public class AfterImageTrailRenderer extends TrailRenderer<TrailRenderer.Segment
             boolean mimicPlayer = GsonHelper.getAsBoolean(json, "mimic_player", false);
             float spacing = GsonUtil.getAsFloatMin(json, "spacing", 0.1F, 1F);
             int lifetime = GsonUtil.getAsIntMin(json, "lifetime", 1, 20);
+            boolean requiresMovement = GsonHelper.getAsBoolean(json, "requires_movement", true);
             float opacity = GsonUtil.getAsFloatRanged(json, "opacity", 0F, 1F, 0.5F);
-            return new AfterImageTrailRenderer(color, mimicPlayer, spacing, lifetime, opacity);
+            return new AfterImageTrailRenderer(color, mimicPlayer, spacing, lifetime, requiresMovement, opacity);
         }
 
         @Override
@@ -87,6 +95,9 @@ public class AfterImageTrailRenderer extends TrailRenderer<TrailRenderer.Segment
             builder.addProperty("lifetime", Integer.class)
                     .description("Determines how long one trail segment stays alive (in ticks)")
                     .fallback(20).exampleJson(new JsonPrimitive(20));
+            builder.addProperty("requires_movement", Boolean.class)
+                    .description("Determines if new trail segments only spawn when the entity is moving")
+                    .fallback(true).exampleJson(new JsonPrimitive(true));
             builder.addProperty("opacity", Float.class)
                     .description("Determines the (initial) opacity of the after image.")
                     .fallback(0.5F).exampleJson(new JsonPrimitive(0.5F));

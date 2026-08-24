@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.Palladium;
@@ -28,13 +29,15 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
     private final LaserRenderer laserRenderer;
     private final float spacing;
     private final int lifetime;
+    private final boolean requiresMovement;
     private final int amount;
     private final float spreadX, spreadY;
 
-    public LightningTrailRenderer(LaserRenderer laserRenderer, float spacing, int lifetime, int amount, float spreadX, float spreadY) {
+    public LightningTrailRenderer(LaserRenderer laserRenderer, float spacing, int lifetime, boolean requiresMovement, int amount, float spreadX, float spreadY) {
         this.laserRenderer = laserRenderer;
         this.spacing = spacing;
         this.lifetime = lifetime;
+        this.requiresMovement = requiresMovement;
         this.amount = amount;
         this.spreadX = spreadX;
         this.spreadY = spreadY;
@@ -127,6 +130,11 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
     }
 
     @Override
+    public boolean requiresMovement() {
+        return this.requiresMovement;
+    }
+
+    @Override
     public DynamicColor getColor() {
         return this.laserRenderer.getGlowColor();
     }
@@ -146,10 +154,11 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
         public TrailRenderer<Cache> parse(JsonObject json) {
             float spacing = GsonUtil.getAsFloatMin(json, "spacing", 0.1F, 1F);
             int lifetime = GsonUtil.getAsIntMin(json, "lifetime", 1, 20);
+            boolean requiresMovement = GsonHelper.getAsBoolean(json, "requires_movement", true);
             int amount = GsonUtil.getAsIntMin(json, "amount", 1, 10);
             float spreadX = GsonUtil.getAsFloatMin(json, "spread_x", 0F, 1F);
             float spreadY = GsonUtil.getAsFloatMin(json, "spread_y", 0F, 1F);
-            return new LightningTrailRenderer(LaserRenderer.fromJson(json, 1), spacing, lifetime, amount, spreadX, spreadY);
+            return new LightningTrailRenderer(LaserRenderer.fromJson(json, 1), spacing, lifetime, requiresMovement, amount, spreadX, spreadY);
         }
 
         @Override
@@ -163,6 +172,9 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
             builder.addProperty("lifetime", Integer.class)
                     .description("Determines how long one trail segment stays alive (in ticks)")
                     .fallback(20).exampleJson(new JsonPrimitive(20));
+            builder.addProperty("requires_movement", Boolean.class)
+                    .description("Determines if new trail segments only spawn when the entity is moving")
+                    .fallback(true).exampleJson(new JsonPrimitive(true));
             builder.addProperty("amount", Integer.class)
                     .description("Determines how many lightnings the entity will generate behind it")
                     .fallback(7).exampleJson(new JsonPrimitive(7));

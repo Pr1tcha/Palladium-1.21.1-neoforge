@@ -34,6 +34,11 @@ public class CompoundTrailRenderer extends TrailRenderer {
         throw new AssertionError();
     }
 
+    @Override
+    public boolean requiresMovement() {
+        throw new AssertionError();
+    }
+
     public static class Serializer implements TrailRendererManager.TypeSerializer {
 
         @Override

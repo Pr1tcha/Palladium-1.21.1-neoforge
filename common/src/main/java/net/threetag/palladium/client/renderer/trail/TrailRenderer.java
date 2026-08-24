@@ -28,6 +28,8 @@ public abstract class TrailRenderer<T extends TrailRenderer.SegmentCache> {
 
     public abstract int getLifetime();
 
+    public abstract boolean requiresMovement();
+
     public static class SegmentCache {
 
     }

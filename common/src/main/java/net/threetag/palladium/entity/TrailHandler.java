@@ -46,7 +46,7 @@ public class TrailHandler {
                 }
 
                 trails = trails.stream().filter(segment -> segment.isAlive() && !segment.isRemoved()).collect(Collectors.toList());
-            } else if (active.contains(renderer) && this.isMoving()) {
+            } else if (active.contains(renderer) && (!renderer.requiresMovement() || this.isMoving())) {
                 trails.add(this.spawnEntity(renderer));
             }
 
@@ -86,7 +86,7 @@ public class TrailHandler {
         }
 
         if (entity instanceof LivingEntity living) {
-            for (TrailRenderer<?> renderer : AbilityUtil.getEnabledEntries(living, Abilities.TRAIL.get()).stream().map(e -> TrailRendererManager.INSTANCE.getRenderer(e.getProperty(TrailAbility.TRAIL_RENDERER_ID))).filter(Objects::nonNull).distinct().toList()) {
+            for (TrailRenderer<?> renderer : AbilityUtil.getEnabledInstances(living, Abilities.TRAIL.get()).stream().map(e -> TrailRendererManager.INSTANCE.getRenderer(e.getProperty(TrailAbility.TRAIL_RENDERER_ID))).filter(Objects::nonNull).distinct().toList()) {
                 addTrailToList(renderer, renderers);
             }
         }
