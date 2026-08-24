@@ -3,16 +3,15 @@ package net.threetag.palladium.item.recipe;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.Util;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.threetag.palladium.item.PalladiumItems;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class TailoringRecipe implements Recipe<Inventory> {
+public abstract class TailoringRecipe implements Recipe<SingleRecipeInput> {
 
-    protected final ResourceLocation id;
     protected final Map<EquipmentSlot, ItemStack> results;
     protected final List<SizedIngredient> ingredients;
     protected final Ingredient toolIngredient;
@@ -32,9 +30,8 @@ public abstract class TailoringRecipe implements Recipe<Inventory> {
     protected final ResourceLocation categoryId;
     protected final boolean requiresUnlocking;
 
-    public TailoringRecipe(ResourceLocation id, Map<EquipmentSlot, ItemStack> results, List<SizedIngredient> ingredients,
+    public TailoringRecipe(Map<EquipmentSlot, ItemStack> results, List<SizedIngredient> ingredients,
                            Ingredient toolIngredient, ResourceLocation toolIcon, ResourceLocation categoryId, boolean requiresUnlocking) {
-        this.id = id;
         this.results = results;
         this.ingredients = ingredients;
         this.toolIngredient = toolIngredient;
@@ -44,12 +41,8 @@ public abstract class TailoringRecipe implements Recipe<Inventory> {
     }
 
     @Override
-    public boolean matches(Inventory container, Level level) {
-        if (container.player instanceof ServerPlayer serverPlayer) {
-            return !this.requiresUnlocking || serverPlayer.getRecipeBook().contains(this);
-        }
-
-        return false;
+    public boolean matches(SingleRecipeInput input, Level level) {
+        return true;
     }
 
     public abstract Component getTitle();
@@ -88,7 +81,7 @@ public abstract class TailoringRecipe implements Recipe<Inventory> {
     }
 
     @Override
-    public ItemStack assemble(Inventory container, RegistryAccess registryAccess) {
+    public ItemStack assemble(SingleRecipeInput input, HolderLookup.Provider registries) {
         return ItemStack.EMPTY;
     }
 
@@ -98,13 +91,8 @@ public abstract class TailoringRecipe implements Recipe<Inventory> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return this.results.values().stream().findFirst().orElse(ItemStack.EMPTY);
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Override

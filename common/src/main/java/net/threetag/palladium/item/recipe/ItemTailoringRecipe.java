@@ -1,31 +1,35 @@
 package net.threetag.palladium.item.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.threetag.palladium.util.json.GsonUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ItemTailoringRecipe extends TailoringRecipe {
 
     private final Component title;
 
-    public ItemTailoringRecipe(ResourceLocation id, Map<EquipmentSlot, ItemStack> results,
+    public ItemTailoringRecipe(Map<EquipmentSlot, ItemStack> results,
                                List<SizedIngredient> ingredients, Ingredient toolIngredient, Component title,
                                ResourceLocation toolIcon, ResourceLocation categoryId, boolean requiresUnlocking) {
-        super(id, results, ingredients, toolIngredient, toolIcon, categoryId, requiresUnlocking);
+        super(results, ingredients, toolIngredient, toolIcon, categoryId, requiresUnlocking);
         this.title = title;
     }
 
@@ -41,93 +45,82 @@ public class ItemTailoringRecipe extends TailoringRecipe {
 
     public static class Serializer implements RecipeSerializer<ItemTailoringRecipe> {
 
-        @Override
-        public ItemTailoringRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            var resultsJson = GsonHelper.getAsJsonObject(serializedRecipe, "results");
-            Map<EquipmentSlot, ItemStack> results = new HashMap<>();
-
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot.isArmor()) {
-                    var stack = GsonUtil.getAsItemStack(resultsJson, slot.getName(), ItemStack.EMPTY);
-
-                    if (!stack.isEmpty()) {
-                        results.put(slot, stack);
-                    }
+        private static final Codec<ItemStack> ITEM_STACK_CODEC = Codec.either(
+                BuiltInRegistries.ITEM.byNameCodec(),
+                RecordCodecBuilder.<ItemStack>create(instance -> instance.group(
+                        BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
+                        Codec.INT.optionalFieldOf("count", 1).forGetter(ItemStack::getCount)
+                ).apply(instance, (item, count) -> new ItemStack(item, count)))
+        ).xmap(value -> value.map(ItemStack::new, stack -> stack), stack -> Either.right(stack));
+        private static final Codec<Map<EquipmentSlot, ItemStack>> RESULTS_CODEC = Codec.unboundedMap(EquipmentSlot.CODEC, ITEM_STACK_CODEC)
+                .validate(results -> results.isEmpty() ? DataResult.error(() -> "Tailoring result needs at least one item") : DataResult.success(results));
+        private static final MapCodec<ItemTailoringRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                RESULTS_CODEC.fieldOf("results").forGetter(recipe -> recipe.results),
+                SizedIngredient.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
+                Ingredient.CODEC_NONEMPTY.fieldOf("tool").forGetter(recipe -> recipe.toolIngredient),
+                ComponentSerialization.CODEC.fieldOf("title").forGetter(recipe -> recipe.title),
+                ResourceLocation.CODEC.optionalFieldOf("tool_icon").forGetter(recipe -> Optional.ofNullable(recipe.toolIcon)),
+                ResourceLocation.CODEC.optionalFieldOf("category").forGetter(recipe -> Optional.ofNullable(recipe.categoryId)),
+                Codec.BOOL.optionalFieldOf("requires_unlocking", true).forGetter(recipe -> recipe.requiresUnlocking)
+        ).apply(instance, (results, ingredients, tool, title, toolIcon, category, requiresUnlocking) ->
+                new ItemTailoringRecipe(results, ingredients, tool, title, toolIcon.orElse(null), category.orElse(null), requiresUnlocking)));
+        private static final StreamCodec<RegistryFriendlyByteBuf, ItemTailoringRecipe> STREAM_CODEC = new StreamCodec<>() {
+            @Override
+            public ItemTailoringRecipe decode(RegistryFriendlyByteBuf buffer) {
+                Map<EquipmentSlot, ItemStack> results = new EnumMap<>(EquipmentSlot.class);
+                int resultCount = buffer.readVarInt();
+                for (int i = 0; i < resultCount; i++) {
+                    results.put(buffer.readEnum(EquipmentSlot.class), ItemStack.STREAM_CODEC.decode(buffer));
                 }
-            }
 
-            if (results.isEmpty()) {
-                throw new JsonParseException("Tailoring result needs at least one item");
-            }
-
-            List<SizedIngredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
-
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for shapeless recipe");
-            }
-
-            var toolIngredient = GsonUtil.parseIngredient(serializedRecipe.get("tool"));
-
-            if (toolIngredient.isEmpty()) {
-                throw new JsonParseException("Valid tool ingredient required");
-            }
-
-            if (!serializedRecipe.has("title")) {
-                throw new JsonParseException("Missing 'title'");
-            }
-
-            var title = Component.Serializer.fromJson(serializedRecipe.get("title"));
-
-            return new ItemTailoringRecipe(
-                    recipeId,
-                    results,
-                    ingredients,
-                    toolIngredient,
-                    title,
-                    GsonUtil.getAsResourceLocation(serializedRecipe, "tool_icon", null),
-                    GsonUtil.getAsResourceLocation(serializedRecipe, "category", null),
-                    GsonHelper.getAsBoolean(serializedRecipe, "requires_unlocking", true)
-            );
-        }
-
-        private static List<SizedIngredient> itemsFromJson(JsonArray ingredientArray) {
-            List<SizedIngredient> list = new ArrayList<>();
-
-            for (int i = 0; i < ingredientArray.size(); ++i) {
-                SizedIngredient ingredient = SizedIngredient.fromJson(GsonHelper.convertToJsonObject(ingredientArray.get(i), "ingredients[].$"), false);
-                if (!ingredient.ingredient().isEmpty()) {
-                    list.add(ingredient);
+                List<SizedIngredient> ingredients = new ArrayList<>();
+                int ingredientCount = buffer.readVarInt();
+                for (int i = 0; i < ingredientCount; i++) {
+                    ingredients.add(SizedIngredient.STREAM_CODEC.decode(buffer));
                 }
+
+                return new ItemTailoringRecipe(
+                        results,
+                        ingredients,
+                        Ingredient.CONTENTS_STREAM_CODEC.decode(buffer),
+                        ComponentSerialization.STREAM_CODEC.decode(buffer),
+                        buffer.readBoolean() ? buffer.readResourceLocation() : null,
+                        buffer.readBoolean() ? buffer.readResourceLocation() : null,
+                        buffer.readBoolean()
+                );
             }
 
-            return list;
+            @Override
+            public void encode(RegistryFriendlyByteBuf buffer, ItemTailoringRecipe recipe) {
+                buffer.writeVarInt(recipe.results.size());
+                recipe.results.forEach((slot, stack) -> {
+                    buffer.writeEnum(slot);
+                    ItemStack.STREAM_CODEC.encode(buffer, stack);
+                });
+                buffer.writeVarInt(recipe.ingredients.size());
+                recipe.ingredients.forEach(ingredient -> SizedIngredient.STREAM_CODEC.encode(buffer, ingredient));
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.toolIngredient);
+                ComponentSerialization.STREAM_CODEC.encode(buffer, recipe.title);
+                buffer.writeBoolean(recipe.toolIcon != null);
+                if (recipe.toolIcon != null) {
+                    buffer.writeResourceLocation(recipe.toolIcon);
+                }
+                buffer.writeBoolean(recipe.categoryId != null);
+                if (recipe.categoryId != null) {
+                    buffer.writeResourceLocation(recipe.categoryId);
+                }
+                buffer.writeBoolean(recipe.requiresUnlocking);
+            }
+        };
+
+        @Override
+        public MapCodec<ItemTailoringRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public ItemTailoringRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            Map<EquipmentSlot, ItemStack> results = buffer.readMap(buf -> EquipmentSlot.byName(buf.readUtf()), FriendlyByteBuf::readItem);
-            List<SizedIngredient> ingredients = buffer.readList(SizedIngredient::fromNetwork);
-            return new ItemTailoringRecipe(
-                    recipeId,
-                    results,
-                    ingredients,
-                    Ingredient.fromNetwork(buffer),
-                    buffer.readComponent(),
-                    buffer.readNullable(FriendlyByteBuf::readResourceLocation),
-                    buffer.readNullable(FriendlyByteBuf::readResourceLocation),
-                    buffer.readBoolean()
-            );
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, ItemTailoringRecipe recipe) {
-            buffer.writeMap(recipe.results, (buf, slot) -> buf.writeUtf(slot.getName()), FriendlyByteBuf::writeItem);
-            buffer.writeCollection(recipe.ingredients, (buf, ingredient) -> ingredient.toNetwork(buf));
-            recipe.toolIngredient.toNetwork(buffer);
-            buffer.writeComponent(recipe.title);
-            buffer.writeNullable(recipe.toolIcon, FriendlyByteBuf::writeResourceLocation);
-            buffer.writeNullable(recipe.categoryId, FriendlyByteBuf::writeResourceLocation);
-            buffer.writeBoolean(recipe.requiresUnlocking);
+        public StreamCodec<RegistryFriendlyByteBuf, ItemTailoringRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

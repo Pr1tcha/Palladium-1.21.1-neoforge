@@ -33,10 +33,10 @@ public class TailoringCraftMessage extends MessageC2S {
 
     @Override
     public void handle(MessageContext context) {
-        var recipe = context.getPlayer().level().getRecipeManager().byKey(this.recipeId).orElseThrow();
+        var holder = context.getPlayer().level().getRecipeManager().byKey(this.recipeId).orElseThrow();
 
-        if (recipe instanceof TailoringRecipe r && context.getPlayer().containerMenu instanceof TailoringMenu menu && menu.canCraft(context.getPlayer(), r)) {
-            menu.craft(context.getPlayer(), r);
+        if (holder.value() instanceof TailoringRecipe recipe && context.getPlayer().containerMenu instanceof TailoringMenu menu && menu.canCraft(context.getPlayer(), holder, recipe)) {
+            menu.craft(context.getPlayer(), holder, recipe);
         }
     }
 }

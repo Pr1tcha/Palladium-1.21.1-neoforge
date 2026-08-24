@@ -4,16 +4,16 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.RecipeHolder;
+import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
-public class TailoringResultContainer implements Container, RecipeHolder {
+public class TailoringResultContainer implements Container, RecipeCraftingHolder {
 
     private final NonNullList<ItemStack> itemStacks = NonNullList.withSize(4, ItemStack.EMPTY);
     @Nullable
-    private Recipe<?> recipeUsed;
+    private RecipeHolder<?> recipeUsed;
 
     @Override
     public int getContainerSize() {
@@ -66,13 +66,13 @@ public class TailoringResultContainer implements Container, RecipeHolder {
     }
 
     @Override
-    public void setRecipeUsed(@Nullable Recipe<?> recipe) {
+    public void setRecipeUsed(@Nullable RecipeHolder<?> recipe) {
         this.recipeUsed = recipe;
     }
 
     @Nullable
     @Override
-    public Recipe<?> getRecipeUsed() {
+    public RecipeHolder<?> getRecipeUsed() {
         return this.recipeUsed;
     }
 

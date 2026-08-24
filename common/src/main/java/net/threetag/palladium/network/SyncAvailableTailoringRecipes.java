@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.threetag.palladium.client.screen.TailoringScreen;
-import net.threetag.palladium.item.recipe.TailoringRecipe;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
@@ -48,7 +47,7 @@ public class SyncAvailableTailoringRecipes extends MessageS2C {
     @Environment(EnvType.CLIENT)
     private void handleClient(MessageContext context) {
         var recipeManager = Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager();
-        List<TailoringRecipe> recipes = this.recipes.stream().map(id -> (TailoringRecipe) recipeManager.byKey(id).orElseThrow()).toList();
+        var recipes = this.recipes.stream().map(id -> recipeManager.byKey(id).orElseThrow()).toList();
         TailoringScreen.setAvailableRecipes(recipes);
     }
 }

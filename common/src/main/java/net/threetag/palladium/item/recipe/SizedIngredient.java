@@ -1,7 +1,9 @@
 package net.threetag.palladium.item.recipe;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -9,6 +11,23 @@ import net.minecraft.world.level.ItemLike;
 import net.threetag.palladium.util.json.GsonUtil;
 
 public record SizedIngredient(Ingredient ingredient, int count) {
+
+    public static final Codec<SizedIngredient> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(instance -> instance.group(
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(SizedIngredient::ingredient),
+            Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("count", 1).forGetter(SizedIngredient::count)
+    ).apply(instance, SizedIngredient::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, SizedIngredient> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public SizedIngredient decode(RegistryFriendlyByteBuf buffer) {
+            return new SizedIngredient(Ingredient.CONTENTS_STREAM_CODEC.decode(buffer), buffer.readVarInt());
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer, SizedIngredient value) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, value.ingredient());
+            buffer.writeVarInt(value.count());
+        }
+    };
 
     public static SizedIngredient of(ItemLike item, int count) {
         return new SizedIngredient(Ingredient.of(item), count);
@@ -99,15 +118,6 @@ public record SizedIngredient(Ingredient ingredient, int count) {
         json.add("ingredient", GsonUtil.ingredientToJson(this.ingredient));
         json.addProperty("count", this.count);
         return json;
-    }
-
-    public static SizedIngredient fromNetwork(FriendlyByteBuf buf) {
-        return new SizedIngredient(Ingredient.fromNetwork(buf), buf.readInt());
-    }
-
-    public void toNetwork(FriendlyByteBuf buf) {
-        this.ingredient.toNetwork(buf);
-        buf.writeInt(this.count);
     }
 
 }

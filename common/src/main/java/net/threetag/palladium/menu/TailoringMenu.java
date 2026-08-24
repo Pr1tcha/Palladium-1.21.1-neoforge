@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladium.item.recipe.PalladiumRecipeSerializers;
 import net.threetag.palladium.item.recipe.SizedIngredient;
@@ -28,7 +29,7 @@ public class TailoringMenu extends AbstractContainerMenu {
     private final TailoringResultContainer resultSlots = new TailoringResultContainer();
     private final ContainerLevelAccess access;
     public final Inventory playerInventory;
-    private List<TailoringRecipe> availableRecipes = new ArrayList<>();
+    private List<RecipeHolder<TailoringRecipe>> availableRecipes = new ArrayList<>();
 
     public TailoringMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, ContainerLevelAccess.NULL);
@@ -57,17 +58,23 @@ public class TailoringMenu extends AbstractContainerMenu {
 
         access.execute((level, blockPos) -> {
             if (playerInventory.player instanceof ServerPlayer serverPlayer) {
-                this.availableRecipes = level.getRecipeManager().getRecipesFor(PalladiumRecipeSerializers.TAILORING.get(), this.playerInventory, level);
-                PalladiumNetwork.NETWORK.sendToPlayer(serverPlayer, new SyncAvailableTailoringRecipes(this.availableRecipes.stream().map(TailoringRecipe::getId).toList()));
+                this.availableRecipes = level.getRecipeManager().getAllRecipesFor(PalladiumRecipeSerializers.TAILORING.get()).stream()
+                        .filter(holder -> !holder.value().requiresUnlocking() || serverPlayer.getRecipeBook().contains(holder))
+                        .toList();
+                PalladiumNetwork.NETWORK.sendToPlayer(serverPlayer, new SyncAvailableTailoringRecipes(this.availableRecipes.stream().map(RecipeHolder::id).toList()));
             }
         });
     }
 
-    public boolean canCraft(Player player, TailoringRecipe recipe) {
-        if (player instanceof ServerPlayer serverPlayer && recipe.requiresUnlocking() && !serverPlayer.getRecipeBook().contains(recipe)) {
+    public boolean canCraft(Player player, RecipeHolder<?> holder, TailoringRecipe recipe) {
+        if (player instanceof ServerPlayer serverPlayer && recipe.requiresUnlocking() && !serverPlayer.getRecipeBook().contains(holder)) {
             return false;
         }
 
+        return this.canCraft(player, recipe);
+    }
+
+    public boolean canCraft(Player player, TailoringRecipe recipe) {
         for (SizedIngredient sizedIngredient : recipe.getSizedIngredients()) {
             if (!sizedIngredient.test(player.getInventory())) {
                 return false;
@@ -77,8 +84,8 @@ public class TailoringMenu extends AbstractContainerMenu {
         return recipe.getToolIngredient().test(this.toolSlotContainer.getItem(0)) && this.resultSlots.isEmpty();
     }
 
-    public void craft(Player player, TailoringRecipe recipe) {
-        if (canCraft(player, recipe)) {
+    public void craft(Player player, RecipeHolder<?> holder, TailoringRecipe recipe) {
+        if (canCraft(player, holder, recipe)) {
             List<ItemStack> takenStacks = new ArrayList<>();
             for (SizedIngredient sizedIngredient : recipe.getSizedIngredients()) {
                 takenStacks.add(sizedIngredient.take(player.getInventory()));
@@ -86,10 +93,10 @@ public class TailoringMenu extends AbstractContainerMenu {
 
             if (player instanceof ServerPlayer serverPlayer) {
                 var tool = this.toolSlotContainer.getItem(0);
-                tool.hurtAndBreak((int) recipe.getResults().values().stream().filter(s -> !s.isEmpty()).count(), serverPlayer, pl -> this.toolSlotContainer.clearContent());
+                tool.hurtAndBreak((int) recipe.getResults().values().stream().filter(s -> !s.isEmpty()).count(), serverPlayer.serverLevel(), serverPlayer, item -> this.toolSlotContainer.clearContent());
             }
 
-            this.resultSlots.setRecipeUsed(recipe);
+            this.resultSlots.setRecipeUsed(holder);
             this.resultSlots.awardUsedRecipes(player, takenStacks);
             this.resultSlots.setRecipeUsed(null);
 
@@ -101,7 +108,7 @@ public class TailoringMenu extends AbstractContainerMenu {
     }
 
     public boolean isValidTool(ItemStack stack) {
-        return this.playerInventory.player.level().getRecipeManager().getAllRecipesFor(PalladiumRecipeSerializers.TAILORING.get()).stream().anyMatch(r -> r.getToolIngredient().test(stack));
+        return this.playerInventory.player.level().getRecipeManager().getAllRecipesFor(PalladiumRecipeSerializers.TAILORING.get()).stream().anyMatch(holder -> holder.value().getToolIngredient().test(stack));
     }
 
     @Override

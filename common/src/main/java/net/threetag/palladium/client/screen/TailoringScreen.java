@@ -4,10 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.locale.Language;
@@ -17,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 import net.threetag.palladium.entity.SuitStand;
@@ -26,10 +26,13 @@ import net.threetag.palladium.menu.TailoringMenu;
 import net.threetag.palladium.network.PalladiumNetwork;
 import net.threetag.palladium.network.TailoringCraftMessage;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -42,6 +45,7 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
             .withStyle(ChatFormatting.ITALIC)
             .withStyle(ChatFormatting.GRAY);
     private static List<TailoringRecipe> AVAILABLE_RECIPES = new ArrayList<>();
+    private static final Map<TailoringRecipe, ResourceLocation> RECIPE_IDS = new IdentityHashMap<>();
     private static int DISPLAYED_RECIPE_INDEX = -1;
     private static TailoringRecipe DISPLAYED_RECIPE;
 
@@ -85,8 +89,9 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         this.addRenderableWidget(this.cycleNextButton = new CycleButton(this.leftPos + 70, this.topPos + 45, true, button -> cycle(true)));
         this.addRenderableWidget(this.recipeBookButton = new RecipeBookButton(this.leftPos + 176, this.topPos + 74, button -> toggleRecipeBook()));
         this.addRenderableWidget(this.createButton = new CreateButton(this.leftPos + 105, this.topPos + 74, button -> {
-            if (DISPLAYED_RECIPE != null)
-                PalladiumNetwork.NETWORK.sendToServer(new TailoringCraftMessage(DISPLAYED_RECIPE.getId()));
+            ResourceLocation recipeId = RECIPE_IDS.get(DISPLAYED_RECIPE);
+            if (recipeId != null)
+                PalladiumNetwork.NETWORK.sendToServer(new TailoringCraftMessage(recipeId));
         }));
         this.createButton.active = DISPLAYED_RECIPE != null && this.menu.canCraft(this.minecraft.player, DISPLAYED_RECIPE);
 
@@ -125,7 +130,7 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         this.cycleNextButton.setX(this.leftPos + 70);
         this.recipeBookButton.setX(this.leftPos + 176);
         this.createButton.setX(this.leftPos + 105);
-        this.recipeList.setLeftPos(this.leftPos - 147 + 5);
+        this.recipeList.setX(this.leftPos - 147 + 5);
         this.searchBox.setX(this.leftPos - 147 + 23);
     }
 
@@ -133,7 +138,7 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.onRecipeChanged();
 
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -170,7 +175,9 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         }
 
         guiGraphics.enableScissor(this.leftPos + 8, this.topPos + 18, this.leftPos + 8 + 73, this.topPos + 18 + 73);
-        InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + 45, this.topPos + 80, 30, SUIT_STAND_ANGLE, null, this.suitStandPreview);
+        float entityScale = this.suitStandPreview.getScale();
+        var translation = new Vector3f(0.0F, this.suitStandPreview.getBbHeight() / 2.0F, 0.0F);
+        InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + 45, this.topPos + 80, 30.0F / entityScale, translation, SUIT_STAND_ANGLE, null, this.suitStandPreview);
         guiGraphics.disableScissor();
 
         if (DISPLAYED_RECIPE != null) {
@@ -264,14 +271,14 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (this.isScrollBarActive() & this.isMouseOverIngredients(mouseX, mouseY)) {
             int i = this.getOffscreenRows();
-            float f = (float) delta / (float) i;
+            float f = (float) scrollY / (float) i;
             this.scrollOffs = Mth.clamp(this.scrollOffs - f, 0.0F, 1.0F);
             this.startIndex = (int) ((double) (this.scrollOffs * (float) i) + 0.5) * 4;
         } else if (this.recipeList.isMouseOver(mouseX, mouseY)) {
-            this.recipeList.mouseScrolled(mouseX, mouseY, delta);
+            this.recipeList.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
 
         return true;
@@ -318,8 +325,17 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         return DISPLAYED_RECIPE != null && DISPLAYED_RECIPE.getSizedIngredients().size() > 12;
     }
 
-    public static void setAvailableRecipes(List<TailoringRecipe> recipes) {
-        AVAILABLE_RECIPES = recipes.stream()
+    public static void setAvailableRecipes(List<? extends RecipeHolder<?>> holders) {
+        RECIPE_IDS.clear();
+        holders.forEach(holder -> {
+            if (holder.value() instanceof TailoringRecipe recipe) {
+                RECIPE_IDS.put(recipe, holder.id());
+            }
+        });
+        AVAILABLE_RECIPES = holders.stream()
+                .map(RecipeHolder::value)
+                .filter(TailoringRecipe.class::isInstance)
+                .map(TailoringRecipe.class::cast)
                 .sorted((o1, o2) -> {
                     try {
                         var category1 = TailoringRecipe.getCategoryTitle(o1.getCategoryId());
@@ -446,17 +462,15 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         }
     }
 
-    private class RecipeList extends AbstractSelectionList<RecipeListEntry> {
+    private class RecipeList extends ObjectSelectionList<RecipeListEntry> {
 
         private final int listWidth;
         private List<TailoringRecipe> recipes;
         private final Consumer<TailoringRecipe> onClick;
 
         public RecipeList(Minecraft minecraft, int width, int height, int x, int y, List<TailoringRecipe> recipes, Consumer<TailoringRecipe> onClick) {
-            super(minecraft, width, height, y, y + height, 16);
-            this.setLeftPos(x);
-            this.setRenderBackground(false);
-            this.setRenderTopAndBottom(false);
+            super(minecraft, width, height, y, 16);
+            this.setX(x);
             this.listWidth = width;
             this.recipes = recipes;
             this.onClick = onClick;
@@ -488,18 +502,21 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
-
-        }
-
-        @Override
         public int getRowWidth() {
             return this.listWidth - 15;
         }
 
         @Override
         protected int getScrollbarPosition() {
-            return this.x0 + this.listWidth - 6;
+            return this.getX() + this.listWidth - 6;
+        }
+
+        @Override
+        protected void renderListBackground(GuiGraphics guiGraphics) {
+        }
+
+        @Override
+        protected void renderListSeparators(GuiGraphics guiGraphics) {
         }
 
         @Override
@@ -508,7 +525,7 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         }
     }
 
-    private abstract static class RecipeListEntry extends AbstractSelectionList.Entry<RecipeListEntry> {
+    private abstract static class RecipeListEntry extends ObjectSelectionList.Entry<RecipeListEntry> {
 
         public abstract boolean isSelected();
 
@@ -554,6 +571,11 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         public boolean isSelected() {
             return this.recipe == DISPLAYED_RECIPE;
         }
+
+        @Override
+        public Component getNarration() {
+            return this.recipe.getTitle();
+        }
     }
 
     private class RecipeListRecipeCategory extends RecipeListEntry {
@@ -592,6 +614,11 @@ public class TailoringScreen extends AbstractContainerScreen<TailoringMenu> {
         @Override
         public boolean isSelected() {
             return false;
+        }
+
+        @Override
+        public Component getNarration() {
+            return this.title;
         }
     }
 }

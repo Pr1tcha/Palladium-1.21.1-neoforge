@@ -1,32 +1,33 @@
 package net.threetag.palladium.item.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.threetag.palladium.item.SuitSet;
-import net.threetag.palladium.util.json.GsonUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class SuitSetTailoringRecipe extends TailoringRecipe {
 
     private final SuitSet suitSet;
 
-    public SuitSetTailoringRecipe(ResourceLocation id, SuitSet suitSet, List<SizedIngredient> ingredients,
+    public SuitSetTailoringRecipe(SuitSet suitSet, List<SizedIngredient> ingredients,
                                   Ingredient toolIngredient, ResourceLocation toolIcon, ResourceLocation categoryId,
                                   boolean requiresUnlocking) {
-        super(id, buildResults(suitSet), ingredients, toolIngredient, toolIcon, categoryId, requiresUnlocking);
+        super(buildResults(suitSet), ingredients, toolIngredient, toolIcon, categoryId, requiresUnlocking);
         this.suitSet = suitSet;
     }
 
@@ -51,75 +52,65 @@ public class SuitSetTailoringRecipe extends TailoringRecipe {
 
     public static class Serializer implements RecipeSerializer<SuitSetTailoringRecipe> {
 
-        @Override
-        public SuitSetTailoringRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            var suitSetId = GsonUtil.getAsResourceLocation(serializedRecipe, "suit_set");
-
-            if (!SuitSet.REGISTRY.containsKey(suitSetId)) {
-                throw new JsonParseException("Unknown suit set " + suitSetId);
-            }
-
-            var suitSet = SuitSet.REGISTRY.get(suitSetId);
-
-            List<SizedIngredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
-
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for shapeless recipe");
-            }
-
-            var toolIngredient = GsonUtil.parseIngredient(serializedRecipe.get("tool"));
-
-            if (toolIngredient.isEmpty()) {
-                throw new JsonParseException("Valid tool ingredient required");
-            }
-
-            return new SuitSetTailoringRecipe(
-                    recipeId,
-                    suitSet,
-                    ingredients,
-                    toolIngredient,
-                    GsonUtil.getAsResourceLocation(serializedRecipe, "tool_icon", null),
-                    GsonUtil.getAsResourceLocation(serializedRecipe, "category", null),
-                    GsonHelper.getAsBoolean(serializedRecipe, "requires_unlocking", true)
-            );
-        }
-
-        private static List<SizedIngredient> itemsFromJson(JsonArray ingredientArray) {
-            List<SizedIngredient> list = new ArrayList<>();
-
-            for (int i = 0; i < ingredientArray.size(); ++i) {
-                SizedIngredient ingredient = SizedIngredient.fromJson(GsonHelper.convertToJsonObject(ingredientArray.get(i), "ingredients[].$"), false);
-                if (!ingredient.ingredient().isEmpty()) {
-                    list.add(ingredient);
+        private static final Codec<SuitSet> SUIT_SET_CODEC = ResourceLocation.CODEC.flatXmap(id -> {
+            SuitSet suitSet = SuitSet.REGISTRY.get(id);
+            return suitSet != null ? DataResult.success(suitSet) : DataResult.error(() -> "Unknown suit set " + id);
+        }, suitSet -> DataResult.success(SuitSet.REGISTRY.getKey(suitSet)));
+        private static final MapCodec<SuitSetTailoringRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                SUIT_SET_CODEC.fieldOf("suit_set").forGetter(recipe -> recipe.suitSet),
+                SizedIngredient.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
+                Ingredient.CODEC_NONEMPTY.fieldOf("tool").forGetter(recipe -> recipe.toolIngredient),
+                ResourceLocation.CODEC.optionalFieldOf("tool_icon").forGetter(recipe -> Optional.ofNullable(recipe.toolIcon)),
+                ResourceLocation.CODEC.optionalFieldOf("category").forGetter(recipe -> Optional.ofNullable(recipe.categoryId)),
+                Codec.BOOL.optionalFieldOf("requires_unlocking", true).forGetter(recipe -> recipe.requiresUnlocking)
+        ).apply(instance, (suitSet, ingredients, tool, toolIcon, category, requiresUnlocking) ->
+                new SuitSetTailoringRecipe(suitSet, ingredients, tool, toolIcon.orElse(null), category.orElse(null), requiresUnlocking)));
+        private static final StreamCodec<RegistryFriendlyByteBuf, SuitSetTailoringRecipe> STREAM_CODEC = new StreamCodec<>() {
+            @Override
+            public SuitSetTailoringRecipe decode(RegistryFriendlyByteBuf buffer) {
+                SuitSet suitSet = SuitSet.REGISTRY.get(buffer.readResourceLocation());
+                List<SizedIngredient> ingredients = new ArrayList<>();
+                int ingredientCount = buffer.readVarInt();
+                for (int i = 0; i < ingredientCount; i++) {
+                    ingredients.add(SizedIngredient.STREAM_CODEC.decode(buffer));
                 }
+
+                return new SuitSetTailoringRecipe(
+                        suitSet,
+                        ingredients,
+                        Ingredient.CONTENTS_STREAM_CODEC.decode(buffer),
+                        buffer.readBoolean() ? buffer.readResourceLocation() : null,
+                        buffer.readBoolean() ? buffer.readResourceLocation() : null,
+                        buffer.readBoolean()
+                );
             }
 
-            return list;
+            @Override
+            public void encode(RegistryFriendlyByteBuf buffer, SuitSetTailoringRecipe recipe) {
+                buffer.writeResourceLocation(SuitSet.REGISTRY.getKey(recipe.suitSet));
+                buffer.writeVarInt(recipe.ingredients.size());
+                recipe.ingredients.forEach(ingredient -> SizedIngredient.STREAM_CODEC.encode(buffer, ingredient));
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.toolIngredient);
+                buffer.writeBoolean(recipe.toolIcon != null);
+                if (recipe.toolIcon != null) {
+                    buffer.writeResourceLocation(recipe.toolIcon);
+                }
+                buffer.writeBoolean(recipe.categoryId != null);
+                if (recipe.categoryId != null) {
+                    buffer.writeResourceLocation(recipe.categoryId);
+                }
+                buffer.writeBoolean(recipe.requiresUnlocking);
+            }
+        };
+
+        @Override
+        public MapCodec<SuitSetTailoringRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public SuitSetTailoringRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            var suitSet = SuitSet.REGISTRY.get(buffer.readResourceLocation());
-            List<SizedIngredient> ingredients = buffer.readList(SizedIngredient::fromNetwork);
-            return new SuitSetTailoringRecipe(
-                    recipeId,
-                    suitSet,
-                    ingredients,
-                    Ingredient.fromNetwork(buffer),
-                    buffer.readNullable(FriendlyByteBuf::readResourceLocation),
-                    buffer.readNullable(FriendlyByteBuf::readResourceLocation),
-                    buffer.readBoolean()
-            );
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, SuitSetTailoringRecipe recipe) {
-            buffer.writeResourceLocation(SuitSet.REGISTRY.getKey(recipe.suitSet));
-            buffer.writeCollection(recipe.ingredients, (buf, ingredient) -> ingredient.toNetwork(buf));
-            recipe.toolIngredient.toNetwork(buffer);
-            buffer.writeNullable(recipe.toolIcon, FriendlyByteBuf::writeResourceLocation);
-            buffer.writeNullable(recipe.categoryId, FriendlyByteBuf::writeResourceLocation);
-            buffer.writeBoolean(recipe.requiresUnlocking);
+        public StreamCodec<RegistryFriendlyByteBuf, SuitSetTailoringRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }
