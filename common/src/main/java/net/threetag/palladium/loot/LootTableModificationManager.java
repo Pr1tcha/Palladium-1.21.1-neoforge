@@ -5,12 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 import net.threetag.palladium.util.json.GsonUtil;
@@ -24,9 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LootTableModificationManager extends SimpleJsonResourceReloadListener {
 
     private static LootTableModificationManager INSTANCE;
-    // Forge does very stupid shit with loot tables, this is used in Mixins to get around it
-    public static boolean OVERRIDE_FORGE_NAME_LOGIC = false;
-    private static final Gson GSON = Deserializers.createLootTableSerializer().create();
+    private static final Gson GSON = new Gson();
     private Map<ResourceLocation, Modification> modifications = ImmutableMap.of();
 
     public LootTableModificationManager() {
@@ -57,9 +56,7 @@ public class LootTableModificationManager extends SimpleJsonResourceReloadListen
                         throw new JsonParseException("Loot Table Modification pool \"" + id + "\" Missing `name` entry for pool #" + i.get());
                     }
 
-                    OVERRIDE_FORGE_NAME_LOGIC = true;
-                    modification.addPool(GSON.fromJson(poolJson, LootPool.class));
-                    OVERRIDE_FORGE_NAME_LOGIC = false;
+                    modification.addPool(poolJson);
                 });
                 builder.put(id, modification);
             } catch (Exception e) {
@@ -85,15 +82,15 @@ public class LootTableModificationManager extends SimpleJsonResourceReloadListen
     public static class Modification {
 
         private final ResourceLocation targetTable;
-        private final List<LootPool> lootPools = new ArrayList<>();
+        private final List<JsonElement> lootPools = new ArrayList<>();
         private boolean applied = false;
 
         public Modification(ResourceLocation targetTable) {
             this.targetTable = targetTable;
         }
 
-        public Modification addPool(LootPool lootPool) {
-            this.lootPools.add(lootPool);
+        public Modification addPool(JsonElement lootPool) {
+            this.lootPools.add(lootPool.deepCopy());
             return this;
         }
 
@@ -101,8 +98,11 @@ public class LootTableModificationManager extends SimpleJsonResourceReloadListen
             return targetTable;
         }
 
-        public List<LootPool> getLootPools() {
-            return lootPools;
+        public List<LootPool> getLootPools(HolderLookup.Provider registries) {
+            var ops = registries.createSerializationContext(JsonOps.INSTANCE);
+            return this.lootPools.stream()
+                    .map(json -> LootPool.CODEC.parse(ops, json).getOrThrow(JsonParseException::new))
+                    .toList();
         }
 
         public boolean markApplied() {
