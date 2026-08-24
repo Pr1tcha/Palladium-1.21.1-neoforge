@@ -95,14 +95,10 @@ public class ItemParser extends AddonParser<Item> {
             FoodProperties.Builder properties = new FoodProperties.Builder();
 
             GsonUtil.ifHasKey(foodJson, "nutrition", el -> properties.nutrition(GsonHelper.convertToInt(el, "$.food.nutrition")));
-            GsonUtil.ifHasKey(foodJson, "saturation_modifier", el -> properties.saturationMod(GsonHelper.convertToFloat(el, "$.food.saturation_modifier")));
-
-            if (GsonHelper.getAsBoolean(foodJson, "meat", false)) {
-                properties.meat();
-            }
+            GsonUtil.ifHasKey(foodJson, "saturation_modifier", el -> properties.saturationModifier(GsonHelper.convertToFloat(el, "$.food.saturation_modifier")));
 
             if (GsonHelper.getAsBoolean(foodJson, "can_always_eat", false)) {
-                properties.alwaysEat();
+                properties.alwaysEdible();
             }
 
             if (GsonHelper.getAsBoolean(foodJson, "fast", false)) {
@@ -124,7 +120,7 @@ public class ItemParser extends AddonParser<Item> {
                 boolean showIcon = GsonHelper.getAsBoolean(effect, "show_icon", true);
                 float probability = GsonHelper.getAsFloat(effect, "probability", 1F);
 
-                properties.effect(new MobEffectInstance(Objects.requireNonNull(BuiltInRegistries.MOB_EFFECT.get(mobEffect)), duration, amplifier, ambient, visible, showIcon), probability);
+                properties.effect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.getHolder(mobEffect).orElseThrow(), duration, amplifier, ambient, visible, showIcon), probability);
             });
 
             builder.food(properties.build());
@@ -261,12 +257,11 @@ public class ItemParser extends AddonParser<Item> {
         JsonObject foodExample = new JsonObject();
         foodExample.addProperty("nutrition", 5);
         foodExample.addProperty("saturation_modifier", 0.6F);
-        foodExample.addProperty("meat", false);
         foodExample.addProperty("can_always_eat", false);
         foodExample.addProperty("fast", false);
         JsonArray effectsExample = new JsonArray();
         JsonObject effectExample = new JsonObject();
-        effectExample.addProperty("mob_effect", Objects.requireNonNull(BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.DAMAGE_BOOST)).toString());
+        effectExample.addProperty("mob_effect", Objects.requireNonNull(BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.DAMAGE_BOOST.value())).toString());
         effectExample.addProperty("duration", 40);
         effectExample.addProperty("amplifier", 1);
         effectExample.addProperty("ambient", false);
