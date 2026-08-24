@@ -180,7 +180,7 @@ public enum BodyPart {
 
         if (entity instanceof AbstractClientPlayer player) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                if (slot.isArmor()) {
                     var stack = player.getItemBySlot(slot);
 
                     if (HIDES_LAYER.contains(stack.getItem()) || (stack.getItem() instanceof ArmorWithRenderer armorWithRenderer

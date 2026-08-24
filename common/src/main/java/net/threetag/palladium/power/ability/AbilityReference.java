@@ -31,7 +31,7 @@ public record AbilityReference(@Nullable ResourceLocation powerId, @NotNull Stri
         if (s.length != 2) {
             return false;
         } else {
-            return ResourceLocation.isValidResourceLocation(s[0]);
+            return ResourceLocation.tryParse(s[0]) != null;
         }
     }
 

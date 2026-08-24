@@ -138,8 +138,8 @@ public abstract class EntityDependentInteger {
             var objective = scoreboard.getObjective(this.objectiveName);
 
             if (objective != null) {
-                var scores = scoreboard.getPlayerScores(entity.getScoreboardName());
-                return scores.containsKey(objective) ? scores.get(objective).getScore() : this.fallbackValue;
+                var score = scoreboard.getPlayerScoreInfo(entity, objective);
+                return score != null ? score.value() : this.fallbackValue;
             }
 
             return this.fallbackValue;
