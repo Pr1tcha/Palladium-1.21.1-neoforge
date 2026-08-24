@@ -2,8 +2,7 @@ package net.threetag.palladium.item;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Objects;
+import net.threetag.palladium.util.ItemStackDataUtil;
 
 public interface Openable {
 
@@ -27,8 +26,7 @@ public interface Openable {
     default void setOpen(LivingEntity entity, ItemStack stack, boolean open) {
         if (!entity.level().isClientSide && this.isOpen(stack) != open) {
             if (!open || canBeOpened(entity, stack)) {
-                var nbt = stack.getOrCreateTag();
-                nbt.putBoolean(OPEN_TAG, open);
+                ItemStackDataUtil.update(stack, nbt -> nbt.putBoolean(OPEN_TAG, open));
                 this.onOpeningStateChange(entity, stack, open);
 
                 if (getOpeningTime(stack) <= 0) {
@@ -43,11 +41,11 @@ public interface Openable {
     }
 
     default boolean isOpen(ItemStack stack) {
-        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).getBoolean(OPEN_TAG);
+        return ItemStackDataUtil.get(stack).getBoolean(OPEN_TAG);
     }
 
     default int getOpeningProgress(ItemStack stack) {
-        return stack.hasTag() ? Objects.requireNonNull(stack.getTag()).getInt(OPENING_TAG) : 0;
+        return ItemStackDataUtil.get(stack).getInt(OPENING_TAG);
     }
 
     default void onOpeningStateChange(LivingEntity entity, ItemStack stack, boolean open) {
@@ -64,7 +62,7 @@ public interface Openable {
 
     static void onTick(LivingEntity entity, ItemStack stack) {
         if (!entity.level().isClientSide && stack.getItem() instanceof Openable openable) {
-            var nbt = stack.getOrCreateTag();
+            var nbt = ItemStackDataUtil.get(stack);
             var max = openable.getOpeningTime(stack);
 
             if (max <= 0) {
@@ -75,20 +73,23 @@ public interface Openable {
 
                 if (isOpen && !openable.canBeOpened(entity, stack)) {
                     isOpen = false;
-                    nbt.putBoolean(OPEN_TAG, isOpen);
+                    boolean finalIsOpen = isOpen;
+                    ItemStackDataUtil.update(stack, tag -> tag.putBoolean(OPEN_TAG, finalIsOpen));
                     openable.onOpeningStateChange(entity, stack, isOpen);
                 }
 
                 if (isOpen && timer < max) {
                     timer += 1;
-                    nbt.putInt(OPENING_TAG, timer);
+                    int finalTimer = timer;
+                    ItemStackDataUtil.update(stack, tag -> tag.putInt(OPENING_TAG, finalTimer));
 
                     if (timer == max) {
                         openable.onFullyOpened(entity, stack);
                     }
                 } else if (!isOpen && timer > 0) {
                     timer -= 1;
-                    nbt.putInt(OPENING_TAG, timer);
+                    int finalTimer = timer;
+                    ItemStackDataUtil.update(stack, tag -> tag.putInt(OPENING_TAG, finalTimer));
 
                     if (timer == 0) {
                         openable.onFullyClosed(entity, stack);

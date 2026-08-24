@@ -1,8 +1,9 @@
 package net.threetag.palladium.item;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -36,11 +38,11 @@ public class SuitStandItem extends Item {
             @Override
             @NotNull
             public ItemStack execute(BlockSource source, ItemStack stack) {
-                Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-                BlockPos blockpos = source.getPos().relative(direction);
-                Level level = source.getLevel();
+                Direction direction = source.state().getValue(DispenserBlock.FACING);
+                BlockPos blockpos = source.pos().relative(direction);
+                Level level = source.level();
                 SuitStand suitStand = new SuitStand(level, (double) blockpos.getX() + 0.5, blockpos.getY(), (double) blockpos.getZ() + 0.5);
-                EntityType.updateCustomEntityTag(level, null, suitStand, stack.getTag());
+                EntityType.updateCustomEntityTag(level, null, suitStand, stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY));
                 suitStand.setYRot(direction.toYRot());
                 level.addFreshEntity(suitStand);
                 stack.shrink(1);
@@ -65,7 +67,7 @@ public class SuitStandItem extends Item {
             if (level.noCollision(null, aABB) && level.getEntities(null, aABB).isEmpty()) {
                 if (level instanceof ServerLevel serverLevel) {
                     Consumer<SuitStand> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
-                    SuitStand armorStand = PalladiumEntityTypes.SUIT_STAND.get().create(serverLevel, itemStack.getTag(), consumer, blockPos, MobSpawnType.SPAWN_EGG, true, true);
+                    SuitStand armorStand = PalladiumEntityTypes.SUIT_STAND.get().create(serverLevel, consumer, blockPos, MobSpawnType.SPAWN_EGG, true, true);
                     if (armorStand == null) {
                         return InteractionResult.FAIL;
                     }

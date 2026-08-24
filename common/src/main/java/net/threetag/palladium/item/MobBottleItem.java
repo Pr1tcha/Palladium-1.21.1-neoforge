@@ -19,6 +19,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.threetag.palladium.entity.Bottable;
+import net.threetag.palladium.util.ItemStackDataUtil;
 
 import java.util.function.Supplier;
 
@@ -60,7 +61,7 @@ public class MobBottleItem extends Item {
     private void spawn(ServerLevel serverLevel, ItemStack bucketedMobStack, BlockPos pos) {
         Entity entity = this.entityTypeSupplier.get().spawn(serverLevel, bucketedMobStack, null, pos, MobSpawnType.BUCKET, true, false);
         if (entity instanceof Bottable bottable) {
-            bottable.loadFromBottleTag(bucketedMobStack.getOrCreateTag());
+            bottable.loadFromBottleTag(ItemStackDataUtil.get(bucketedMobStack));
             bottable.setFromBottle(true);
         }
     }

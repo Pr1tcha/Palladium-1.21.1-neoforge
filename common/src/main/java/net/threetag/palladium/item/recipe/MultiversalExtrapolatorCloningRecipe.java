@@ -1,37 +1,35 @@
 package net.threetag.palladium.item.recipe;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.threetag.palladium.item.PalladiumItems;
+import net.threetag.palladium.util.ItemStackDataUtil;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class MultiversalExtrapolatorCloningRecipe extends CustomRecipe {
 
-    public MultiversalExtrapolatorCloningRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, category);
+    public MultiversalExtrapolatorCloningRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         int designated = 0;
         int circuits = 0;
         int diamonds = 0;
 
-        for (int j = 0; j < container.getContainerSize(); j++) {
+        for (int j = 0; j < container.size(); j++) {
             ItemStack stack = container.getItem(j);
             if (!stack.isEmpty()) {
                 if (stack.is(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get())) {
-                    if (!stack.getOrCreateTag().getString("Universe").isEmpty()) {
+                    if (!ItemStackDataUtil.get(stack).getString("Universe").isEmpty()) {
                         designated++;
                     }
                 } else if (stack.is(PalladiumItems.VIBRANIUM_CIRCUIT.get())) {
@@ -46,13 +44,14 @@ public class MultiversalExtrapolatorCloningRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, HolderLookup.Provider registries) {
         if (this.matches(container, null)) {
-            for (int j = 0; j < container.getContainerSize(); j++) {
+            for (int j = 0; j < container.size(); j++) {
                 ItemStack stack = container.getItem(j);
-                if (!stack.isEmpty() && stack.is(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()) && !stack.getOrCreateTag().getString("Universe").isEmpty()) {
+                if (!stack.isEmpty() && stack.is(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()) && !ItemStackDataUtil.get(stack).getString("Universe").isEmpty()) {
                     var result = PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get().getDefaultInstance();
-                    result.getOrCreateTag().put("Universe", stack.getOrCreateTag().get("Universe"));
+                    var universeId = ItemStackDataUtil.get(stack).getString("Universe");
+                    ItemStackDataUtil.update(result, tag -> tag.putString("Universe", universeId));
                     return result;
                 }
             }
@@ -62,14 +61,14 @@ public class MultiversalExtrapolatorCloningRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-        NonNullList<ItemStack> remaining = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
+        NonNullList<ItemStack> remaining = NonNullList.withSize(container.size(), ItemStack.EMPTY);
 
         for (int i = 0; i < remaining.size(); i++) {
             ItemStack itemStack = container.getItem(i);
-            if (itemStack.getItem().hasCraftingRemainingItem()) {
-                remaining.set(i, new ItemStack(Objects.requireNonNull(itemStack.getItem().getCraftingRemainingItem())));
-            } else if (itemStack.is(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()) && itemStack.getOrCreateTag().contains("Universe")) {
+            if (itemStack.hasCraftingRemainingItem()) {
+                remaining.set(i, itemStack.getCraftingRemainingItem());
+            } else if (itemStack.is(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()) && ItemStackDataUtil.get(itemStack).contains("Universe")) {
                 remaining.set(i, itemStack.copyWithCount(1));
                 break;
             }

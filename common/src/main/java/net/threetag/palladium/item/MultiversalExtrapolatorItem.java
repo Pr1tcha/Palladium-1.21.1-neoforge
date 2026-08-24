@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.threetag.palladium.multiverse.MultiverseManager;
 import net.threetag.palladium.multiverse.Universe;
 import net.threetag.palladium.sound.PalladiumSoundEvents;
+import net.threetag.palladium.util.ItemStackDataUtil;
 import net.threetag.palladium.util.context.DataContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,11 @@ public class MultiversalExtrapolatorItem extends Item {
 
     public MultiversalExtrapolatorItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return oldStack != newStack;
     }
 
     @Override
@@ -43,20 +49,23 @@ public class MultiversalExtrapolatorItem extends Item {
             return InteractionResultHolder.pass(stack);
         }
 
-        stack.getOrCreateTag().putBoolean("Searching", true);
-        stack.getOrCreateTag().putInt("SearchTimer", 0);
+        ItemStackDataUtil.update(stack, tag -> {
+            tag.putBoolean("Searching", true);
+            tag.putInt("SearchTimer", 0);
+        });
 
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (entity instanceof Player player && stack.getOrCreateTag().getBoolean("Searching")) {
-            int progress = stack.getOrCreateTag().getInt("SearchTimer");
+        var customData = ItemStackDataUtil.get(stack);
+        if (entity instanceof Player player && customData.getBoolean("Searching")) {
+            int progress = customData.getInt("SearchTimer");
 
             if (progress < 80) {
                 if (!level.isClientSide()) {
-                    stack.getOrCreateTag().putInt("SearchTimer", progress + 1);
+                    ItemStackDataUtil.update(stack, tag -> tag.putInt("SearchTimer", progress + 1));
 
                     if (progress == 60) {
                         var universe = MultiverseManager.getInstance(level).getRandomAvailableUniverse(DataContext.forEntity(entity));
@@ -85,19 +94,22 @@ public class MultiversalExtrapolatorItem extends Item {
                     }
                 }
             } else if (!level.isClientSide()) {
-                stack.getOrCreateTag().remove("Searching");
-                stack.getOrCreateTag().remove("SearchTimer");
+                ItemStackDataUtil.update(stack, tag -> {
+                    tag.remove("Searching");
+                    tag.remove("SearchTimer");
+                });
             }
         }
     }
 
     public static void setUniverse(ItemStack stack, Universe universe) {
-        stack.getOrCreateTag().putString("Universe", universe.getId().toString());
+        ItemStackDataUtil.update(stack, tag -> tag.putString("Universe", universe.getId().toString()));
     }
 
     public static Universe getUniverse(ItemStack stack, Level level) {
-        return stack.getOrCreateTag().contains("Universe") ?
-                MultiverseManager.getInstance(level).get(ResourceLocation.tryParse(stack.getOrCreateTag().getString("Universe"))) :
+        var customData = ItemStackDataUtil.get(stack);
+        return customData.contains("Universe") ?
+                MultiverseManager.getInstance(level).get(ResourceLocation.tryParse(customData.getString("Universe"))) :
                 null;
     }
 }

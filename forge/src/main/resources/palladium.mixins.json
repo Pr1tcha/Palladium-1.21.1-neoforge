@@ -6,7 +6,6 @@
     "ForgeHooksMixin",
     "IEnergyStorageMixin",
     "LootTableMixin",
-    "MultiversalExtrapolatorItemMixin",
     "NetworkManagerMixin",
     "PathPackResourcesAccessor"
   ],

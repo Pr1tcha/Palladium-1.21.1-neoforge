@@ -1,6 +1,7 @@
 package net.threetag.palladium.entity;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -11,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.threetag.palladium.util.ItemStackDataUtil;
 
 import java.util.Optional;
 
@@ -29,32 +31,28 @@ public interface Bottable {
     SoundEvent getPickupSound();
 
     static void saveDefaultDataToBottleTag(Mob mob, ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
         if (mob.hasCustomName()) {
-            itemStack.setHoverName(mob.getCustomName());
+            itemStack.set(DataComponents.CUSTOM_NAME, mob.getCustomName());
         }
 
-        if (mob.isNoAi()) {
-            compoundTag.putBoolean("NoAI", mob.isNoAi());
-        }
-
-        if (mob.isSilent()) {
-            compoundTag.putBoolean("Silent", mob.isSilent());
-        }
-
-        if (mob.isNoGravity()) {
-            compoundTag.putBoolean("NoGravity", mob.isNoGravity());
-        }
-
-        if (mob.hasGlowingTag()) {
-            compoundTag.putBoolean("Glowing", mob.hasGlowingTag());
-        }
-
-        if (mob.isInvulnerable()) {
-            compoundTag.putBoolean("Invulnerable", mob.isInvulnerable());
-        }
-
-        compoundTag.putFloat("Health", mob.getHealth());
+        ItemStackDataUtil.update(itemStack, compoundTag -> {
+            if (mob.isNoAi()) {
+                compoundTag.putBoolean("NoAI", true);
+            }
+            if (mob.isSilent()) {
+                compoundTag.putBoolean("Silent", true);
+            }
+            if (mob.isNoGravity()) {
+                compoundTag.putBoolean("NoGravity", true);
+            }
+            if (mob.hasGlowingTag()) {
+                compoundTag.putBoolean("Glowing", true);
+            }
+            if (mob.isInvulnerable()) {
+                compoundTag.putBoolean("Invulnerable", true);
+            }
+            compoundTag.putFloat("Health", mob.getHealth());
+        });
     }
 
     static void loadDefaultDataFromBottleTag(Mob mob, CompoundTag compoundTag) {

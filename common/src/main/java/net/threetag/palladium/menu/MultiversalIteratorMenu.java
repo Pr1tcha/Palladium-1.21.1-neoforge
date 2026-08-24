@@ -14,6 +14,7 @@ import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladium.item.MultiversalExtrapolatorItem;
 import net.threetag.palladium.multiverse.MultiversalItemVariantsManager;
 import net.threetag.palladium.sound.PalladiumSoundEvents;
+import net.threetag.palladium.util.ItemStackDataUtil;
 import net.threetag.palladium.util.PlayerUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,11 +89,8 @@ public class MultiversalIteratorMenu extends ItemCombinerMenu {
                 this.resultIndex = 0;
 
                 if (!this.results.isEmpty()) {
-                    var inputTag = this.inputSlots.getItem(1).getTag();
                     var resultStack = this.results.get(this.resultIndex).getDefaultInstance();
-                    if (inputTag != null) {
-                        resultStack.setTag(inputTag.copy());
-                    }
+                    ItemStackDataUtil.copy(this.inputSlots.getItem(1), resultStack);
                     this.resultSlots.setItem(0, resultStack);
                     this.resultCount.set(this.results.size());
                     return;

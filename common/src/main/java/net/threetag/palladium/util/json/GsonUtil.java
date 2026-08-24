@@ -18,6 +18,7 @@ import net.threetag.palladium.accessory.AccessorySlot;
 import net.threetag.palladium.client.dynamictexture.TextureReference;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladium.power.energybar.EnergyBarReference;
+import net.threetag.palladium.util.ItemStackDataUtil;
 import net.threetag.palladium.util.ModelLayerLocationUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -651,8 +652,8 @@ public class GsonUtil {
         json.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         json.addProperty("count", stack.getCount());
 
-        if (writeNbt && stack.hasTag()) {
-            json.add("nbt", nbtToJson(stack.getTag()));
+        if (writeNbt && ItemStackDataUtil.has(stack)) {
+            json.add("nbt", nbtToJson(ItemStackDataUtil.get(stack)));
         }
 
         return json;
