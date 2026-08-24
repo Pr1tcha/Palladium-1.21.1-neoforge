@@ -1,6 +1,10 @@
 package net.threetag.palladium;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.service.MixinService;
@@ -39,7 +43,8 @@ public class PalladiumMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
             if (mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.ScriptManagerMixin")
-                    || mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.KubeJSModelledBuilderMixin")) {
+                    || mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.KubeJSModelledBuilderMixin")
+                    || mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.KubeJSUtilsWrapperMixin")) {
                 return HAS_KUBEJS;
             }
 
@@ -86,7 +91,25 @@ public class PalladiumMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
+        if (mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.KubeJSUtilsWrapperMixin")
+                && targetClass.methods.stream().noneMatch(method -> method.name.equals("getServer") && method.desc.equals("()Lnet/minecraft/server/MinecraftServer;"))) {
+            MethodNode method = new MethodNode(
+                    Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
+                    "getServer",
+                    "()Lnet/minecraft/server/MinecraftServer;",
+                    null,
+                    null
+            );
+            method.instructions.add(new MethodInsnNode(
+                    Opcodes.INVOKESTATIC,
+                    "net/threetag/palladiumcore/util/Platform",
+                    "getCurrentServer",
+                    "()Lnet/minecraft/server/MinecraftServer;",
+                    false
+            ));
+            method.instructions.add(new InsnNode(Opcodes.ARETURN));
+            targetClass.methods.add(method);
+        }
     }
 
     @Override

@@ -45,6 +45,7 @@
     "InventoryMixin",
     "ItemMixin",
     "KubeJSModelledBuilderMixin",
+    "KubeJSUtilsWrapperMixin",
     "LivingEntityMixin",
     "OreFeatureMixin",
     "PackTypeMixin",
@@ -56,7 +57,8 @@
     "ScriptManagerMixin",
     "ServerScoreboardMixin",
     "SlotMixin",
-    "VibrationListenerMixin"
+    "VibrationListenerMixin",
+    "VanillaPackResourcesBuilderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
