@@ -37,7 +37,6 @@
     "ArmorStandMixin",
     "BlockBehaviourMixin",
     "BlockStateBaseMixin",
-    "CrossbowItemMixin",
     "ElytraItemMixin",
     "EntityMixin",
     "EntitySelectorOptionsInvoker",

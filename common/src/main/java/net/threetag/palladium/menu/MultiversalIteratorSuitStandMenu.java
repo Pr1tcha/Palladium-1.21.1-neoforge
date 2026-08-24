@@ -116,8 +116,8 @@ public class MultiversalIteratorSuitStandMenu extends AbstractContainerMenu {
 
     private void damageExtrapolator(int amount) {
         ItemStack itemStack = this.extrapolatorSlotContainer.getItem(0);
-        if (!itemStack.isEmpty()) {
-            itemStack.hurtAndBreak(amount, this.player, player1 -> this.extrapolatorSlotContainer.setItem(0, ItemStack.EMPTY));
+        if (!itemStack.isEmpty() && this.player instanceof ServerPlayer serverPlayer) {
+            itemStack.hurtAndBreak(amount, serverPlayer.serverLevel(), serverPlayer, item -> this.extrapolatorSlotContainer.setItem(0, ItemStack.EMPTY));
             this.extrapolatorSlotContainer.setItem(0, itemStack);
         }
     }

@@ -1,6 +1,7 @@
 package net.threetag.palladium.menu;
 
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -68,8 +69,8 @@ public class MultiversalIteratorMenu extends ItemCombinerMenu {
 
     private void damageStackInSlot(int index) {
         ItemStack itemStack = this.inputSlots.getItem(index);
-        if (!itemStack.isEmpty()) {
-            itemStack.hurtAndBreak(1, this.player, player1 -> this.inputSlots.setItem(index, ItemStack.EMPTY));
+        if (!itemStack.isEmpty() && this.player instanceof ServerPlayer serverPlayer) {
+            itemStack.hurtAndBreak(1, serverPlayer.serverLevel(), serverPlayer, item -> this.inputSlots.setItem(index, ItemStack.EMPTY));
             this.inputSlots.setItem(index, itemStack);
         }
     }

@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,6 +84,17 @@ public class AddonCrossbowItem extends CrossbowItem implements IAddonItem {
         } else {
             return InteractionResultHolder.fail(itemStack);
         }
+    }
+
+    @Override
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+        if (ammo.getItem() instanceof AddonProjectileItem projectileItem) {
+            Projectile projectile = projectileItem.createProjectile(level, ammo, shooter);
+            if (projectile != null) {
+                return projectile;
+            }
+        }
+        return super.createProjectile(level, shooter, weapon, ammo, isCrit);
     }
 
     @Override
