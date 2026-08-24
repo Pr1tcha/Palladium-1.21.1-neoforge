@@ -1,8 +1,6 @@
 package net.threetag.palladium.power.ability;
 
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,10 +21,10 @@ public class PlayerAnimationAbility extends Ability {
     public void firstTick(LivingEntity entity, AbilityInstance entry, IPowerHolder holder, boolean enabled) {
         if (enabled && entity.level().isClientSide && entity instanceof IAnimatablePlayer animatablePlayer) {
             var animationContainer = animatablePlayer.palladium_getModifierLayer();
-            KeyframeAnimation anim = PlayerAnimationRegistry.getAnimation(entry.getProperty(ANIMATION));
+            var animation = PlayerAnimationRegistry.getAnimation(entry.getProperty(ANIMATION));
 
-            if (anim != null) {
-                animationContainer.replaceAnimationWithFade(AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value), new KeyframeAnimationPlayer(anim));
+            if (animation != null) {
+                animationContainer.replaceAnimationWithFade(AbstractFadeModifier.functionalFadeIn(20, (modelName, type, value) -> value), animation.playAnimation());
             }
         }
     }

@@ -135,6 +135,9 @@ dependencies {
 
     compileOnly "maven.modrinth:curios:${curios_version}"
     localRuntime "maven.modrinth:curios:${curios_version}"
+
+    compileOnly "maven.modrinth:playeranimator:${player_animator_version}"
+    localRuntime "maven.modrinth:playeranimator:${player_animator_version}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
