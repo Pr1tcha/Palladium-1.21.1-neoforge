@@ -97,12 +97,12 @@ public class PackRenderLayerManager extends SimpleJsonResourceReloadListener {
         registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "lightning_sparks"), LightningSparksRenderLayer::parse);
         registerParser(ResourceLocation.fromNamespaceAndPath(Palladium.MOD_ID, "thrusters"), ThrusterPackRenderLayer::parse);
 
-        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "solid"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityTranslucent(texture), false, glint));
-        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "cutout"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityCutout(texture), false, glint));
+        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "solid"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityTranslucent(texture), glint));
+        registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "cutout"), (source, texture, glint) -> ItemRenderer.getArmorFoilBuffer(source, RenderType.entityCutout(texture), glint));
         registerRenderType(ResourceLocation.fromNamespaceAndPath("minecraft", "glow"), new RenderTypeFunction() {
             @Override
             public VertexConsumer createVertexConsumer(MultiBufferSource buffer, ResourceLocation texture, boolean withGlint) {
-                return ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getGlowing(texture), false, withGlint);
+                return ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getGlowing(texture), withGlint);
             }
 
             @Override

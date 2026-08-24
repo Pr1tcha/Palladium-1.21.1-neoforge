@@ -87,7 +87,7 @@ public class ArmorRendererManager extends SimpleJsonResourceReloadListener {
         if (!stack.isEmpty() && stack.getItem() instanceof ArmorWithRenderer item && item.getCachedArmorRenderer() instanceof ArmorRendererData renderer) {
             var context = DataContext.forArmorInSlot(player, EquipmentSlot.CHEST);
             var armorModel = renderer.getModel(player, context);
-            var vertex = ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getArmorTranslucent(renderer.getTexture(context)), false, stack.hasFoil());
+            var vertex = ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getArmorTranslucent(renderer.getTexture(context)), stack.hasFoil());
             var arm = rightArm ? armorModel.rightArm : armorModel.leftArm;
             arm.copyFrom(rendererArm);
             arm.xRot = 0.0F;

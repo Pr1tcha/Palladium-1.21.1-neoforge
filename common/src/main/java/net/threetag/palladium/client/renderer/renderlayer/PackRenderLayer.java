@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
@@ -85,10 +86,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
                     vertexConsumer,
                     this.renderType.getPackedLight(packedLight),
                     OverlayTexture.NO_OVERLAY,
-                    tint.getRed() / 255F,
-                    tint.getGreen() / 255F,
-                    tint.getBlue() / 255F,
-                    tint.getAlpha() / 255F
+                    FastColor.ARGB32.color(tint.getAlpha(), tint.getRed(), tint.getGreen(), tint.getBlue())
             );
         }
     }
@@ -120,10 +118,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
                             vertexConsumer,
                             this.renderType.getPackedLight(packedLight),
                             OverlayTexture.NO_OVERLAY,
-                            tint.getRed() / 255F,
-                            tint.getGreen() / 255F,
-                            tint.getBlue() / 255F,
-                            tint.getAlpha() / 255F);
+                            FastColor.ARGB32.color(tint.getAlpha(), tint.getRed(), tint.getGreen(), tint.getBlue()));
                 } else {
                     humanoidModel.leftArm.xRot = 0.0F;
                     humanoidModel.leftArm.render(
@@ -131,10 +126,7 @@ public class PackRenderLayer extends AbstractPackRenderLayer {
                             vertexConsumer,
                             this.renderType.getPackedLight(packedLight),
                             OverlayTexture.NO_OVERLAY,
-                            tint.getRed() / 255F,
-                            tint.getGreen() / 255F,
-                            tint.getBlue() / 255F,
-                            tint.getAlpha() / 255F);
+                            FastColor.ARGB32.color(tint.getAlpha(), tint.getRed(), tint.getGreen(), tint.getBlue()));
                 }
             }
         }

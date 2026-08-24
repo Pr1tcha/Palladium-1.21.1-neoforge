@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.client.model.animation.PalladiumAnimationRegistry;
 import net.threetag.palladium.entity.BodyPart;
@@ -113,7 +114,7 @@ public class HumanoidRendererModifications {
                 if (renderType != null) {
                     VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
                     int m = LivingEntityRenderer.getOverlayCoords(entity, renderer.getWhiteOverlayProgress(entity, partialTick));
-                    renderer.getModel().renderToBuffer(poseStack, vertexConsumer, packedLight, m, 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
+                    renderer.getModel().renderToBuffer(poseStack, vertexConsumer, packedLight, m, FastColor.ARGB32.colorFromFloat(bl2 ? 0.15F : 1.0F, 1.0F, 1.0F, 1.0F));
                 }
 
                 poseStack.popPose();

@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.threetag.palladium.client.renderer.renderlayer.IPackRenderLayer;
@@ -150,7 +151,7 @@ public class TrailSegmentEntityRenderer extends LivingEntityRenderer<TrailSegmen
                         playerModel.leftSleeve.visible = playerModel.rightPants.visible = playerModel.leftPants.visible = false;
             }
 
-            this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, m, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, 1.0F);
+            this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, m, FastColor.ARGB32.color(255, color.getRed(), color.getGreen(), color.getBlue()));
         }
 
         if (!entity.isSpectator() && entity.mimicPlayer) {
@@ -163,7 +164,7 @@ public class TrailSegmentEntityRenderer extends LivingEntityRenderer<TrailSegmen
                 IPackRenderLayer.Snapshot snapshot = (IPackRenderLayer.Snapshot) s;
                 snapshot.applyPoses();
                 poseStack.pushPose();
-                snapshot.getModel().renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityTranslucent(snapshot.getTexture())), packedLight, OverlayTexture.NO_OVERLAY, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, 1.0F);
+                snapshot.getModel().renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityTranslucent(snapshot.getTexture())), packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color(255, color.getRed(), color.getGreen(), color.getBlue()));
                 poseStack.popPose();
             }
         }

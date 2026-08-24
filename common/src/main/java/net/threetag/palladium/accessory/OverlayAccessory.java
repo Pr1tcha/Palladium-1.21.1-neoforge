@@ -89,7 +89,7 @@ public class OverlayAccessory extends DefaultAccessory {
         }
 
         var buffer = bufferSource.getBuffer(renderType);
-        model.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+        model.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY);
     }
 
     @Environment(EnvType.CLIENT)

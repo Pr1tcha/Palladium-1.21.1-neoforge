@@ -130,7 +130,7 @@ public class HumanoidModelOverlayAccessory extends OverlayAccessory {
             var renderType = getRenderType(player, texture, renderLayerParent.getModel());
             if (renderType != null) {
                 var buffer = bufferSource.getBuffer(this.glowing ? RenderType.eyes(texture) : renderType);
-                model.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+                model.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY);
             }
         }
     }

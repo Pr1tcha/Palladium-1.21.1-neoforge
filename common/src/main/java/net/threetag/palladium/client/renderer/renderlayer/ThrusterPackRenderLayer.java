@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -71,7 +72,7 @@ public class ThrusterPackRenderLayer extends AbstractPackRenderLayer {
 
             VertexConsumer vertexConsumer = bufferSource.getBuffer(PalladiumRenderTypes.getGlowing(TEXTURES[(entity.tickCount / 2) % TEXTURES.length]));
             var color = this.color.getColor(context);
-            model.renderToBuffer(poseStack, vertexConsumer, 15728640, OverlayTexture.NO_OVERLAY, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+            model.renderToBuffer(poseStack, vertexConsumer, 15728640, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.color(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue()));
         }
     }
 

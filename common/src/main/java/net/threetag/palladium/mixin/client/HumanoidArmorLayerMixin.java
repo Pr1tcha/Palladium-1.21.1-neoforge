@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -87,14 +88,14 @@ public abstract class HumanoidArmorLayerMixin {
 
     @Unique
     private void palladium$renderModelCustom(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean foil, HumanoidModel model, ResourceLocation texture, boolean innerModel, float red, float green, float blue) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getArmorTranslucent(texture), false, foil);
-        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, PalladiumRenderTypes.getArmorTranslucent(texture), foil);
+        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(1.0F, red, green, blue));
     }
 
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
     private void renderModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmorItem armorItem, HumanoidModel model, boolean withGlint, float red, float green, float blue, @Nullable String armorSuffix, CallbackInfo ci) {
         if (model instanceof CancelGeckoArmorBuffer) {
-            model.renderToBuffer(poseStack, null, packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
+            model.renderToBuffer(poseStack, null, packedLight, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(1.0F, red, green, blue));
             ci.cancel();
         }
     }
