@@ -16,7 +16,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -48,6 +47,7 @@ public class PalladiumForge {
 
     public PalladiumForge(IEventBus modEventBus, ModContainer modContainer, Dist dist) {
         ModEventBusRegistry.register(Palladium.MOD_ID, modEventBus);
+        PalladiumFeatureFlagEnabledCondition.register(modEventBus);
         RegistrationEvents.register(modEventBus);
         EventBridge.register(modEventBus);
         NetworkRegistration.register(modEventBus);
@@ -61,8 +61,6 @@ public class PalladiumForge {
         Palladium.init();
         modContainer.registerConfig(ModConfig.Type.CLIENT, PalladiumConfig.Client.generateConfig());
         modContainer.registerConfig(ModConfig.Type.SERVER, PalladiumConfig.Server.generateConfig());
-        CraftingHelper.register(new PalladiumFeatureFlagEnabledCondition.Serializer());
-
         if (ModList.get().isLoaded("curios")) {
             CuriosCompat.init();
         }

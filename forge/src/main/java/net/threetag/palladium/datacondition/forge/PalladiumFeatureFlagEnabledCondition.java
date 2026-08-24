@@ -1,52 +1,47 @@
 package net.threetag.palladium.datacondition.forge;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.common.crafting.conditions.ICondition;
-import net.neoforged.neoforge.common.crafting.conditions.IConditionSerializer;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.threetag.palladium.Palladium;
 import net.threetag.palladium.feature.PalladiumFeatureFlags;
 
-public class PalladiumFeatureFlagEnabledCondition implements ICondition {
+public record PalladiumFeatureFlagEnabledCondition(PalladiumFeatureFlags.Type featureFlag) implements ICondition {
 
-    private final PalladiumFeatureFlags.Type featureFlag;
+    private static final Codec<PalladiumFeatureFlags.Type> FEATURE_FLAG_CODEC = Codec.STRING.comapFlatMap(name -> {
+        var featureFlag = PalladiumFeatureFlags.getFeatureFlag(name);
+        return featureFlag == null
+                ? DataResult.error(() -> "Unknown Palladium feature flag: " + name)
+                : DataResult.success(featureFlag);
+    }, PalladiumFeatureFlags.Type::getSerializedName);
 
-    public PalladiumFeatureFlagEnabledCondition(PalladiumFeatureFlags.Type featureFlag) {
-        this.featureFlag = featureFlag;
+    public static final MapCodec<PalladiumFeatureFlagEnabledCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            FEATURE_FLAG_CODEC.fieldOf("feature_flag").forGetter(PalladiumFeatureFlagEnabledCondition::featureFlag)
+    ).apply(instance, PalladiumFeatureFlagEnabledCondition::new));
+
+    private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS =
+            DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, Palladium.MOD_ID);
+
+    static {
+        CONDITION_CODECS.register("feature_flag_enabled", () -> CODEC);
+    }
+
+    public static void register(IEventBus modEventBus) {
+        CONDITION_CODECS.register(modEventBus);
     }
 
     @Override
-    public ResourceLocation getID() {
-        return PalladiumFeatureFlags.DATA_CONDITION_ID;
-    }
-
-    @Override
-    public boolean test(IContext iContext) {
+    public boolean test(IContext context) {
         return PalladiumFeatureFlags.isEnabled(this.featureFlag);
     }
 
-    public static class Serializer implements IConditionSerializer<PalladiumFeatureFlagEnabledCondition> {
-
-        @Override
-        public void write(JsonObject jsonObject, PalladiumFeatureFlagEnabledCondition condition) {
-            jsonObject.addProperty("feature_flag", condition.featureFlag.name());
-        }
-
-        @Override
-        public PalladiumFeatureFlagEnabledCondition read(JsonObject jsonObject) {
-            var type = PalladiumFeatureFlags.getFeatureFlag(GsonHelper.getAsString(jsonObject, "feature_flag"));
-
-            if (type == null) {
-                throw new JsonParseException("Unknown Palladium feature flag: " + GsonHelper.getAsString(jsonObject, "feature_flag"));
-            }
-
-            return new PalladiumFeatureFlagEnabledCondition(type);
-        }
-
-        @Override
-        public ResourceLocation getID() {
-            return PalladiumFeatureFlags.DATA_CONDITION_ID;
-        }
+    @Override
+    public MapCodec<? extends ICondition> codec() {
+        return CODEC;
     }
 }

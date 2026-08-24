@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.crafting.conditions.IConditionBuilder;
 import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.block.PalladiumBlocks;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @SuppressWarnings("NullableProblems")
-public class PalladiumRecipeProvider extends RecipeProvider implements IConditionBuilder {
+public class PalladiumRecipeProvider extends RecipeProvider {
 
     private static final ImmutableList<ItemLike> LEAD_SMELTABLES = ImmutableList.of(PalladiumItems.RAW_LEAD.get(), PalladiumItems.LEAD_ORE.get(), PalladiumItems.DEEPSLATE_LEAD_ORE.get());
     private static final ImmutableList<ItemLike> TITANIUM_SMELTABLES = ImmutableList.of(PalladiumItems.RAW_TITANIUM.get(), PalladiumItems.TITANIUM_ORE.get());
