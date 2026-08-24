@@ -1,6 +1,5 @@
 package net.threetag.palladium.entity;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleType;
@@ -27,6 +26,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.threetag.palladium.util.SizeUtil;
 import net.threetag.palladium.util.ComponentUtil;
+import net.threetag.palladium.util.ParticleUtil;
 import net.threetag.palladiumcore.network.ExtendedEntitySpawnData;
 import org.jetbrains.annotations.Nullable;
 
@@ -369,7 +369,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
                 float sZ = (random.nextFloat() - 0.5F) * this.spread * SizeUtil.getInstance().getWidthScale(projectile);
 
                 try {
-                    projectile.level().addParticle(this.type.getDeserializer().fromCommand(this.type, new StringReader(this.options)), projectile.getX(), projectile.getY(), projectile.getZ(), sX, sY, sZ);
+                    projectile.level().addParticle(ParticleUtil.parseOptions(this.type, this.options, projectile.level().registryAccess()), projectile.getX(), projectile.getY(), projectile.getZ(), sX, sY, sZ);
                 } catch (CommandSyntaxException ignored) {
                 }
             }
@@ -388,7 +388,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
                 float sZ = (random.nextFloat() - 0.5F) * this.spread * 2F;
 
                 try {
-                    projectile.level().addParticle(this.type.getDeserializer().fromCommand(this.type, new StringReader(this.options)), projectile.getX(), projectile.getY(), projectile.getZ(), sX, sY, sZ);
+                    projectile.level().addParticle(ParticleUtil.parseOptions(this.type, this.options, projectile.level().registryAccess()), projectile.getX(), projectile.getY(), projectile.getZ(), sX, sY, sZ);
                 } catch (CommandSyntaxException ignored) {
                 }
             }

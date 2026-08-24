@@ -1,6 +1,5 @@
 package net.threetag.palladium.power.ability;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.client.particleemitter.ParticleEmitterManager;
 import net.threetag.palladium.power.IPowerHolder;
+import net.threetag.palladium.util.ParticleUtil;
 import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladium.util.property.ParticleTypeProperty;
 import net.threetag.palladium.util.property.ResourceLocationListProperty;
@@ -46,13 +46,13 @@ public class ParticleAbility extends Ability {
         if (entity instanceof AbstractClientPlayer player) {
             try {
                 ParticleType type = entry.getProperty(PARTICLE);
-                ParticleOptions options = type.getDeserializer().fromCommand(type, new StringReader(" " + entry.getProperty(OPTIONS).trim() + " "));
+                ParticleOptions options = ParticleUtil.parseOptions(type, entry.getProperty(OPTIONS), entity.level().registryAccess());
 
                 for (ResourceLocation id : entry.getProperty(PARTICLE_EMITTER)) {
                     var emitter = ParticleEmitterManager.INSTANCE.get(id);
 
                     if (emitter != null) {
-                        emitter.spawnParticles(entity.level(), player, options, Minecraft.getInstance().getDeltaFrameTime());
+                        emitter.spawnParticles(entity.level(), player, options, Minecraft.getInstance().getTimer().getRealtimeDeltaTicks());
                     }
                 }
             } catch (CommandSyntaxException ignored) {

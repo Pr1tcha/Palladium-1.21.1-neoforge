@@ -3,7 +3,6 @@ package net.threetag.palladium.client.energybeam;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.client.particleemitter.ParticleEmitter;
 import net.threetag.palladium.entity.BodyPart;
+import net.threetag.palladium.util.ParticleUtil;
 import net.threetag.palladium.util.PerspectiveValue;
 import net.threetag.palladium.util.json.GsonUtil;
 import org.joml.Vector3f;
@@ -93,7 +93,7 @@ public class EnergyBeam {
         public void spawn(Level level, Vec3 pos) {
             try {
                 ParticleType type = this.particleType;
-                ParticleOptions options = type.getDeserializer().fromCommand(type, new StringReader(" " + this.options.trim() + " "));
+                ParticleOptions options = ParticleUtil.parseOptions(type, this.options, level.registryAccess());
                 this.emitter.spawnAtPosition(level, pos, options);
             } catch (CommandSyntaxException ignored) {
 
