@@ -194,13 +194,12 @@ public class PowersScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
         int i = (this.width - WINDOW_WIDTH) / 2;
         int j = (this.height - WINDOW_HEIGHT) / 2;
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         this.renderInside(guiGraphics, mouseX, mouseY, i, j, partialTick);
         this.renderWindow(guiGraphics, i, j);
         this.renderTooltips(guiGraphics, mouseX, mouseY, i, j, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (this.selectedTab != null && this.overlayScreen != null) {
             guiGraphics.pose().translate(0, 0, 500);
