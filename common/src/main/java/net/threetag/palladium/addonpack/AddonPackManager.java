@@ -136,12 +136,12 @@ public class AddonPackManager {
             var resources = new Pack.ResourcesSupplier() {
                 @Override
                 public net.minecraft.server.packs.PackResources openPrimary(PackLocationInfo ignored) {
-                    return pack.open();
+                    return new LegacyAddonPackResources(pack.open());
                 }
 
                 @Override
                 public net.minecraft.server.packs.PackResources openFull(PackLocationInfo ignored, Pack.Metadata metadata) {
-                    return pack.open();
+                    return new LegacyAddonPackResources(pack.open());
                 }
             };
             var wrappedPack = Pack.readMetaAndCreate(
