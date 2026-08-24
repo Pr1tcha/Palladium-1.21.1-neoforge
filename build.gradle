@@ -55,6 +55,12 @@ repositories {
         }
     }
     maven {
+        url = 'https://maven.blamejared.com'
+        content {
+            includeGroup 'mezz.jei'
+        }
+    }
+    maven {
         url = 'https://jitpack.io'
         content {
             includeModule 'com.github.rtyley', 'animated-gif-lib-for-java'
@@ -138,6 +144,10 @@ dependencies {
 
     compileOnly "maven.modrinth:playeranimator:${player_animator_version}"
     localRuntime "maven.modrinth:playeranimator:${player_animator_version}"
+
+    compileOnly "mezz.jei:jei-1.21.1-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:${jei_version}"
+    localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {

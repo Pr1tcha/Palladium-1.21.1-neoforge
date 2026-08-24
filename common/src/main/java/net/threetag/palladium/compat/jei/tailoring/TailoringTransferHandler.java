@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -13,7 +14,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.client.screen.TailoringScreen;
-import net.threetag.palladium.item.recipe.PalladiumRecipeSerializers;
 import net.threetag.palladium.item.recipe.TailoringRecipe;
 import net.threetag.palladium.menu.PalladiumMenuTypes;
 import net.threetag.palladium.menu.TailoringMenu;
@@ -55,8 +55,10 @@ public class TailoringTransferHandler implements IRecipeTransferHandler<Tailorin
         }
 
         var level = player.level();
-        var availableRecipes = level.getRecipeManager().getRecipesFor(PalladiumRecipeSerializers.TAILORING.get(), player.getInventory(), level);
-        if (!availableRecipes.contains(recipe)) {
+        boolean recipeAvailable = level.getRecipeManager().getRecipes().stream()
+                .filter(holder -> holder.value() == recipe)
+                .anyMatch(holder -> !recipe.requiresUnlocking() || player instanceof LocalPlayer localPlayer && localPlayer.getRecipeBook().contains(holder));
+        if (!recipeAvailable) {
             return transferHelper.createUserErrorWithTooltip(Component.translatable("gui.palladium.jei.tailoring.recipe_unavailable"));
         }
 

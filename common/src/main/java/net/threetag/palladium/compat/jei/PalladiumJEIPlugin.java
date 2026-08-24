@@ -20,7 +20,7 @@ import net.threetag.palladium.compat.jei.tailoring.TailoringCategory;
 import net.threetag.palladium.compat.jei.tailoring.TailoringTransferHandler;
 import net.threetag.palladium.item.MultiversalExtrapolatorItem;
 import net.threetag.palladium.item.PalladiumItems;
-import net.threetag.palladium.item.recipe.PalladiumRecipeSerializers;
+import net.threetag.palladium.item.recipe.TailoringRecipe;
 import net.threetag.palladium.multiverse.MultiverseManager;
 
 import java.util.ArrayList;
@@ -49,7 +49,12 @@ public class PalladiumJEIPlugin implements IModPlugin {
         ClientLevel level = Objects.requireNonNull(Minecraft.getInstance().level);
         RecipeManager recipeManager = level.getRecipeManager();
 
-        registration.addRecipes(TailoringCategory.RECIPE_TYPE, recipeManager.getAllRecipesFor(PalladiumRecipeSerializers.TAILORING.get()));
+        List<TailoringRecipe> tailoringRecipes = recipeManager.getRecipes().stream()
+                .map(RecipeHolder::value)
+                .filter(TailoringRecipe.class::isInstance)
+                .map(TailoringRecipe.class::cast)
+                .toList();
+        registration.addRecipes(TailoringCategory.RECIPE_TYPE, tailoringRecipes);
         registration.addRecipes(MultiversalVariantsCategory.RECIPE_TYPE, MultiversalVariantRecipe.getRecipes(level));
         registration.addRecipes(RecipeTypes.CRAFTING, addSpecialCraftingRecipes(level));
     }
@@ -71,10 +76,10 @@ public class PalladiumJEIPlugin implements IModPlugin {
         registration.addRecipeTransferHandler(new TailoringTransferHandler(registration.getTransferHelper()), TailoringCategory.RECIPE_TYPE);
     }
 
-    private static List<CraftingRecipe> addSpecialCraftingRecipes(Level level) {
+    private static List<RecipeHolder<CraftingRecipe>> addSpecialCraftingRecipes(Level level) {
         String group = "jei.palladium.multiversal_extrapolator_cloning";
         return MultiverseManager.getInstance(level).getUniverses().values().stream().map(universe -> {
-            List<CraftingRecipe> recipes = new ArrayList<>();
+            List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
             var id = universe.getId();
             var stack = PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get().getDefaultInstance();
             MultiversalExtrapolatorItem.setUniverse(stack, universe);
@@ -86,12 +91,14 @@ public class PalladiumJEIPlugin implements IModPlugin {
                     Ingredient.of(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()),
                     Ingredient.of(PalladiumItems.QUARTZ_CIRCUIT.get()));
 
-            recipes.add(new ShapelessRecipe(
+            recipes.add(new RecipeHolder<>(
                     Palladium.id("jei.extrapolator_transfer." + id.getNamespace() + "." + id.getPath()),
-                    group,
-                    CraftingBookCategory.MISC,
-                    result,
-                    inputs
+                    new ShapelessRecipe(
+                            group,
+                            CraftingBookCategory.MISC,
+                            result,
+                            inputs
+                    )
             ));
 
             inputs = NonNullList.of(Ingredient.EMPTY,
@@ -106,12 +113,14 @@ public class PalladiumJEIPlugin implements IModPlugin {
                     Ingredient.of(Items.DIAMOND)
             );
 
-            recipes.add(new ShapelessRecipe(
+            recipes.add(new RecipeHolder<>(
                     Palladium.id("jei.extrapolator_cloning." + id.getNamespace() + "." + id.getPath()),
-                    group,
-                    CraftingBookCategory.MISC,
-                    result,
-                    inputs
+                    new ShapelessRecipe(
+                            group,
+                            CraftingBookCategory.MISC,
+                            result,
+                            inputs
+                    )
             ));
 
             return recipes;
