@@ -20,9 +20,11 @@ public class ModelPartMixin {
     @Final
     public Map<String, ModelPart> children;
 
-    @ModifyVariable(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V", at = @At("HEAD"), ordinal = 3, argsOnly = true)
-    private float injected(float alpha) {
-        return alpha * HumanoidRendererModifications.ALPHA_MULTIPLIER;
+    @ModifyVariable(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;III)V", at = @At("HEAD"), ordinal = 2, argsOnly = true)
+    private int palladium$multiplyAlpha(int color) {
+        int alpha = color >>> 24;
+        int adjustedAlpha = Math.clamp((int) (alpha * HumanoidRendererModifications.ALPHA_MULTIPLIER), 0, 255);
+        return color & 0x00FFFFFF | adjustedAlpha << 24;
     }
 
     @Inject(method = "getChild", at = @At("HEAD"), cancellable = true)

@@ -33,7 +33,7 @@ import java.util.function.BiConsumer;
 public class PalladiumLootTableProvider extends LootTableProvider {
 
     public PalladiumLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-        super(output, BuiltInLootTables.all(), List.of(
+        super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLoot::new, LootContextParamSets.BLOCK),
                 new LootTableProvider.SubProviderEntry(ChestLoot::new, LootContextParamSets.CHEST)
         ), lookupProvider);

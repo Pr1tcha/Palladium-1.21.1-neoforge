@@ -39,8 +39,9 @@ public class CuriosCompat {
     public static void init() {
         CuriosTrinketsUtil.setInstance(new CuriosUtil());
         NeoForge.EVENT_BUS.register(CuriosTrinketsUtil.getInstance());
-        ModEventBusRegistry.get(Palladium.MOD_ID).addListener(CuriosCompat::interModQueue);
-        FACTORIES.register();
+        var modEventBus = ModEventBusRegistry.get(Palladium.MOD_ID);
+        modEventBus.addListener(CuriosCompat::interModQueue);
+        FACTORIES.register(modEventBus);
     }
 
     @OnlyIn(Dist.CLIENT)

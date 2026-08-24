@@ -1,6 +1,7 @@
 package net.threetag.palladium.mixin;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.threetag.palladium.entity.SuitStand;
@@ -24,7 +25,7 @@ public class ArmorStandMixin {
     }
 
     @Inject(method = "brokenByPlayer", at = @At("HEAD"), cancellable = true)
-    private void brokenByPlayer(DamageSource damageSource, CallbackInfo ci) {
+    private void brokenByPlayer(ServerLevel level, DamageSource damageSource, CallbackInfo ci) {
         var armorStand = (ArmorStand) (Object) this;
 
         if (armorStand instanceof SuitStand suitStand) {

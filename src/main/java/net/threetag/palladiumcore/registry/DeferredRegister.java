@@ -3,6 +3,7 @@ package net.threetag.palladiumcore.registry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,11 +31,15 @@ public final class DeferredRegister<T> implements Iterable<RegistrySupplier<T>> 
     }
 
     public void register() {
+        this.register(ModEventBusRegistry.get(this.modId));
+    }
+
+    public void register(IEventBus eventBus) {
         if (this.registered) {
             throw new IllegalStateException("Deferred register for '" + this.modId + "' was registered more than once");
         }
         this.registered = true;
-        this.delegate.register(ModEventBusRegistry.get(this.modId));
+        this.delegate.register(eventBus);
     }
 
     @SuppressWarnings("unchecked")
