@@ -13,21 +13,46 @@ public class DefaultDynamicTexture extends DynamicTexture {
 
     private final String base;
     @Nullable
+    private final String baseFallback;
+    @Nullable
     private String output;
 
     public DefaultDynamicTexture(ResourceLocation texture) {
-        this(texture.toString(), null);
+        this(texture, null);
+    }
+
+    public DefaultDynamicTexture(String base) {
+        this(base, null, null);
+    }
+
+    public DefaultDynamicTexture(ResourceLocation texture, @Nullable String baseFallback) {
+        this(texture.toString(), baseFallback, null);
     }
 
     public DefaultDynamicTexture(String base, @Nullable String output) {
+        this(base, null, output);
+    }
+
+    public DefaultDynamicTexture(String base, @Nullable String baseFallback, @Nullable String output) {
         this.base = base;
+        this.baseFallback = baseFallback;
         this.output = output;
     }
 
     @Override
     public ResourceLocation getTexture(DataContext context) {
+        String base = replaceVariables(this.base, context, this.textureVariableMap);
+        ResourceLocation baseTexture = ResourceLocation.parse(base);
+        boolean fallbackUsed = false;
+
+        if (this.baseFallback != null && !Minecraft.getInstance().getTextureManager().byPath.containsKey(baseTexture)) {
+            base = this.baseFallback;
+            baseTexture = ResourceLocation.parse(this.baseFallback);
+            fallbackUsed = true;
+        }
+
         if (this.transformers.isEmpty()) {
-            return ResourceLocation.parse(replaceVariables(this.base, context, this.textureVariableMap));
+            return baseTexture;
         }
 
         if (this.output == null || this.output.isEmpty()) {
@@ -40,12 +65,16 @@ public class DefaultDynamicTexture extends DynamicTexture {
             }
         }
 
-        ResourceLocation output = ResourceLocation.parse(replaceVariables(this.output, context, this.textureVariableMap));
+        String outputString = this.output;
+
+        if (fallbackUsed) {
+            outputString += "_fallback";
+        }
+
+        ResourceLocation output = ResourceLocation.parse(replaceVariables(outputString, context, this.textureVariableMap));
 
         if (!Minecraft.getInstance().getTextureManager().byPath.containsKey(output)) {
-            String s = replaceVariables(this.base, context, this.textureVariableMap);
-            ResourceLocation texture = ResourceLocation.parse(s);
-            Minecraft.getInstance().getTextureManager().register(output, new TransformedTexture(texture, null, this.transformers, context, transformerPath -> replaceVariables(transformerPath, context, this.textureVariableMap)));
+            Minecraft.getInstance().getTextureManager().register(output, new TransformedTexture(baseTexture, null, this.transformers, context, transformerPath -> replaceVariables(transformerPath, context, this.textureVariableMap)));
         }
 
         return output;

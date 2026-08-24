@@ -2,6 +2,7 @@ package net.threetag.palladium.mixin.client;
 
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.PreloadedTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.resources.ResourceLocation;
@@ -11,13 +12,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @SuppressWarnings("SuspiciousMethodCalls")
 @Mixin(TextureManager.class)
@@ -34,8 +33,12 @@ public abstract class TextureManagerMixin {
     @Shadow
     protected abstract void safeClose(ResourceLocation path, AbstractTexture texture);
 
-    @Inject(method = "preload", at = @At("RETURN"))
-    private void preload(ResourceLocation path, Executor backgroundExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+    @Inject(method = "register(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/texture/AbstractTexture;)V", at = @At("HEAD"))
+    private void register(ResourceLocation path, AbstractTexture texture, CallbackInfo ci) {
+        if (!(texture instanceof PreloadedTexture)) {
+            return;
+        }
+
         List<ResourceLocation> toRemove = this.byPath.entrySet().stream()
                 .filter(e -> e.getValue() instanceof TransformedTexture)
                 .map(Map.Entry::getKey)
@@ -45,7 +48,7 @@ public abstract class TextureManagerMixin {
             var abstractTexture = this.byPath.get(resourceLocation);
             if (abstractTexture != null && abstractTexture != MissingTextureAtlasSprite.getTexture()) {
                 this.tickableTextures.remove(abstractTexture);
-                this.safeClose(path, abstractTexture);
+                this.safeClose(resourceLocation, abstractTexture);
                 this.byPath.remove(resourceLocation);
             }
         }

@@ -26,7 +26,6 @@ public class EntityDynamicTexture extends DynamicTexture {
             IGNORE_SKIN_CHANGE = true;
             texture = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(context.getEntity()).getTextureLocation(context.getEntity());
             IGNORE_SKIN_CHANGE = false;
-            return texture;
         } else {
             texture = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(context.getEntity()).getTextureLocation(context.getEntity());
         }
@@ -36,7 +35,7 @@ public class EntityDynamicTexture extends DynamicTexture {
         }
 
         if (this.output == null || this.output.isEmpty()) {
-            this.output = texture.toString();
+            this.output = "palladium_etx:" + texture.getNamespace() + "/" + texture.getPath();
 
             for (String var : this.textureVariableMap.keySet()) {
                 if (!this.output.contains("#" + var)) {
