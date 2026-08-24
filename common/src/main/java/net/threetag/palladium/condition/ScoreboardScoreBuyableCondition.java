@@ -33,7 +33,8 @@ public class ScoreboardScoreBuyableCondition extends BuyableCondition {
     public boolean isAvailable(LivingEntity entity) {
         if (entity instanceof Player player) {
             var objective = player.getScoreboard().getObjective(this.objective);
-            return objective != null && player.getScoreboard().getOrCreatePlayerScore(player.getScoreboardName(), objective).getScore() >= this.amount;
+            var score = objective == null ? null : player.getScoreboard().getPlayerScoreInfo(player, objective);
+            return score != null && score.value() >= this.amount;
         }
 
         return false;
@@ -45,10 +46,10 @@ public class ScoreboardScoreBuyableCondition extends BuyableCondition {
             var objective = player.getScoreboard().getObjective(this.objective);
 
             if (objective != null) {
-                var score = player.getScoreboard().getOrCreatePlayerScore(player.getScoreboardName(), objective);
+                var score = player.getScoreboard().getPlayerScoreInfo(player, objective);
 
-                if (score.getScore() >= this.amount) {
-                    score.setScore(score.getScore() - this.amount);
+                if (score != null && score.value() >= this.amount) {
+                    player.getScoreboard().getOrCreatePlayerScore(player, objective).add(-this.amount);
                     return true;
                 }
             }

@@ -29,12 +29,8 @@ public class ObjectiveScoreCondition extends Condition {
         var objective = entity.level().getScoreboard().getObjective(this.objectiveName);
 
         if (objective != null) {
-            if (!entity.level().getScoreboard().hasPlayerScore(entity.getScoreboardName(), objective)) {
-                return false;
-            } else {
-                int score = entity.level().getScoreboard().getOrCreatePlayerScore(entity.getScoreboardName(), objective).getScore();
-                return score >= this.min && score <= this.max;
-            }
+            var score = entity.level().getScoreboard().getPlayerScoreInfo(entity, objective);
+            return score != null && score.value() >= this.min && score.value() <= this.max;
         }
 
         return false;

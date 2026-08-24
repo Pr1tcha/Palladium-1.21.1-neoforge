@@ -13,10 +13,10 @@ public class ScoreboardUtil {
         var obj = scoreboard.getObjective(objective);
 
         if (obj != null) {
-            var score = scoreboard.getPlayerScores(entity.getScoreboardName()).get(obj);
+            var score = scoreboard.getPlayerScoreInfo(entity, obj);
 
             if (score != null) {
-                return score.getScore();
+                return score.value();
             }
         }
 
@@ -28,11 +28,12 @@ public class ScoreboardUtil {
         var obj = scoreboard.getObjective(objective);
 
         if (obj != null) {
-            var score = scoreboard.getPlayerScores(entity.getScoreboardName()).get(obj);
+            var existingScore = scoreboard.getPlayerScoreInfo(entity, obj);
 
-            if (score != null) {
-                score.setScore(value);
-                return score.getScore();
+            if (existingScore != null) {
+                var score = scoreboard.getOrCreatePlayerScore(entity, obj);
+                score.set(value);
+                return score.get();
             }
         }
 
@@ -44,11 +45,12 @@ public class ScoreboardUtil {
         var obj = scoreboard.getObjective(objective);
 
         if (obj != null) {
-            var score = scoreboard.getPlayerScores(entity.getScoreboardName()).get(obj);
+            var existingScore = scoreboard.getPlayerScoreInfo(entity, obj);
 
-            if (score != null) {
+            if (existingScore != null) {
+                var score = scoreboard.getOrCreatePlayerScore(entity, obj);
                 score.add(amount);
-                return score.getScore();
+                return score.get();
             }
         }
 
@@ -60,11 +62,12 @@ public class ScoreboardUtil {
         var obj = scoreboard.getObjective(objective);
 
         if (obj != null) {
-            var score = scoreboard.getPlayerScores(entity.getScoreboardName()).get(obj);
+            var existingScore = scoreboard.getPlayerScoreInfo(entity, obj);
 
-            if (score != null) {
+            if (existingScore != null) {
+                var score = scoreboard.getOrCreatePlayerScore(entity, obj);
                 score.add(-amount);
-                return score.getScore();
+                return score.get();
             }
         }
 
