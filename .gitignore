@@ -21,6 +21,8 @@ classes/
 
 run/*
 
+src/generated/resources/.cache/
+
 !run/addonpacks
 run/addonpacks/*
 !run/addonpacks/Test Pack

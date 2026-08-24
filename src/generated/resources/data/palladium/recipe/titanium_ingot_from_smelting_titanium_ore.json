@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 600,
+  "experience": 1.0,
+  "group": "titanium_ingot",
+  "ingredient": {
+    "item": "palladium:titanium_ore"
+  },
+  "result": {
+    "count": 1,
+    "id": "palladium:titanium_ingot"
+  }
+}

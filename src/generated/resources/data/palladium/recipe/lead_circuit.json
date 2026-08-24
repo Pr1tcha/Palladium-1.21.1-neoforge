@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "tag": "palladium:connector/gold_ingots"
+    },
+    "I": {
+      "tag": "palladium:connector/iron_ingots"
+    },
+    "L": {
+      "tag": "palladium:connector/lead_ingots"
+    }
+  },
+  "pattern": [
+    "II",
+    "LL",
+    "GG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "palladium:lead_circuit"
+  }
+}

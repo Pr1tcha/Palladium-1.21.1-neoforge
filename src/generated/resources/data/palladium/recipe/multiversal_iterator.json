@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "palladium:vibranium_circuit"
+    },
+    "E": {
+      "item": "minecraft:end_crystal"
+    },
+    "I": {
+      "tag": "palladium:connector/iron_ingots"
+    },
+    "M": {
+      "item": "palladium:multiversal_extrapolator"
+    },
+    "O": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "pattern": [
+    "OEO",
+    "IMI",
+    "ICI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "palladium:multiversal_iterator"
+  }
+}

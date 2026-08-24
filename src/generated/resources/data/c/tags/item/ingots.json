@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#forge:ingots/lead",
+    "#c:lead_ingots",
+    "#forge:ingots/titanium",
+    "#c:titanium_ingots",
+    "#forge:ingots/vibranium",
+    "#c:vibranium_ingots"
+  ]
+}

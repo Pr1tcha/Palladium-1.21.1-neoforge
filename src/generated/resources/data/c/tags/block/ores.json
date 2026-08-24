@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#forge:ores/lead",
+    "#c:lead_ores",
+    "#forge:ores/titanium",
+    "#c:titanium_ores",
+    "#forge:ores/vibranium",
+    "#c:vibranium_ores"
+  ]
+}

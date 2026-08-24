@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "palladium:fabrics"
+    },
+    {
+      "tag": "palladium:connector/brown_dyes"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "palladium:brown_fabric"
+  }
+}

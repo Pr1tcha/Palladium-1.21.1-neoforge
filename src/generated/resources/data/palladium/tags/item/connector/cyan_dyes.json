@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "#c:dyes/cyan",
+      "required": false
+    },
+    {
+      "id": "#c:cyan_dyes",
+      "required": false
+    }
+  ]
+}

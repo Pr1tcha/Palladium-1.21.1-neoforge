@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "palladium:multiversal_extrapolator"
+    },
+    {
+      "item": "palladium:quartz_circuit"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "palladium:multiversal_extrapolator"
+  }
+}

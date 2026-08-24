@@ -30,8 +30,7 @@ sourceSets {
             exclude 'fabric.mod.json'
             exclude 'palladium.accesswidener'
             exclude 'META-INF/mods.toml'
-            exclude 'data/c/**'
-            exclude 'src/generated/**/.cache'
+            exclude '**/.cache/**'
         }
     }
 }
