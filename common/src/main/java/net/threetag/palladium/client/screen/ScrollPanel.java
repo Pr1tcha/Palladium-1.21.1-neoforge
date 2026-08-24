@@ -6,10 +6,7 @@
 package net.threetag.palladium.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -17,7 +14,6 @@ import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 
 import java.util.Collections;
 import java.util.List;
@@ -153,21 +149,12 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
      * Draws the background of the scroll panel. This runs AFTER Scissors are enabled.
      */
     protected void drawBackground(GuiGraphics guiGraphics, Tesselator tess, float partialTick) {
-        BufferBuilder worldr = tess.getBuilder();
-
         if (this.client.level != null) {
             this.drawGradientRect(guiGraphics, this.left, this.top, this.right, this.bottom, bgColorFrom, bgColorTo);
         } else // Draw dark dirt background
         {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, Screen.BACKGROUND_LOCATION);
-            final float texScale = 32.0F;
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            worldr.vertex(this.left, this.bottom, 0.0D).uv(this.left / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.bottom, 0.0D).uv(this.right / texScale, (this.bottom + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.right, this.top, 0.0D).uv(this.right / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            worldr.vertex(this.left, this.top, 0.0D).uv(this.left / texScale, (this.top + (int) this.scrollDistance) / texScale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
-            tess.end();
+            Screen.renderMenuBackgroundTexture(guiGraphics, Screen.MENU_BACKGROUND, this.left, this.top,
+                    this.left, this.top + (int) this.scrollDistance, this.width, this.height);
         }
     }
 
@@ -202,9 +189,9 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
-        if (scroll != 0) {
-            this.scrollDistance += -scroll * getScrollAmount();
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        if (deltaY != 0) {
+            this.scrollDistance += -deltaY * getScrollAmount();
             applyScrollLimits();
             return true;
         }
@@ -272,11 +259,7 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Tesselator tess = Tesselator.getInstance();
-        BufferBuilder worldr = tess.getBuilder();
-
-        double scale = client.getWindow().getGuiScale();
-        RenderSystem.enableScissor((int) (left * scale), (int) (client.getWindow().getHeight() - (bottom * scale)),
-                (int) (width * scale), (int) (height * scale));
+        guiGraphics.enableScissor(this.left, this.top, this.right, this.bottom);
 
         this.drawBackground(guiGraphics, tess, partialTick);
 
@@ -294,46 +277,13 @@ public abstract class ScrollPanel extends AbstractContainerEventHandler implemen
                 barTop = this.top;
             }
 
-            int barBgAlpha = this.barBgColor >> 24 & 0xff;
-            int barBgRed = this.barBgColor >> 16 & 0xff;
-            int barBgGreen = this.barBgColor >> 8 & 0xff;
-            int barBgBlue = this.barBgColor & 0xff;
-
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.bottom, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            worldr.vertex(barLeft, this.top, 0.0D).color(barBgRed, barBgGreen, barBgBlue, barBgAlpha).endVertex();
-            tess.end();
-
-            int barAlpha = this.barColor >> 24 & 0xff;
-            int barRed = this.barColor >> 16 & 0xff;
-            int barGreen = this.barColor >> 8 & 0xff;
-            int barBlue = this.barColor & 0xff;
-
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop + barHeight, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barRed, barGreen, barBlue, barAlpha).endVertex();
-            tess.end();
-
-            int barBorderAlpha = this.barBorderColor >> 24 & 0xff;
-            int barBorderRed = this.barBorderColor >> 16 & 0xff;
-            int barBorderGreen = this.barBorderColor >> 8 & 0xff;
-            int barBorderBlue = this.barBorderColor & 0xff;
-
-            worldr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-            worldr.vertex(barLeft, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop + barHeight - 1, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft + barWidth - 1, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            worldr.vertex(barLeft, barTop, 0.0D).color(barBorderRed, barBorderGreen, barBorderBlue, barBorderAlpha).endVertex();
-            tess.end();
+            guiGraphics.fill(this.barLeft, this.top, this.barLeft + this.barWidth, this.bottom, this.barBgColor);
+            guiGraphics.fill(this.barLeft, barTop, this.barLeft + this.barWidth, barTop + barHeight, this.barColor);
+            guiGraphics.fill(this.barLeft, barTop, this.barLeft + this.barWidth - 1, barTop + barHeight - 1, this.barBorderColor);
         }
 
         RenderSystem.disableBlend();
-        RenderSystem.disableScissor();
+        guiGraphics.disableScissor();
     }
 
     protected void drawGradientRect(GuiGraphics guiGraphics, int left, int top, int right, int bottom, int color1, int color2) {
