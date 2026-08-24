@@ -63,7 +63,7 @@ public class AbilityEventHandler implements LivingEntityEvents.Hurt, LivingEntit
                 }
                 fireSeconds += time;
             }
-            entity.setSecondsOnFire(fireSeconds);
+            entity.igniteForSeconds(fireSeconds);
         }
         return this.livingEntityHurt(entity, damageSource, new AtomicReference<>(amount));
     }

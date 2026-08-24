@@ -1,5 +1,6 @@
 package net.threetag.palladium.mixin;
 
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class VibrationListenerMixin {
 
     @Inject(at = @At("HEAD"), method = "handleGameEvent", cancellable = true)
-    public void handleGameEvent(ServerLevel level, GameEvent gameEvent, GameEvent.Context context, Vec3 pos, CallbackInfoReturnable<Boolean> info) {
+    public void handleGameEvent(ServerLevel level, Holder<GameEvent> gameEvent, GameEvent.Context context, Vec3 pos, CallbackInfoReturnable<Boolean> info) {
         if (context.sourceEntity() instanceof LivingEntity livingEntity &&
                 (livingEntity.getItemBySlot(EquipmentSlot.FEET).is(PalladiumItemTags.VIBRATION_ABSORPTION_BOOTS) || AbilityUtil.isTypeEnabled(livingEntity, Abilities.SCULK_IMMUNITY.get()))
         ) {
-            if (gameEvent == GameEvent.HIT_GROUND || gameEvent == GameEvent.STEP) {
+            if (gameEvent.is(GameEvent.HIT_GROUND) || gameEvent.is(GameEvent.STEP)) {
                 info.setReturnValue(false);
             }
         }

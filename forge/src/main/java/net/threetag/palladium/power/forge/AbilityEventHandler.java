@@ -5,12 +5,12 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.power.ability.Abilities;
 import net.threetag.palladium.power.ability.AbilityUtil;
 
-@Mod.EventBusSubscriber(modid = Palladium.MOD_ID)
+@EventBusSubscriber(modid = Palladium.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class AbilityEventHandler {
 
     @OnlyIn(Dist.CLIENT)
