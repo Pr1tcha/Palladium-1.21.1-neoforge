@@ -23,19 +23,20 @@ public class FluxCrystalGeodeBlock extends Block {
         if (randomSource.nextInt(5) == 0) {
             Direction direction = DIRECTIONS[randomSource.nextInt(DIRECTIONS.length)];
             BlockPos blockPos = pos.relative(direction);
+            BlockState state = level.getBlockState(blockPos);
             Block block = null;
-            if (canClusterGrowAtState(blockState)) {
+            if (canClusterGrowAtState(state)) {
                 block = PalladiumBlocks.SMALL_REDSTONE_FLUX_CRYSTAL_BUD.get();
-            } else if (blockState.is(PalladiumBlocks.SMALL_REDSTONE_FLUX_CRYSTAL_BUD.get()) && blockState.getValue(AmethystClusterBlock.FACING) == direction) {
+            } else if (state.is(PalladiumBlocks.SMALL_REDSTONE_FLUX_CRYSTAL_BUD.get()) && state.getValue(AmethystClusterBlock.FACING) == direction) {
                 block = PalladiumBlocks.MEDIUM_REDSTONE_FLUX_CRYSTAL_BUD.get();
-            } else if (blockState.is(PalladiumBlocks.MEDIUM_REDSTONE_FLUX_CRYSTAL_BUD.get()) && blockState.getValue(AmethystClusterBlock.FACING) == direction) {
+            } else if (state.is(PalladiumBlocks.MEDIUM_REDSTONE_FLUX_CRYSTAL_BUD.get()) && state.getValue(AmethystClusterBlock.FACING) == direction) {
                 block = PalladiumBlocks.LARGE_REDSTONE_FLUX_CRYSTAL_BUD.get();
-            } else if (blockState.is(PalladiumBlocks.LARGE_REDSTONE_FLUX_CRYSTAL_BUD.get()) && blockState.getValue(AmethystClusterBlock.FACING) == direction) {
+            } else if (state.is(PalladiumBlocks.LARGE_REDSTONE_FLUX_CRYSTAL_BUD.get()) && state.getValue(AmethystClusterBlock.FACING) == direction) {
                 block = PalladiumBlocks.REDSTONE_FLUX_CRYSTAL_CLUSTER.get();
             }
 
             if (block != null) {
-                BlockState blockState2 = block.defaultBlockState().setValue(AmethystClusterBlock.FACING, direction).setValue(AmethystClusterBlock.WATERLOGGED, blockState.getFluidState().getType() == Fluids.WATER);
+                BlockState blockState2 = block.defaultBlockState().setValue(AmethystClusterBlock.FACING, direction).setValue(AmethystClusterBlock.WATERLOGGED, state.getFluidState().getType() == Fluids.WATER);
                 level.setBlockAndUpdate(blockPos, blockState2);
             }
 
