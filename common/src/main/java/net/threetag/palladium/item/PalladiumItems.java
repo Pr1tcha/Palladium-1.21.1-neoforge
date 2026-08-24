@@ -214,7 +214,7 @@ public class PalladiumItems {
         });
 
         CreativeModeTabRegistry.addToTab(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.BUILDING_BLOCKS), entries -> {
-            entries.add(Items.DIAMOND_BLOCK, LEAD_BLOCK.get(), TITANIUM_BLOCK.get());
+            entries.addAfter(Items.DIAMOND_BLOCK, LEAD_BLOCK.get(), TITANIUM_BLOCK.get());
             entries.addAfter(Items.NETHERITE_BLOCK, VIBRANIUM_BLOCK.get());
         });
 

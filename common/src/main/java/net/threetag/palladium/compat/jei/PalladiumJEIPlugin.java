@@ -3,11 +3,15 @@ package net.threetag.palladium.compat.jei;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -18,6 +22,8 @@ import net.threetag.palladium.compat.jei.multiversalvariants.MultiversalVariantR
 import net.threetag.palladium.compat.jei.multiversalvariants.MultiversalVariantsCategory;
 import net.threetag.palladium.compat.jei.tailoring.TailoringCategory;
 import net.threetag.palladium.compat.jei.tailoring.TailoringTransferHandler;
+import net.threetag.palladium.energy.EnergyHelper;
+import net.threetag.palladium.item.EnergyItem;
 import net.threetag.palladium.item.MultiversalExtrapolatorItem;
 import net.threetag.palladium.item.PalladiumItems;
 import net.threetag.palladium.item.recipe.TailoringRecipe;
@@ -35,6 +41,25 @@ public class PalladiumJEIPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
         return Palladium.id("jei");
+    }
+
+    @Override
+    @SuppressWarnings({"deprecation", "removal"})
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        ISubtypeInterpreter<ItemStack> energySubtype = new ISubtypeInterpreter<>() {
+            @Override
+            public Object getSubtypeData(ItemStack stack, UidContext context) {
+                return EnergyHelper.getEnergyStoredInItem(stack);
+            }
+
+            @Override
+            public String getLegacyStringSubtypeInfo(ItemStack stack, UidContext context) {
+                return Integer.toString(EnergyHelper.getEnergyStoredInItem(stack));
+            }
+        };
+        BuiltInRegistries.ITEM.stream()
+                .filter(EnergyItem.class::isInstance)
+                .forEach(item -> registration.registerSubtypeInterpreter(item, energySubtype));
     }
 
     @Override
