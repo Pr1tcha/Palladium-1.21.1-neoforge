@@ -1,13 +1,14 @@
 package net.threetag.palladium.addonpack;
 
 import com.google.gson.JsonObject;
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.architectury.injectables.targets.ArchitecturyTarget;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.Util;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.FolderRepositorySource;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
@@ -16,7 +17,9 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Unit;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import net.threetag.palladium.Palladium;
+import net.threetag.palladium.addonpack.forge.AddonPackManagerImpl;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 import net.threetag.palladium.addonpack.log.AddonPackLogEntry;
 import net.threetag.palladium.addonpack.parser.*;
@@ -69,7 +72,12 @@ public class AddonPackManager {
     private AddonPackManager() {
         IGNORE_INJECT = true;
         this.resourceManager = new ReloadableResourceManager(getPackType());
-        this.folderPackFinder = new FolderRepositorySource(getLocation(), getPackType(), PackSource.DEFAULT);
+        this.folderPackFinder = new FolderRepositorySource(
+                getLocation(),
+                getPackType(),
+                PackSource.DEFAULT,
+                LevelStorageSource.parseValidator(Platform.getFolder().resolve("allowed_symlinks.txt"))
+        );
         var modSource = getModRepositorySource();
         RepositorySource[] sources = modSource == null ? new RepositorySource[]{this.folderPackFinder} : new RepositorySource[]{this.folderPackFinder, modSource};
         this.packList = new PackRepository(sources);
@@ -119,9 +127,32 @@ public class AddonPackManager {
 
     public static RepositorySource getWrappedPackFinder(RepositorySource folderPackFinder) {
         return (infoConsumer) -> folderPackFinder.loadPacks(pack -> {
-            pack.id = "addonpack:" + pack.getId();
-            pack.required = true;
-            infoConsumer.accept(pack);
+            var location = new PackLocationInfo(
+                    "addonpack:" + pack.getId(),
+                    pack.getTitle(),
+                    pack.getPackSource(),
+                    Optional.empty()
+            );
+            var resources = new Pack.ResourcesSupplier() {
+                @Override
+                public net.minecraft.server.packs.PackResources openPrimary(PackLocationInfo ignored) {
+                    return pack.open();
+                }
+
+                @Override
+                public net.minecraft.server.packs.PackResources openFull(PackLocationInfo ignored, Pack.Metadata metadata) {
+                    return pack.open();
+                }
+            };
+            var wrappedPack = Pack.readMetaAndCreate(
+                    location,
+                    resources,
+                    getPackType(),
+                    new PackSelectionConfig(true, pack.getDefaultPosition(), pack.isFixedPosition())
+            );
+            if (wrappedPack != null) {
+                infoConsumer.accept(wrappedPack);
+            }
         });
     }
 
@@ -131,9 +162,8 @@ public class AddonPackManager {
         return PACK_TYPE;
     }
 
-    @ExpectPlatform
     public static RepositorySource getModRepositorySource() {
-        throw new AssertionError();
+        return AddonPackManagerImpl.getModRepositorySource();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -155,6 +185,7 @@ public class AddonPackManager {
                     bufferedreader.close();
                     stream.close();
                     Palladium.LOGGER.info("Skipping " + pack.getId() + " as it's not been marked as an addonpack");
+                    return;
                 }
 
                 if (packs.containsKey(packData.getId())) {
@@ -174,7 +205,7 @@ public class AddonPackManager {
         // Check dependencies
         Map<PackData, List<PackData.Dependency>> dependencyConflicts = new HashMap<>();
         for (PackData pack : packs.values()) {
-            for (PackData.Dependency dependency : pack.getDependenciesFor(ArchitecturyTarget.getCurrentTarget())) {
+            for (PackData.Dependency dependency : pack.getDependenciesFor("forge")) {
                 if (!dependency.isValid()) {
                     dependencyConflicts.computeIfAbsent(pack, p -> new ArrayList<>()).add(dependency);
                 }

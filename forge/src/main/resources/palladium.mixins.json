@@ -6,8 +6,7 @@
     "ForgeHooksMixin",
     "IEnergyStorageMixin",
     "LootTableMixin",
-    "NetworkManagerMixin",
-    "PathPackResourcesAccessor"
+    "NetworkManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
