@@ -1,10 +1,10 @@
 package net.threetag.palladium.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MultiversalIteratorBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<MultiversalIteratorBlock> CODEC = simpleCodec(MultiversalIteratorBlock::new);
     public static final Component CONTAINER_TITLE = Component.translatable("container.palladium.multiversal_iterator");
 
     public MultiversalIteratorBlock(BlockBehaviour.Properties properties) {
@@ -38,7 +39,12 @@ public class MultiversalIteratorBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {

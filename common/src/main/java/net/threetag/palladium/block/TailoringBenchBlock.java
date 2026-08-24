@@ -1,8 +1,8 @@
 package net.threetag.palladium.block;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
@@ -19,6 +19,7 @@ import net.threetag.palladium.menu.TailoringMenu;
 
 public class TailoringBenchBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<TailoringBenchBlock> CODEC = simpleCodec(TailoringBenchBlock::new);
     public static final Component CONTAINER_TITLE = Component.translatable("container.palladium.tailoring");
 
     public TailoringBenchBlock(Properties properties) {
@@ -26,7 +27,12 @@ public class TailoringBenchBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
