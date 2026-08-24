@@ -62,7 +62,7 @@ public class TrailHandler {
 
     private TrailSegmentEntity<?> spawnEntity(TrailRenderer<?> trailRenderer) {
         var entity = new TrailSegmentEntity<>(this.entity, trailRenderer);
-        Objects.requireNonNull(Minecraft.getInstance().level).putNonPlayerEntity(0, entity);
+        Objects.requireNonNull(Minecraft.getInstance().level).addEntity(entity);
         return entity;
     }
 

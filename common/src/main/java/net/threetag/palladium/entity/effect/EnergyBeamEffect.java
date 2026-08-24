@@ -18,8 +18,6 @@ import net.threetag.palladium.util.property.AbilityReferenceProperty;
 import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladium.util.property.PropertyManager;
 
-import java.util.Objects;
-
 public class EnergyBeamEffect extends EntityEffect {
 
     public static final PalladiumProperty<AbilityReference> ABILITY = new AbilityReferenceProperty("ability");
@@ -88,6 +86,6 @@ public class EnergyBeamEffect extends EntityEffect {
     public static void start(Player player, AbilityReference abilityReference) {
         EffectEntity effectEntity = new EffectEntity(player.level(), player, EntityEffects.ENERGY_BEAM.get());
         ABILITY.set(effectEntity, abilityReference);
-        Objects.requireNonNull(Minecraft.getInstance().level).putNonPlayerEntity(0, effectEntity);
+        Minecraft.getInstance().level.addEntity(effectEntity);
     }
 }

@@ -13,7 +13,6 @@ import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladium.util.property.PropertyManager;
 import net.threetag.palladiumcore.registry.PalladiumRegistry;
 
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public abstract class EntityEffect {
@@ -54,7 +53,7 @@ public abstract class EntityEffect {
     @Environment(EnvType.CLIENT)
     public static void start(Entity anchor, EntityEffect entityEffect) {
         EffectEntity effectEntity = new EffectEntity(anchor.level(), anchor, entityEffect);
-        Objects.requireNonNull(Minecraft.getInstance().level).putNonPlayerEntity(0, effectEntity);
+        Minecraft.getInstance().level.addEntity(effectEntity);
     }
 
     @Environment(EnvType.CLIENT)
