@@ -1,5 +1,6 @@
 package net.threetag.palladium.power;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.network.FriendlyByteBuf;
@@ -182,11 +183,7 @@ public class Power {
         );
 
         if (GsonHelper.isValidNode(json, "abilities")) {
-            JsonObject abilities = GsonHelper.getAsJsonObject(json, "abilities");
-
-            for (String key : abilities.keySet()) {
-                power.addAbility(AbilityConfiguration.fromJSON(new AbilityReference(id, key), GsonHelper.getAsJsonObject(abilities, key)));
-            }
+            parseAbilities(power, id, GsonHelper.getAsJsonObject(json, "abilities"), "");
         }
 
         if (GsonHelper.isValidNode(json, "energy_bars")) {
@@ -198,6 +195,25 @@ public class Power {
         }
 
         return power;
+    }
+
+    private static void parseAbilities(Power power, ResourceLocation id, JsonObject json, String prefix) {
+        for (String key : json.keySet()) {
+            JsonElement element = json.get(key);
+
+            if (!element.isJsonObject()) {
+                continue;
+            }
+
+            JsonObject obj = element.getAsJsonObject();
+            String fullKey = prefix.isEmpty() ? key : prefix + "." + key;
+
+            if (obj.has("type")) {
+                power.addAbility(AbilityConfiguration.fromJSON(new AbilityReference(id, fullKey), obj));
+            } else {
+                parseAbilities(power, id, obj, fullKey);
+            }
+        }
     }
 
     public enum GuiDisplayType {
