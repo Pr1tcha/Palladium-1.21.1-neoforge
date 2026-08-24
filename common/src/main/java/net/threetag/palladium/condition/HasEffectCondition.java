@@ -19,7 +19,7 @@ public class HasEffectCondition extends Condition {
     @Override
     public boolean active(DataContext context) {
         var entity = context.getLivingEntity();
-        return entity != null && entity.hasEffect(this.mobEffect);
+        return entity != null && entity.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(this.mobEffect));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class HasEffectCondition extends Condition {
         public static final PalladiumProperty<MobEffect> EFFECT = new RegistryObjectProperty<>("effect", BuiltInRegistries.MOB_EFFECT).configurable("ID of the (potion) effect that is being checked for.");
 
         public Serializer() {
-            this.withProperty(EFFECT, MobEffects.POISON);
+            this.withProperty(EFFECT, MobEffects.POISON.value());
         }
 
         @Override

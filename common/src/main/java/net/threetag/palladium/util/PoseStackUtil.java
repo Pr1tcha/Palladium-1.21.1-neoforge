@@ -61,7 +61,7 @@ public class PoseStackUtil extends PoseStack {
     }
 
     public void mulPoseMatrix(Matrix4f matrix) {
-        this.poseStack.mulPoseMatrix(matrix);
+        this.poseStack.mulPose(matrix);
     }
 
 

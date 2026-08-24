@@ -44,7 +44,10 @@ public class CommandResultCondition extends Condition implements CommandSource {
                 stack = stack.withSuppressedOutput();
             }
 
-            int result = serverLevel.getServer().getCommands().performPrefixedCommand(stack, command);
+            int[] resultHolder = {0};
+            stack = stack.withCallback((success, result) -> resultHolder[0] = result);
+            serverLevel.getServer().getCommands().performPrefixedCommand(stack, command);
+            int result = resultHolder[0];
 
             return switch (comparison) {
                 case ">=" -> (result >= compare_to);

@@ -47,7 +47,7 @@ public class PalladiumConfig {
                     if (ref.equals(reference)) {
                         return true;
                     }
-                } else if (ResourceLocation.isValidResourceLocation(s)) {
+                } else if (ResourceLocation.tryParse(s) != null) {
                     var powerId = ResourceLocation.tryParse(s);
 
                     if (reference.powerId() != null && reference.powerId().equals(powerId)) {
