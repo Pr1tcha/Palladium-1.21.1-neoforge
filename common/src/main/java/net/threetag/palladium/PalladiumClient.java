@@ -9,11 +9,13 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
@@ -195,7 +197,7 @@ public class PalladiumClient {
                     if (livingEntity == null) {
                         return 0.0F;
                     } else {
-                        return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / 20.0F;
+                        return livingEntity.getUseItem() != itemStack ? 0.0F : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / 20.0F;
                     }
                 });
 
@@ -216,7 +218,7 @@ public class PalladiumClient {
                             } else {
                                 return CrossbowItem.isCharged(itemStack)
                                         ? 0.0F
-                                        : (float) (itemStack.getUseDuration() - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack);
+                                        : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / (float) CrossbowItem.getChargeDuration(itemStack, livingEntity);
                             }
                         }
                 );
@@ -240,7 +242,7 @@ public class PalladiumClient {
                         ResourceLocation.parse("firework"),
                         (itemStack, clientLevel, livingEntity, i) -> livingEntity != null
                                 && CrossbowItem.isCharged(itemStack)
-                                && CrossbowItem.containsChargedProjectile(itemStack, Items.FIREWORK_ROCKET)
+                                && itemStack.getOrDefault(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY).contains(Items.FIREWORK_ROCKET)
                                 ? 1.0F
                                 : 0.0F
                 );
