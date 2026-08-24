@@ -44,6 +44,7 @@
     "EntitySelectorParserMixin",
     "InventoryMixin",
     "ItemMixin",
+    "KubeJSModelledBuilderMixin",
     "LivingEntityMixin",
     "OreFeatureMixin",
     "PackTypeMixin",

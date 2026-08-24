@@ -38,7 +38,8 @@ public class PalladiumMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
-            if (mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.ScriptManagerMixin")) {
+            if (mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.ScriptManagerMixin")
+                    || mixinClassName.equalsIgnoreCase("net.threetag.palladium.mixin.KubeJSModelledBuilderMixin")) {
                 return HAS_KUBEJS;
             }
 
