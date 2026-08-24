@@ -69,7 +69,7 @@ public class AbilityBarRenderer implements OverlayRegistry.IngameOverlay {
             return;
         }
 
-        if (position.top && mc.options.renderDebug) {
+        if (position.top && mc.getDebugOverlay().showDebugScreen()) {
             return;
         }
 
@@ -187,7 +187,7 @@ public class AbilityBarRenderer implements OverlayRegistry.IngameOverlay {
                     // Ability Name
                     if (showName) {
                         Tesselator tes = Tesselator.getInstance();
-                        BufferBuilder bb = tes.getBuilder();
+                        BufferBuilder bb = tes.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
                         Component name = entry.getConfiguration().getDisplayName();
                         int width = minecraft.font.width(name);
                         renderBlackBox(bb, tes, poseStack, position.left ? 24 : -width - 10, i * 22 + 5, 10 + width, 14, 0.5F);
@@ -293,12 +293,11 @@ public class AbilityBarRenderer implements OverlayRegistry.IngameOverlay {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bb.vertex(matrixStack.last().pose(), x + width, y, 0).color(0F, 0F, 0F, opacity).endVertex();
-        bb.vertex(matrixStack.last().pose(), x, y, 0).color(0F, 0F, 0F, opacity).endVertex();
-        bb.vertex(matrixStack.last().pose(), x, y + height, 0).color(0F, 0F, 0F, opacity).endVertex();
-        bb.vertex(matrixStack.last().pose(), x + width, y + height, 0).color(0F, 0F, 0F, opacity).endVertex();
-        tesselator.end();
+        bb.addVertex(matrixStack.last().pose(), x + width, y, 0).setColor(0F, 0F, 0F, opacity);
+        bb.addVertex(matrixStack.last().pose(), x, y, 0).setColor(0F, 0F, 0F, opacity);
+        bb.addVertex(matrixStack.last().pose(), x, y + height, 0).setColor(0F, 0F, 0F, opacity);
+        bb.addVertex(matrixStack.last().pose(), x + width, y + height, 0).setColor(0F, 0F, 0F, opacity);
+        BufferUploader.drawWithShader(bb.buildOrThrow());
 
         RenderSystem.disableBlend();
     }
