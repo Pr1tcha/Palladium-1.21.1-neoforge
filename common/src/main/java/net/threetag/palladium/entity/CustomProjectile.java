@@ -12,9 +12,11 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +56,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
     public float knockbackStrength = 0F;
     public String commandOnEntityHit = null;
     public String commandOnBlockHit = null;
-    public EntityDimensions dimensions = new EntityDimensions(0.1F, 0.1F, false);
+    public EntityDimensions dimensions = EntityDimensions.fixed(0.1F, 0.1F);
     public List<Appearance> appearances = new ArrayList<>();
 
     static {
@@ -80,12 +82,12 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
 
     }
 
     @Override
-    protected float getGravity() {
+    protected double getDefaultGravity() {
         return this.gravity;
     }
 
@@ -161,7 +163,8 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
     }
 
     public Explosion explode(Entity source, @Nullable DamageSource damageSource, double x, double y, double z, float radius, boolean fire, Explosion.BlockInteraction blockInteraction) {
-        Explosion explosion = new Explosion(source.level(), source, damageSource, null, x, y, z, radius, fire, blockInteraction);
+        Explosion explosion = new Explosion(source.level(), source, damageSource, null, x, y, z, radius, fire, blockInteraction,
+                ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
         explosion.explode();
         explosion.finalizeExplosion(true);
 
@@ -171,7 +174,8 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
 
         for (Player player : source.level().players()) {
             if (player.distanceToSqr(x, y, z) < 4096.0 && player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.connection.send(new ClientboundExplodePacket(x, y, z, radius, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
+                serverPlayer.connection.send(new ClientboundExplodePacket(x, y, z, radius, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer),
+                        explosion.getBlockInteraction(), explosion.getSmallExplosionParticles(), explosion.getLargeExplosionParticles(), explosion.getExplosionSound()));
             }
         }
 
@@ -214,7 +218,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
         compound.putBoolean("DieOnEntityHit", this.dieOnEntityHit);
         compound.putBoolean("DieOnBlockHit", this.dieOnBlockHit);
         compound.putBoolean("PreventShooterInteraction", this.preventShooterInteraction);
-        compound.putFloat("Size", this.dimensions.width);
+        compound.putFloat("Size", this.dimensions.width());
         compound.putFloat("Lifetime", this.lifetime);
         compound.putFloat("SetEntityOnFireSeconds", this.setEntityOnFireSeconds);
         compound.putFloat("ExplosionRadius", this.explosionRadius);
@@ -257,7 +261,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
         if (compound.contains("PreventShooterInteraction"))
             this.preventShooterInteraction = compound.getBoolean("PreventShooterInteraction");
         if (compound.contains("Size", Tag.TAG_ANY_NUMERIC))
-            this.dimensions = new EntityDimensions(compound.getFloat("Size"), compound.getFloat("Size"), false);
+            this.dimensions = EntityDimensions.fixed(compound.getFloat("Size"), compound.getFloat("Size"));
         if (compound.contains("ExplosionRadius", Tag.TAG_ANY_NUMERIC))
             this.explosionRadius = compound.getFloat("ExplosionRadius");
         if (compound.contains("ExplosionCausesFire"))
