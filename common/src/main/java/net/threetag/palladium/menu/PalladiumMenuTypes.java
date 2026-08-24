@@ -1,9 +1,7 @@
 package net.threetag.palladium.menu;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,6 +9,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.client.screen.MultiversalIteratorScreen;
 import net.threetag.palladium.client.screen.MultiversalIteratorSuitStandScreen;
@@ -27,20 +27,18 @@ public class PalladiumMenuTypes {
     public static final RegistrySupplier<MenuType<MultiversalIteratorSuitStandMenu>> MULTIVERSAL_ITERATOR_SUIT_STAND = MENU_TYPES.register("multiversal_iterator_suit_stand", () -> ofExtended(MultiversalIteratorSuitStandMenu::new));
 
     @Environment(EnvType.CLIENT)
-    public static void registerScreens() {
-        MenuScreens.register(TAILORING.get(), TailoringScreen::new);
-        MenuScreens.register(MULTIVERSAL_ITERATOR.get(), MultiversalIteratorScreen::new);
-        MenuScreens.register(MULTIVERSAL_ITERATOR_SUIT_STAND.get(), MultiversalIteratorSuitStandScreen::new);
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(TAILORING.get(), TailoringScreen::new);
+        event.register(MULTIVERSAL_ITERATOR.get(), MultiversalIteratorScreen::new);
+        event.register(MULTIVERSAL_ITERATOR_SUIT_STAND.get(), MultiversalIteratorSuitStandScreen::new);
     }
 
-    @ExpectPlatform
     public static void openExtendedMenu(ServerPlayer player, ExtendedMenuProvider provider) {
-        throw new AssertionError();
+        player.openMenu(provider, provider::addAdditionalData);
     }
 
-    @ExpectPlatform
     public static <T extends AbstractContainerMenu> MenuType<T> ofExtended(ExtendedMenuTypeFactory<T> factory) {
-        throw new AssertionError();
+        return IMenuTypeExtension.create(factory::create);
     }
 
     @FunctionalInterface

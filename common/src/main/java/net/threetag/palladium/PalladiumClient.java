@@ -52,7 +52,6 @@ import net.threetag.palladium.energy.EnergyHelper;
 import net.threetag.palladium.entity.PalladiumEntityTypes;
 import net.threetag.palladium.event.PalladiumClientEvents;
 import net.threetag.palladium.item.*;
-import net.threetag.palladium.menu.PalladiumMenuTypes;
 import net.threetag.palladium.power.ability.AbilityClientEventHandler;
 import net.threetag.palladium.power.ability.GuiOverlayAbility;
 import net.threetag.palladium.util.SupporterHandler;
@@ -83,7 +82,6 @@ public class PalladiumClient {
         LifecycleEvents.SETUP.register(() -> {
             blockRenderTypes();
             itemModelPredicates();
-            PalladiumMenuTypes.registerScreens();
         });
 
         // Entity Renderers

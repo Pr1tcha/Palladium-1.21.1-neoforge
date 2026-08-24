@@ -32,6 +32,7 @@ import net.threetag.palladium.data.forge.*;
 import net.threetag.palladium.datacondition.forge.PalladiumFeatureFlagEnabledCondition;
 import net.threetag.palladium.energy.forge.EnergyHelperImpl;
 import net.threetag.palladium.mixin.ReloadableResourceManagerMixin;
+import net.threetag.palladium.menu.PalladiumMenuTypes;
 import net.threetag.palladiumcore.event.ClientEventBridge;
 import net.threetag.palladiumcore.event.EventBridge;
 import net.threetag.palladiumcore.network.NetworkRegistration;
@@ -55,6 +56,7 @@ public class PalladiumForge {
         if (dist == Dist.CLIENT) {
             ClientRegistrationEvents.register(modEventBus);
             ClientEventBridge.register(modEventBus);
+            modEventBus.addListener(PalladiumMenuTypes::registerScreens);
         }
         modEventBus.register(PalladiumForge.class);
 
