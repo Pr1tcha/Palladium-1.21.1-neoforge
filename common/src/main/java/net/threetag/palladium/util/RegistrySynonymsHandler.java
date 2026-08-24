@@ -15,6 +15,11 @@ public class RegistrySynonymsHandler {
     private static final Map<ResourceKey<?>, List<Synonym>> SYNONYMS = new HashMap<>();
 
     static {
+        register(Registries.ATTRIBUTE, ResourceLocation.parse("minecraft:generic.step_height"), ResourceLocation.parse("forge:step_height_addition"));
+        register(Registries.ATTRIBUTE, ResourceLocation.parse("neoforge:swim_speed"), ResourceLocation.parse("forge:swim_speed"));
+        register(Registries.ATTRIBUTE, ResourceLocation.parse("minecraft:player.block_interaction_range"), ResourceLocation.parse("forge:block_reach"));
+        register(Registries.ATTRIBUTE, ResourceLocation.parse("minecraft:player.entity_interaction_range"), ResourceLocation.parse("forge:entity_reach"));
+
         register(Registries.ATTRIBUTE, ResourceLocation.parse("porting_lib:step_height_addition"), ResourceLocation.parse("forge:step_height_addition"));
         register(Registries.ATTRIBUTE, ResourceLocation.parse("porting_lib:entity_gravity"), ResourceLocation.parse("forge:entity_gravity"));
         register(Registries.ATTRIBUTE, ResourceLocation.parse("porting_lib:swim_speed"), ResourceLocation.parse("forge:swim_speed"));
