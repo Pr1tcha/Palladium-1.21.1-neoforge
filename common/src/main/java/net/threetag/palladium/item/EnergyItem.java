@@ -1,8 +1,10 @@
 package net.threetag.palladium.item;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 
 public abstract class EnergyItem extends Item {
@@ -30,8 +32,10 @@ public abstract class EnergyItem extends Item {
 
     @Override
     public void onCraftedBy(ItemStack stack, Level level, Player player) {
-        if (!stack.hasTag() || !stack.getOrCreateTag().contains("energy")) {
-            stack.getOrCreateTag().putInt("energy", 0);
-        }
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            if (!tag.contains("energy")) {
+                tag.putInt("energy", 0);
+            }
+        });
     }
 }

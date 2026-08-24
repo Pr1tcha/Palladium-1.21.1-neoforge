@@ -1,6 +1,8 @@
 package net.threetag.palladium.energy.forge;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.threetag.palladium.item.EnergyItem;
 
@@ -60,11 +62,11 @@ public class ItemEnergyStorage implements IEnergyStorage {
 
     @Override
     public int getEnergyStored() {
-        return this.stack.getOrCreateTag().getInt("energy");
+        return this.stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getInt("energy");
     }
 
     public ItemEnergyStorage setEnergyStored(int energy) {
-        this.stack.getOrCreateTag().putInt("energy", energy);
+        CustomData.update(DataComponents.CUSTOM_DATA, this.stack, tag -> tag.putInt("energy", energy));
         return this;
     }
 

@@ -172,7 +172,7 @@ public class PalladiumClient {
                     return storage.map(energyStorage -> Math.round(13F * energyStorage.getEnergyAmount() / (float) energyStorage.getEnergyCapacity())).orElse(0);
                 });
                 ItemPropertyRegistry.register(item, Palladium.id("charged"), (itemStack, clientLevel, livingEntity, i) -> {
-                    return itemStack.getOrCreateTag().getInt("energy") > 0 ? 1F : 0F;
+                    return EnergyHelper.getEnergyStoredInItem(itemStack) > 0 ? 1F : 0F;
                 });
             }
 

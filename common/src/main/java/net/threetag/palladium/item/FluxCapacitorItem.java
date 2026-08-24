@@ -103,13 +103,13 @@ public class FluxCapacitorItem extends EnergyItem implements IAddonItem {
 
     public ItemStack getEmptyInstance() {
         var filled = this.getDefaultInstance();
-        filled.getOrCreateTag().putInt("energy", 0);
+        net.minecraft.world.item.component.CustomData.update(net.minecraft.core.component.DataComponents.CUSTOM_DATA, filled, tag -> tag.putInt("energy", 0));
         return filled;
     }
 
     public ItemStack getFullyChargedInstance() {
         var filled = this.getDefaultInstance();
-        filled.getOrCreateTag().putInt("energy", this.getEnergyCapacity(filled));
+        net.minecraft.world.item.component.CustomData.update(net.minecraft.core.component.DataComponents.CUSTOM_DATA, filled, tag -> tag.putInt("energy", this.getEnergyCapacity(filled)));
         return filled;
     }
 

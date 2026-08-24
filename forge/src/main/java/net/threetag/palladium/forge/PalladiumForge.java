@@ -31,6 +31,7 @@ import net.threetag.palladium.compat.curios.forge.CuriosCompat;
 import net.threetag.palladium.compat.geckolib.forge.GeckoLibCompatImpl;
 import net.threetag.palladium.data.forge.*;
 import net.threetag.palladium.datacondition.forge.PalladiumFeatureFlagEnabledCondition;
+import net.threetag.palladium.energy.forge.EnergyHelperImpl;
 import net.threetag.palladium.mixin.ReloadableResourceManagerMixin;
 import net.threetag.palladiumcore.event.ClientEventBridge;
 import net.threetag.palladiumcore.event.EventBridge;
@@ -50,6 +51,7 @@ public class PalladiumForge {
         RegistrationEvents.register(modEventBus);
         EventBridge.register(modEventBus);
         NetworkRegistration.register(modEventBus);
+        modEventBus.addListener(EnergyHelperImpl::registerCapabilities);
         if (dist == Dist.CLIENT) {
             ClientRegistrationEvents.register(modEventBus);
             ClientEventBridge.register(modEventBus);
