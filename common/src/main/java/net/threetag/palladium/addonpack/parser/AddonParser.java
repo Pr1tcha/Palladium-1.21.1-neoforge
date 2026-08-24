@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -16,6 +15,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.threetag.palladium.addonpack.builder.AddonBuilder;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
+import net.threetag.palladium.addonpack.parser.forge.AddonParserImpl;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,9 +97,8 @@ public abstract class AddonParser<T> extends SimpleJsonResourceReloadListener {
         return list;
     }
 
-    @ExpectPlatform
     public static <T> void register(ResourceKey<? extends Registry<T>> key, AddonBuilder<T> builder) {
-        throw new AssertionError();
+        AddonParserImpl.register(key, builder);
     }
 
     public void postRegister(AddonBuilder<T> addonBuilder) {

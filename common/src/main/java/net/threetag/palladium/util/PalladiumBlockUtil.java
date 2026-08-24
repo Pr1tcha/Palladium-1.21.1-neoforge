@@ -1,6 +1,5 @@
 package net.threetag.palladium.util;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -13,14 +12,12 @@ import java.util.function.Supplier;
 
 public class PalladiumBlockUtil {
 
-    @ExpectPlatform
     public static Block createFlowerPotBlock(Supplier<FlowerPotBlock> emptyPot, Supplier<? extends Block> supplier, BlockBehaviour.Properties properties) {
-        throw new AssertionError();
+        return new FlowerPotBlock(emptyPot, supplier, properties);
     }
 
-    @ExpectPlatform
     public static boolean canBurn(BlockState blockState, BlockGetter level, BlockPos pos, Direction facing) {
-        throw new AssertionError();
+        return blockState.isFlammable(level, pos, facing);
     }
 
 }
