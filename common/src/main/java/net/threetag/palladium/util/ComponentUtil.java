@@ -42,7 +42,7 @@ public final class ComponentUtil {
         ComponentSerialization.TRUSTED_CONTEXT_FREE_STREAM_CODEC.encode(buffer, component);
     }
 
-    private static HolderLookup.Provider registryProvider() {
+    public static HolderLookup.Provider registryProvider() {
         var server = Platform.getCurrentServer();
         return server != null ? server.registryAccess() : BUILTIN_REGISTRIES;
     }

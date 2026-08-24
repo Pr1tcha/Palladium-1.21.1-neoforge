@@ -317,7 +317,7 @@ public class AbilityConfiguration {
         }
 
         public UnlockData(FriendlyByteBuf buf) {
-            this.icon = IconSerializer.parseNBT(Objects.requireNonNull(buf.readAnySizeNbt()));
+            this.icon = IconSerializer.parseNBT(Objects.requireNonNull(buf.readNbt()));
             this.amount = buf.readInt();
             this.description = ComponentUtil.read(buf);
         }

@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.threetag.palladium.util.SizeUtil;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladiumcore.network.ExtendedEntitySpawnData;
 import org.jetbrains.annotations.Nullable;
 
@@ -403,7 +404,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
             var itemTag = tag.get("Item");
 
             if (itemTag instanceof CompoundTag compoundTag) {
-                this.item = ItemStack.of(compoundTag);
+                this.item = ItemStack.parseOptional(ComponentUtil.registryProvider(), compoundTag);
             } else if (itemTag instanceof StringTag stringTag) {
                 this.item = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(stringTag.getAsString())));
             } else {
@@ -418,7 +419,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
 
         @Override
         public void toNBT(CompoundTag nbt) {
-            nbt.put("Item", this.item.save(new CompoundTag()));
+            nbt.put("Item", this.item.save(ComponentUtil.registryProvider()));
         }
 
         @Override

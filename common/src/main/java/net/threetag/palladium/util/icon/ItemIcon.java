@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladium.util.GuiUtil;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
@@ -67,7 +68,7 @@ public record ItemIcon(ItemStack stack) implements IIcon {
 
         @Override
         public ItemIcon fromNBT(CompoundTag nbt) {
-            return new ItemIcon(ItemStack.of(nbt));
+            return new ItemIcon(ItemStack.parseOptional(ComponentUtil.registryProvider(), nbt));
         }
 
         @Override
@@ -80,7 +81,9 @@ public record ItemIcon(ItemStack stack) implements IIcon {
 
         @Override
         public CompoundTag toNBT(ItemIcon icon) {
-            return icon.stack.save(new CompoundTag());
+            CompoundTag tag = new CompoundTag();
+            icon.stack.save(ComponentUtil.registryProvider(), tag);
+            return tag;
         }
 
         @Override

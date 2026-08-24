@@ -41,7 +41,7 @@ public class CompoundTagProperty extends PalladiumProperty<CompoundTag> {
 
     @Override
     public CompoundTag fromBuffer(FriendlyByteBuf buf) {
-        return buf.readAnySizeNbt();
+        return buf.readNbt();
     }
 
     @Override
