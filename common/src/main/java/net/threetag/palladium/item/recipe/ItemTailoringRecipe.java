@@ -27,9 +27,9 @@ public class ItemTailoringRecipe extends TailoringRecipe {
     private final Component title;
 
     public ItemTailoringRecipe(Map<EquipmentSlot, ItemStack> results,
-                               List<SizedIngredient> ingredients, Ingredient toolIngredient, Component title,
+                               List<SizedIngredient> ingredients, Ingredient toolIngredient, boolean consumeTool, Component title,
                                ResourceLocation toolIcon, ResourceLocation categoryId, boolean requiresUnlocking) {
-        super(results, ingredients, toolIngredient, toolIcon, categoryId, requiresUnlocking);
+        super(results, ingredients, toolIngredient, consumeTool, toolIcon, categoryId, requiresUnlocking);
         this.title = title;
     }
 
@@ -58,12 +58,13 @@ public class ItemTailoringRecipe extends TailoringRecipe {
                 RESULTS_CODEC.fieldOf("results").forGetter(recipe -> recipe.results),
                 SizedIngredient.CODEC.listOf(1, Integer.MAX_VALUE).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
                 Ingredient.CODEC_NONEMPTY.fieldOf("tool").forGetter(recipe -> recipe.toolIngredient),
+                Codec.BOOL.optionalFieldOf("consume_tool", false).forGetter(recipe -> recipe.consumeTool),
                 ComponentSerialization.CODEC.fieldOf("title").forGetter(recipe -> recipe.title),
                 ResourceLocation.CODEC.optionalFieldOf("tool_icon").forGetter(recipe -> Optional.ofNullable(recipe.toolIcon)),
                 ResourceLocation.CODEC.optionalFieldOf("category").forGetter(recipe -> Optional.ofNullable(recipe.categoryId)),
                 Codec.BOOL.optionalFieldOf("requires_unlocking", true).forGetter(recipe -> recipe.requiresUnlocking)
-        ).apply(instance, (results, ingredients, tool, title, toolIcon, category, requiresUnlocking) ->
-                new ItemTailoringRecipe(results, ingredients, tool, title, toolIcon.orElse(null), category.orElse(null), requiresUnlocking)));
+        ).apply(instance, (results, ingredients, tool, consumeTool, title, toolIcon, category, requiresUnlocking) ->
+                new ItemTailoringRecipe(results, ingredients, tool, consumeTool, title, toolIcon.orElse(null), category.orElse(null), requiresUnlocking)));
         private static final StreamCodec<RegistryFriendlyByteBuf, ItemTailoringRecipe> STREAM_CODEC = new StreamCodec<>() {
             @Override
             public ItemTailoringRecipe decode(RegistryFriendlyByteBuf buffer) {
@@ -83,6 +84,7 @@ public class ItemTailoringRecipe extends TailoringRecipe {
                         results,
                         ingredients,
                         Ingredient.CONTENTS_STREAM_CODEC.decode(buffer),
+                        buffer.readBoolean(),
                         ComponentSerialization.STREAM_CODEC.decode(buffer),
                         buffer.readBoolean() ? buffer.readResourceLocation() : null,
                         buffer.readBoolean() ? buffer.readResourceLocation() : null,
@@ -100,6 +102,7 @@ public class ItemTailoringRecipe extends TailoringRecipe {
                 buffer.writeVarInt(recipe.ingredients.size());
                 recipe.ingredients.forEach(ingredient -> SizedIngredient.STREAM_CODEC.encode(buffer, ingredient));
                 Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.toolIngredient);
+                buffer.writeBoolean(recipe.consumeTool);
                 ComponentSerialization.STREAM_CODEC.encode(buffer, recipe.title);
                 buffer.writeBoolean(recipe.toolIcon != null);
                 if (recipe.toolIcon != null) {
