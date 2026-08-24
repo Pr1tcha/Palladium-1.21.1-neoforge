@@ -1,24 +1,20 @@
 package net.threetag.palladium.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.threetag.palladium.sound.FlightSound;
 import net.threetag.palladium.util.property.PalladiumProperties;
 import net.threetag.palladiumcore.util.Platform;
 
 import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 public class FlightHandler {
 
-    public static Object CACHED_SOUND = null;
+    private static Consumer<Player> clientSoundHandler = player -> {
+    };
 
     private final Player player;
     private Vec3 prevMovementDelta = null;
@@ -158,7 +154,7 @@ public class FlightHandler {
             player.refreshDimensions();
 
             if (this.flightBoost > 1F && this.prevFlightBoost <= 1F && Platform.isClient()) {
-                FlightHandler.startSound(player);
+                clientSoundHandler.accept(player);
             }
         }
     }
@@ -234,15 +230,8 @@ public class FlightHandler {
         return FlightAnimationType.NORMAL;
     }
 
-    @Environment(EnvType.CLIENT)
-    public static void startSound(Player player) {
-        if (player == Minecraft.getInstance().player) {
-            if (CACHED_SOUND instanceof FlightSound sound) {
-                sound.stop = true;
-            }
-
-            Minecraft.getInstance().getSoundManager().play((SoundInstance) (CACHED_SOUND = new FlightSound(player, SoundEvents.ELYTRA_FLYING, player.getSoundSource())));
-        }
+    public static void setClientSoundHandler(Consumer<Player> handler) {
+        clientSoundHandler = handler;
     }
 
     public enum FlightType {

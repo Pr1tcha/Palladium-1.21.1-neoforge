@@ -1,13 +1,7 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.threetag.palladium.client.screen.power.BuyAbilityScreen;
-import net.threetag.palladium.client.screen.power.PowersScreen;
 import net.threetag.palladium.power.ability.AbilityConfiguration;
-import net.threetag.palladium.power.ability.AbilityInstance;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
@@ -47,17 +41,18 @@ public class OpenAbilityBuyScreenMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient(context);
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    public void handleClient(MessageContext context) {
-        if (Minecraft.getInstance().screen instanceof PowersScreen powersScreen) {
-            AbilityInstance entry = this.reference.getEntry(Minecraft.getInstance().player);
+    public AbilityReference getReference() {
+        return this.reference;
+    }
 
-            if (entry != null) {
-                powersScreen.openOverlayScreen(new BuyAbilityScreen(this.reference, this.unlockData, this.available, powersScreen));
-            }
-        }
+    public AbilityConfiguration.UnlockData getUnlockData() {
+        return this.unlockData;
+    }
+
+    public boolean isAvailable() {
+        return this.available;
     }
 }

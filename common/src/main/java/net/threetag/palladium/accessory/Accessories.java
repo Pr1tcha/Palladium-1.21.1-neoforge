@@ -1,8 +1,8 @@
 package net.threetag.palladium.accessory;
 
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.threetag.palladium.Palladium;
+import net.threetag.palladium.util.ModelLayerLocationUtil;
 import net.threetag.palladiumcore.registry.DeferredRegister;
 import net.threetag.palladiumcore.registry.RegistrySupplier;
 
@@ -20,31 +20,31 @@ public class Accessories {
             () -> new OverlayAccessory("face_mask").slot(AccessorySlot.FACE));
 
     public static final RegistrySupplier<Accessory> GLASSES_3D = ACCESSORIES.register("3d_glasses",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "glasses"), "3d_glasses").slot(AccessorySlot.FACE));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "glasses"), "3d_glasses").slot(AccessorySlot.FACE));
 
     public static final RegistrySupplier<Accessory> SUN_GLASSES = ACCESSORIES.register("sun_glasses",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "glasses"), "sun_glasses").slot(AccessorySlot.FACE));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "glasses"), "sun_glasses").slot(AccessorySlot.FACE));
 
     public static final RegistrySupplier<Accessory> HEART_GLASSES = ACCESSORIES.register("heart_glasses",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "glasses"), "heart_glasses").slot(AccessorySlot.FACE));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "glasses"), "heart_glasses").slot(AccessorySlot.FACE));
 
     public static final RegistrySupplier<Accessory> OWCA_FEDORA = ACCESSORIES.register("owca_fedora",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "fedora"), "owca_fedora").slot(AccessorySlot.HAT).setExclusive());
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "fedora"), "owca_fedora").slot(AccessorySlot.HAT).setExclusive());
 
     public static final RegistrySupplier<Accessory> ELTON_HAT = ACCESSORIES.register("elton_hat",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "fedora"), "elton_hat").slot(AccessorySlot.HAT).setExclusive());
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "fedora"), "elton_hat").slot(AccessorySlot.HAT).setExclusive());
 
     public static final RegistrySupplier<Accessory> STRAWHAT = ACCESSORIES.register("strawhat",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "strawhat"), ResourceLocation.parse("textures/entity/villager/profession/farmer.png")).slot(AccessorySlot.HAT));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "strawhat"), ResourceLocation.parse("textures/entity/villager/profession/farmer.png")).slot(AccessorySlot.HAT));
 
     public static final RegistrySupplier<Accessory> FEZ = ACCESSORIES.register("fez",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "fez"), "fez").slot(AccessorySlot.HAT).setExclusive());
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "fez"), "fez").slot(AccessorySlot.HAT).setExclusive());
 
     public static final RegistrySupplier<Accessory> ANTENNA = ACCESSORIES.register("antenna",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "antenna"), "antenna").slot(AccessorySlot.HAT));
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "antenna"), "antenna").slot(AccessorySlot.HAT));
 
     public static final RegistrySupplier<Accessory> KRUSTY_KRAB_HAT = ACCESSORIES.register("krusty_krab_hat",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "krusty_krab_hat"), "krusty_krab_hat").slot(AccessorySlot.HAT).setExclusive());
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "krusty_krab_hat"), "krusty_krab_hat").slot(AccessorySlot.HAT).setExclusive());
 
     public static final RegistrySupplier<Accessory> SEA_PICKLE_HAT = ACCESSORIES.register("sea_pickle_hat", SeaPickleHatAccessory::new);
 
@@ -55,11 +55,11 @@ public class Accessories {
             () -> new OverlayAccessory("hyperion_arms", "hyperion_slim_arms").onlyRenderSlot().slot(AccessorySlot.MAIN_ARM, AccessorySlot.OFF_ARM).setExclusive());
 
     public static final RegistrySupplier<Accessory> MECHANICAL_ARM = ACCESSORIES.register("mechanical_arm",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("player"), "mechanical_arms"), () -> new ModelLayerLocation(Palladium.id("player_slim"), "mechanical_arms"), "mechanical_arm", "mechanical_slim_arm")
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("player"), "mechanical_arms"), () -> new ModelLayerLocationUtil(Palladium.id("player_slim"), "mechanical_arms"), "mechanical_arm", "mechanical_slim_arm")
                     .onlyRenderSlot().slot(AccessorySlot.MAIN_ARM, AccessorySlot.OFF_ARM).setExclusive());
 
     public static final RegistrySupplier<Accessory> HAMMOND_CANE = ACCESSORIES.register("hammond_cane",
-            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocation(Palladium.id("humanoid"), "hammond_cane"), "hammond_cane")
+            () -> new HumanoidModelOverlayAccessory(() -> new ModelLayerLocationUtil(Palladium.id("humanoid"), "hammond_cane"), "hammond_cane")
                     .handVisibilityFix().slot(AccessorySlot.MAIN_HAND, AccessorySlot.OFF_HAND).setExclusive());
 
     public static final RegistrySupplier<Accessory> WOODEN_LEG = ACCESSORIES.register("wooden_leg", () -> new WoodenLegAccessory().setExclusive());

@@ -1,12 +1,8 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import net.threetag.palladium.power.IPowerHolder;
 import net.threetag.palladium.power.PowerManager;
 import net.threetag.palladium.power.energybar.EnergyBar;
@@ -19,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class UpdatePowersMessage extends MessageS2C {
 
@@ -76,26 +71,22 @@ public class UpdatePowersMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        Level level = Minecraft.getInstance().level;
-        if (level != null && level.getEntity(this.entityId) instanceof LivingEntity livingEntity) {
-            PowerManager manager = PowerManager.getInstance(level);
-            var toRemove = this.toRemove.stream().map(manager::getPower).filter(Objects::nonNull).toList();
-            var toAdd = this.toAdd.stream().map(manager::getPower).filter(Objects::nonNull).toList();
-            PowerManager.getPowerHandler(livingEntity).ifPresent(handler -> handler.removeAndAddPowers(toRemove, toAdd));
+    public int getEntityId() {
+        return this.entityId;
+    }
 
-            for (Triple<EnergyBarReference, Integer, Integer> pair : this.energyBars) {
-                var bar = pair.getLeft().getEntry(livingEntity);
+    public List<ResourceLocation> getPowersToRemove() {
+        return this.toRemove;
+    }
 
-                if (bar != null) {
-                    bar.set(pair.getMiddle());
-                    bar.setMax(pair.getRight());
-                }
-            }
-        }
+    public List<ResourceLocation> getPowersToAdd() {
+        return this.toAdd;
+    }
+
+    public List<Triple<EnergyBarReference, Integer, Integer>> getEnergyBars() {
+        return this.energyBars;
     }
 }

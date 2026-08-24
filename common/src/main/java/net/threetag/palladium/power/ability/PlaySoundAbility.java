@@ -1,13 +1,9 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.threetag.palladium.power.IPowerHolder;
-import net.threetag.palladium.sound.AbilitySound;
 import net.threetag.palladium.util.PlayerUtil;
 import net.threetag.palladium.util.property.BooleanProperty;
 import net.threetag.palladium.util.property.FloatProperty;
@@ -16,6 +12,9 @@ import net.threetag.palladium.util.property.ResourceLocationProperty;
 import net.threetag.palladiumcore.util.Platform;
 
 public class PlaySoundAbility extends Ability {
+
+    private static ClientHandler clientHandler = (entity, entry) -> {
+    };
 
     public static final PalladiumProperty<ResourceLocation> SOUND = new ResourceLocationProperty("sound").configurable("Sound ID that is being played");
     public static final PalladiumProperty<Float> VOLUME = new FloatProperty("volume").configurable("Volume for the played sound");
@@ -48,7 +47,7 @@ public class PlaySoundAbility extends Ability {
         if (enabled) {
             if (entry.getProperty(LOOPING)) {
                 if (Platform.isClient() && entity.level().isClientSide) {
-                    this.startSound(entity, entry);
+                    clientHandler.startSound(entity, entry);
                 }
             } else if (!entity.level().isClientSide) {
                 if (entry.getProperty(PLAY_SELF)) {
@@ -68,22 +67,14 @@ public class PlaySoundAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
-    public void startSound(LivingEntity entity, AbilityInstance entry) {
-        boolean play;
+    public static void setClientHandler(ClientHandler handler) {
+        clientHandler = handler;
+    }
 
-        if (entry.getProperty(PLAY_SELF)) {
-            play = entity == Minecraft.getInstance().player;
-        } else {
-            if (entry.getProperty(PLAY_OTHERS)) {
-                play = entity != Minecraft.getInstance().player;
-            } else {
-                play = true;
-            }
-        }
+    @FunctionalInterface
+    public interface ClientHandler {
 
-        if (play) {
-            Minecraft.getInstance().getSoundManager().play(new AbilitySound(entry.getReference(), entity, entry.getProperty(SOUND), entity.getSoundSource(), entry.getProperty(VOLUME), entry.getProperty(PITCH)));
-        }
+        void startSound(LivingEntity entity, AbilityInstance entry);
+
     }
 }

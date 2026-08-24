@@ -2,8 +2,6 @@ package net.threetag.palladium.accessory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -105,12 +103,6 @@ public class AccessorySlot {
 
     public boolean isVisible(DataContext context) {
         return ConditionSerializer.checkConditions(this.visible, context);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public boolean wasHidden(Player player, boolean isFirstPerson) {
-        var result = BodyPart.getModifiedBodyParts(player, isFirstPerson, false);
-        return this.getHiddenBodyParts(player).stream().filter(p -> !p.isOverlay()).anyMatch(result::isHiddenOrRemoved);
     }
 
     public Collection<BodyPart> getHiddenBodyParts(Player player) {

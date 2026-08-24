@@ -1,19 +1,12 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.threetag.palladium.util.property.EntityPropertyHandler;
 import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
-
-import java.util.Objects;
 
 public class SyncPropertyMessage extends MessageS2C {
 
@@ -51,22 +44,10 @@ public class SyncPropertyMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(this.entityId);
-        if (entity != null) {
-            EntityPropertyHandler.getHandler(entity).ifPresent(handler -> {
-                for (String key : this.tag.getAllKeys()) {
-                    PalladiumProperty property = handler.getPropertyByName(key);
-                    if (property != null) {
-                        handler.setRaw(property, property.fromNBT(this.tag.get(property.getKey()), handler.getDefault(property)));
-                    }
-                }
-            });
-        }
+    public int getEntityId() {
+        return this.entityId;
     }
 }

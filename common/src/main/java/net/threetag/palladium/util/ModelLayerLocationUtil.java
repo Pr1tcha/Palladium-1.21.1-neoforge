@@ -1,16 +1,8 @@
 package net.threetag.palladium.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.resources.ResourceLocation;
 
 public record ModelLayerLocationUtil(ResourceLocation model, String layer) {
-
-    @Environment(EnvType.CLIENT)
-    public ModelLayerLocation toModelLayer() {
-        return new ModelLayerLocation(this.model, this.layer);
-    }
 
     @Override
     public boolean equals(Object object) {

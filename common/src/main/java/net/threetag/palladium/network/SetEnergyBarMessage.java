@@ -1,17 +1,11 @@
 package net.threetag.palladium.network;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.threetag.palladium.power.energybar.EnergyBar;
 import net.threetag.palladium.power.energybar.EnergyBarReference;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class SetEnergyBarMessage extends MessageS2C {
 
@@ -48,15 +42,22 @@ public class SetEnergyBarMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(this.entityId);
+        PalladiumNetwork.handleClient(this);
+    }
 
-        if (entity instanceof LivingEntity living) {
-            EnergyBar energyBar = this.reference.getEntry(living);
+    public int getEntityId() {
+        return this.entityId;
+    }
 
-            if (energyBar != null) {
-                energyBar.set(this.value);
-                energyBar.setMax(this.maxValue);
-            }
-        }
+    public EnergyBarReference getReference() {
+        return this.reference;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
+
+    public int getMaxValue() {
+        return this.maxValue;
     }
 }

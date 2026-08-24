@@ -6,7 +6,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.threetag.palladium.entity.FlightHandler;
+import net.threetag.palladium.client.sound.FlightSoundHandler;
 import net.threetag.palladium.entity.PalladiumPlayerExtension;
 
 public class FlightSound extends AbstractTickableSoundInstance {
@@ -56,7 +56,7 @@ public class FlightSound extends AbstractTickableSoundInstance {
 
         } else {
             this.stop();
-            FlightHandler.CACHED_SOUND = null;
+            FlightSoundHandler.clear(this);
         }
     }
 

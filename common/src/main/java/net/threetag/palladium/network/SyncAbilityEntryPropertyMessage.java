@@ -1,24 +1,11 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.threetag.palladium.client.screen.power.PowersScreen;
-import net.threetag.palladium.power.ability.AbilityInstance;
 import net.threetag.palladium.power.ability.AbilityReference;
-import net.threetag.palladium.power.ability.NameChangeAbility;
-import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
-import net.threetag.palladiumcore.util.PlayerUtil;
-
-import java.util.Objects;
 
 public class SyncAbilityEntryPropertyMessage extends MessageS2C {
 
@@ -56,32 +43,22 @@ public class SyncAbilityEntryPropertyMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        var level = Objects.requireNonNull(Minecraft.getInstance().level);
-        Entity entity = level.getEntity(this.entityId);
-        if (entity instanceof LivingEntity livingEntity) {
-            AbilityInstance entry = this.reference.getEntry(livingEntity);
+    public int getEntityId() {
+        return this.entityId;
+    }
 
-            if (entry != null) {
-                PalladiumProperty property = entry.getPropertyManager().getPropertyByName(this.propertyKey);
+    public AbilityReference getReference() {
+        return this.reference;
+    }
 
-                if (property != null) {
-                    entry.getPropertyManager().setRaw(property, property.fromNBT(this.tag.get(property.getKey()), entry.getPropertyManager().getDefault(property)));
+    public String getPropertyKey() {
+        return this.propertyKey;
+    }
 
-                    if (Minecraft.getInstance().screen instanceof PowersScreen powers && powers.selectedTab != null) {
-                        powers.selectedTab.populate();
-                    }
-                    if (property == NameChangeAbility.NAME_CACHED && entity instanceof Player player) {
-                        PlayerUtil.refreshDisplayName(player);
-                        var name = entry.getProperty(NameChangeAbility.NAME_CACHED);
-                    }
-                }
-            }
-        }
+    public CompoundTag getTag() {
+        return this.tag;
     }
 }

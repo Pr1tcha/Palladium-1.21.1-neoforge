@@ -11,14 +11,18 @@ import net.threetag.palladium.power.ability.NameChangeAbility;
 import net.threetag.palladium.util.property.EntityPropertyHandler;
 import net.threetag.palladium.util.property.SyncType;
 import net.threetag.palladiumcore.network.MessageType;
+import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.NetworkManager;
 import net.threetag.palladiumcore.util.DataSyncUtil;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 public class PalladiumNetwork {
 
     public static final NetworkManager NETWORK = NetworkManager.create(Palladium.id("main_channel"));
+    private static Consumer<MessageS2C> clientHandler = message -> {
+    };
 
     public static final MessageType SYNC_POWERS = NETWORK.registerS2C("sync_powers", SyncPowersMessage::new);
     public static final MessageType UPDATE_POWERS = NETWORK.registerS2C("update_powers", UpdatePowersMessage::new);
@@ -83,5 +87,13 @@ public class PalladiumNetwork {
                 });
             });
         });
+    }
+
+    public static void setClientHandler(Consumer<MessageS2C> handler) {
+        clientHandler = handler;
+    }
+
+    public static void handleClient(MessageS2C message) {
+        clientHandler.accept(message);
     }
 }

@@ -1,10 +1,5 @@
 package net.threetag.palladium.entity.effect;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.entity.EffectEntity;
@@ -24,9 +19,6 @@ public abstract class EntityEffect {
     public void registerProperties(PropertyManager manager) {
         manager.register(IS_DONE_PLAYING, false);
     }
-
-    @Environment(EnvType.CLIENT)
-    public abstract void render(EffectEntity entity, Entity anchor, PoseStack poseStack, MultiBufferSource bufferSource, int packedLightIn, boolean isFirstPerson, float partialTicks);
 
     public abstract void tick(EffectEntity entity, Entity anchor);
 
@@ -50,13 +42,6 @@ public abstract class EntityEffect {
         this.set(entity, IS_DONE_PLAYING, true);
     }
 
-    @Environment(EnvType.CLIENT)
-    public static void start(Entity anchor, EntityEffect entityEffect) {
-        EffectEntity effectEntity = new EffectEntity(anchor.level(), anchor, entityEffect);
-        Minecraft.getInstance().level.addEntity(effectEntity);
-    }
-
-    @Environment(EnvType.CLIENT)
     public static void stop(Entity anchor, Predicate<EntityEffect> predicate) {
         anchor.level().getEntities(anchor, anchor.getBoundingBox().inflate(2), entity -> entity instanceof EffectEntity && ((EffectEntity) entity).getAnchorEntity() == anchor && predicate.test(((EffectEntity) entity).entityEffect)).forEach(Entity::discard);
     }

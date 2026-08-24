@@ -1,19 +1,10 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.threetag.palladium.client.screen.power.PowersScreen;
-import net.threetag.palladium.power.ability.AbilityInstance;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
-
-import java.util.Objects;
 
 public class SyncAbilityStateMessage extends MessageS2C {
 
@@ -64,23 +55,38 @@ public class SyncAbilityStateMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(this.entityId);
+    public int getEntityId() {
+        return this.entityId;
+    }
 
-        if (entity instanceof LivingEntity livingEntity) {
-            AbilityInstance entry = this.reference.getEntry(livingEntity);
+    public AbilityReference getReference() {
+        return this.reference;
+    }
 
-            if (entry != null) {
-                entry.setClientState(livingEntity, entry.getHolder(), this.unlocked, this.enabled, this.maxCooldown, this.cooldown, this.maxActivationTimer, this.activationTimer);
+    public boolean isUnlocked() {
+        return this.unlocked;
+    }
 
-                if (Minecraft.getInstance().screen instanceof PowersScreen powers && powers.selectedTab != null) {
-                    powers.selectedTab.populate();
-                }
-            }
-        }
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public int getMaxCooldown() {
+        return this.maxCooldown;
+    }
+
+    public int getCooldown() {
+        return this.cooldown;
+    }
+
+    public int getMaxActivationTimer() {
+        return this.maxActivationTimer;
+    }
+
+    public int getActivationTimer() {
+        return this.activationTimer;
     }
 }

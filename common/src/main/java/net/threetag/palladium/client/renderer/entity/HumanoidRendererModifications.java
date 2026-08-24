@@ -58,10 +58,10 @@ public class HumanoidRendererModifications {
 
         // visibility
         if (!FirstPersonMode.isFirstPersonPass()) {
-            BodyPart.resetBodyParts(entity, model);
+            BodyPartClient.resetBodyParts(entity, model);
         }
-        CACHED_HIDE_RESULT = BodyPart.getModifiedBodyParts(entity, false);
-        BodyPart.hideHiddenOrRemovedParts(model, entity, CACHED_HIDE_RESULT);
+        CACHED_HIDE_RESULT = BodyPartClient.getModifiedBodyParts(entity, false);
+        BodyPartClient.hideHiddenOrRemovedParts(model, CACHED_HIDE_RESULT);
 
         // layer shrinking
         float scale = AnimationTimer.getValue(entity, Abilities.SHRINK_BODY_OVERLAY.get(), partialTick, Easing.INOUTSINE);
@@ -71,7 +71,7 @@ public class HumanoidRendererModifications {
             CACHED_SHRINK = f;
             Vector3f vec = new Vector3f(f, f, f);
             for (BodyPart value : BodyPart.values()) {
-                ModelPart part = value.getModelPart(model);
+                ModelPart part = BodyPartClient.getModelPart(value, model);
                 if (value.isOverlay() && part != null) {
                     part.offsetScale(vec);
                 }
@@ -86,7 +86,7 @@ public class HumanoidRendererModifications {
             CACHED_SHRINK = 0F;
             Vector3f vec = new Vector3f(f, f, f);
             for (BodyPart value : BodyPart.values()) {
-                ModelPart part = value.getModelPart(model);
+                ModelPart part = BodyPartClient.getModelPart(value, model);
                 if (value.isOverlay() && part != null) {
                     part.offsetScale(vec);
                 }
@@ -138,8 +138,8 @@ public class HumanoidRendererModifications {
 
         if (entity instanceof PlayerModelCacheExtension ext) {
             for (BodyPart part : BodyPart.values()) {
-                var orig = part.getModelPart(model);
-                var cache = part.getModelPart(ext.palladium$getCachedModel());
+                var orig = BodyPartClient.getModelPart(part, model);
+                var cache = BodyPartClient.getModelPart(part, ext.palladium$getCachedModel());
 
                 if (orig != null && cache != null) {
                     cache.loadPose(orig.storePose());

@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.client.particleemitter.ParticleEmitter;
 import net.threetag.palladium.entity.BodyPart;
+import net.threetag.palladium.client.renderer.entity.BodyPartClient;
 import net.threetag.palladium.util.ParticleUtil;
 import net.threetag.palladium.util.PerspectiveValue;
 import net.threetag.palladium.util.json.GsonUtil;
@@ -40,7 +41,7 @@ public class EnergyBeam {
     }
 
     public Vec3 getOriginPosition(AbstractClientPlayer player, float partialTick) {
-        return BodyPart.getInWorldPosition(this.anchor, this.offset.get(), player, partialTick);
+        return BodyPartClient.getInWorldPosition(this.anchor, this.offset.get(), player, partialTick);
     }
 
     public void spawnParticles(Level level, Vec3 pos) {

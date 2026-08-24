@@ -1,19 +1,17 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.threetag.palladium.accessory.Accessory;
 import net.threetag.palladium.accessory.AccessorySlot;
-import net.threetag.palladium.client.screen.AccessoryScreen;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SyncAccessoriesMessage extends MessageS2C {
 
@@ -65,25 +63,6 @@ public class SyncAccessoriesMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        Entity entity = Objects.requireNonNull(Minecraft.getInstance().level).getEntity(this.entityId);
-
-        if (entity instanceof Player player) {
-            Accessory.getPlayerData(player).ifPresent(data -> {
-                data.clear(player);
-                this.accessories.forEach((slot, accessories) -> {
-                    for (Accessory accessory : accessories) {
-                        data.enable(slot, accessory, player);
-                    }
-                });
-                if (Minecraft.getInstance().screen instanceof AccessoryScreen) {
-                    ((AccessoryScreen) Minecraft.getInstance().screen).accessoryList.refreshList();
-                }
-            });
-        }
+        PalladiumNetwork.handleClient(this);
     }
 }

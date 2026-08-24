@@ -13,6 +13,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.accessory.Accessory;
+import net.threetag.palladium.client.renderer.accessory.AccessoryRenderer;
+import net.threetag.palladium.client.renderer.entity.BodyPartClient;
 import net.threetag.palladium.client.model.animation.PalladiumAnimationRegistry;
 import net.threetag.palladium.client.renderer.item.armor.ArmorRendererManager;
 import net.threetag.palladium.client.renderer.renderlayer.PackRenderLayerManager;
@@ -56,10 +58,10 @@ public class PlayerRendererMixin {
         PalladiumAnimationRegistry.SKIP_ANIMATIONS = false;
 
         // Reset all, make them visible
-        BodyPart.resetBodyParts(player, playerRenderer.getModel());
+        BodyPartClient.resetBodyParts(player, playerRenderer.getModel());
 
         // Make them invisible if specified
-        this.cachedHideResult = BodyPart.getModifiedBodyParts(player, true);
+        this.cachedHideResult = BodyPartClient.getModifiedBodyParts(player, true);
         var bodyPart = rendererArm == playerRenderer.getModel().rightArm ? BodyPart.RIGHT_ARM : BodyPart.LEFT_ARM;
         var bodyPartOverlay = rendererArm == playerRenderer.getModel().rightArm ? BodyPart.RIGHT_ARM_OVERLAY : BodyPart.LEFT_ARM_OVERLAY;
 
@@ -88,16 +90,16 @@ public class PlayerRendererMixin {
         boolean rightArm = rendererArm == playerRenderer.getModel().rightArm;
 
         // Visibilities
-        BodyPart.resetBodyParts(player, playerRenderer.getModel());
-        BodyPart.hideRemovedParts(playerRenderer.getModel(), player, this.cachedHideResult);
+        BodyPartClient.resetBodyParts(player, playerRenderer.getModel());
+        BodyPartClient.hideRemovedParts(playerRenderer.getModel(), this.cachedHideResult);
         this.cachedHideResult = null;
 
         // Render accessories
         Accessory.getPlayerData(player).ifPresent(data -> data.getSlots().forEach((slot, accessories) -> {
             for (Accessory accessory : accessories) {
                 var arm = rightArm ? HumanoidArm.RIGHT : HumanoidArm.LEFT;
-                if (accessory.isVisible(slot, player, true) && accessory.canRenderAsArm(slot, arm, player)) {
-                    accessory.renderArm(arm, player, playerRenderer, rendererArm, rendererArmwear, slot, poseStack, buffer, combinedLight);
+                if (AccessoryRenderer.isVisible(accessory, slot, player, true) && AccessoryRenderer.canRenderAsArm(accessory, slot, arm, player)) {
+                    AccessoryRenderer.renderArm(accessory, arm, player, playerRenderer, rendererArm, rendererArmwear, slot, poseStack, buffer, combinedLight);
                 }
             }
         }));

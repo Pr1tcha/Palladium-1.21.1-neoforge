@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.threetag.palladium.accessory.Accessory;
+import net.threetag.palladium.client.renderer.accessory.AccessoryRenderer;
 
 public class AccessoryRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
@@ -21,8 +22,8 @@ public class AccessoryRenderLayer extends RenderLayer<AbstractClientPlayer, Play
     public void render(PoseStack poseStack, MultiBufferSource source, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         Accessory.getPlayerData(player).ifPresent(data -> data.getSlots().forEach((slot, accessories) -> {
             for (Accessory accessory : accessories) {
-                if (accessory.isVisible(slot, player, false)) {
-                    accessory.render(this.renderLayerParent, slot, poseStack, source, packedLight, player, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
+                if (AccessoryRenderer.isVisible(accessory, slot, player, false)) {
+                    AccessoryRenderer.render(accessory, this.renderLayerParent, slot, poseStack, source, packedLight, player, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
                 }
             }
         }));

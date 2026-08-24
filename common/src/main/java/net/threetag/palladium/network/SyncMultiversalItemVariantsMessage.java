@@ -1,10 +1,7 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.threetag.palladium.multiverse.ClientMultiversalItemVariantsManager;
 import net.threetag.palladium.multiverse.MultiversalItemVariants;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
@@ -37,11 +34,10 @@ public class SyncMultiversalItemVariantsMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        ClientMultiversalItemVariantsManager.updateEntries(this.byUniverseId);
+    public Map<ResourceLocation, MultiversalItemVariants> getVariantsByUniverseId() {
+        return this.byUniverseId;
     }
 }

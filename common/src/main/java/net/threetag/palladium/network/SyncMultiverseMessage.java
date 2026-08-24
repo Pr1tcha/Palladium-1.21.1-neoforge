@@ -1,10 +1,7 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.threetag.palladium.multiverse.ClientMultiverseManager;
 import net.threetag.palladium.multiverse.Universe;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
@@ -47,11 +44,10 @@ public class SyncMultiverseMessage extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        this.handleClient();
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    public void handleClient() {
-        ClientMultiverseManager.updateUniverses(this.universes);
+    public Map<ResourceLocation, Universe> getUniverses() {
+        return this.universes;
     }
 }

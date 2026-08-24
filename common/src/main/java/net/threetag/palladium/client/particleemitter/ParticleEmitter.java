@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.entity.BodyPart;
+import net.threetag.palladium.client.renderer.entity.BodyPartClient;
 import net.threetag.palladium.util.PerspectiveValue;
 import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +54,7 @@ public class ParticleEmitter {
 
     public Vec3 getCenter(AbstractClientPlayer player, float partialTick) {
         if (this.anchor != null) {
-            return BodyPart.getInWorldPosition(this.anchor, this.offset.get(), player, partialTick);
+            return BodyPartClient.getInWorldPosition(this.anchor, this.offset.get(), player, partialTick);
         } else {
             var offset = this.offset.get();
             return player.getPosition(partialTick).add(0, player.getBbHeight() / 2D, 0).add(offset.x, offset.y, offset.z);
@@ -97,12 +98,12 @@ public class ParticleEmitter {
         Vector3f offset = randomizeVector(random, this.offset.get(cameraType), this.offsetRandom.get(cameraType));
         var motion = randomizeVector(random, this.motion.get(cameraType), this.motionRandom.get(cameraType));
 
-        Vec3 pos = this.anchor != null ? BodyPart.getInWorldPosition(this.anchor, offset, player, partialTick) :
+        Vec3 pos = this.anchor != null ? BodyPartClient.getInWorldPosition(this.anchor, offset, player, partialTick) :
                 player.getPosition(partialTick).add(0, player.getBbHeight() / 2D, 0).add(offset.x, offset.y, offset.z);
 
         if (this.anchor != null) {
             var combined = new Vector3f(offset).add(motion);
-            var transformed = BodyPart.getInWorldPosition(this.anchor, combined, player, partialTick);
+            var transformed = BodyPartClient.getInWorldPosition(this.anchor, combined, player, partialTick);
             var motionRotated = transformed.subtract(pos);
             level.addParticle(particleOptions, pos.x, pos.y, pos.z, motionRotated.x, motionRotated.y, motionRotated.z);
         } else {

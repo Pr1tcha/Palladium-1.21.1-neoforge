@@ -1,19 +1,13 @@
 package net.threetag.palladium.network;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.threetag.palladium.client.screen.TailoringScreen;
 import net.threetag.palladiumcore.network.MessageContext;
 import net.threetag.palladiumcore.network.MessageS2C;
 import net.threetag.palladiumcore.network.MessageType;
-import net.threetag.palladiumcore.util.Platform;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 public class SyncAvailableTailoringRecipes extends MessageS2C {
 
@@ -39,15 +33,10 @@ public class SyncAvailableTailoringRecipes extends MessageS2C {
 
     @Override
     public void handle(MessageContext context) {
-        if (Platform.isClient()) {
-            this.handleClient(context);
-        }
+        PalladiumNetwork.handleClient(this);
     }
 
-    @Environment(EnvType.CLIENT)
-    private void handleClient(MessageContext context) {
-        var recipeManager = Objects.requireNonNull(Minecraft.getInstance().level).getRecipeManager();
-        var recipes = this.recipes.stream().map(id -> recipeManager.byKey(id).orElseThrow()).toList();
-        TailoringScreen.setAvailableRecipes(recipes);
+    public List<ResourceLocation> getRecipes() {
+        return this.recipes;
     }
 }

@@ -7,7 +7,9 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.threetag.palladium.client.entity.effect.EnergyBeamEffectClient;
 import net.threetag.palladium.entity.EffectEntity;
+import net.threetag.palladium.entity.effect.EnergyBeamEffect;
 
 public class EffectEntityRenderer extends EntityRenderer<EffectEntity> {
 
@@ -21,7 +23,9 @@ public class EffectEntityRenderer extends EntityRenderer<EffectEntity> {
 
         if (anchor != null) {
             poseStack.pushPose();
-            entity.entityEffect.render(entity, anchor, poseStack, buffer, packedLight, Minecraft.getInstance().player == anchor && Minecraft.getInstance().options.getCameraType().isFirstPerson(), partialTicks);
+            if (entity.entityEffect instanceof EnergyBeamEffect energyBeamEffect) {
+                EnergyBeamEffectClient.render(energyBeamEffect, entity, anchor, poseStack, buffer, packedLight, Minecraft.getInstance().player == anchor && Minecraft.getInstance().options.getCameraType().isFirstPerson(), partialTicks);
+            }
             poseStack.popPose();
         }
     }
