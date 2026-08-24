@@ -1,7 +1,6 @@
 package net.threetag.palladium.compat.curios.forge;
 
 import com.google.gson.JsonElement;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -10,11 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.AddonPackManager;
 import net.threetag.palladium.addonpack.PackData;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
@@ -26,13 +23,10 @@ import net.threetag.palladium.power.provider.PowerProvider;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
 import net.threetag.palladiumcore.registry.DeferredRegister;
+import net.threetag.palladiumcore.registry.ModEventBusRegistry;
 import net.threetag.palladiumcore.registry.RegistrySupplier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.CuriosCapability;
 import top.theillusivec4.curios.api.SlotTypeMessage;
-import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
 import java.util.Map;
@@ -45,7 +39,7 @@ public class CuriosCompat {
     public static void init() {
         CuriosTrinketsUtil.setInstance(new CuriosUtil());
         NeoForge.EVENT_BUS.register(CuriosTrinketsUtil.getInstance());
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(CuriosCompat::interModQueue);
+        ModEventBusRegistry.get(Palladium.MOD_ID).addListener(CuriosCompat::interModQueue);
         FACTORIES.register();
     }
 
@@ -53,7 +47,7 @@ public class CuriosCompat {
     public static void initClient() {
         PackRenderLayerManager.registerProvider((entity, layers) -> {
             if (entity instanceof LivingEntity livingEntity) {
-                CuriosApi.getCuriosHelper().getCuriosHandler(livingEntity)
+                CuriosApi.getCuriosInventory(livingEntity)
                         .ifPresent(handler -> handler.getCurios().forEach((id, stacksHandler) -> {
                             IDynamicStackHandler stackHandler = stacksHandler.getStacks();
                             IDynamicStackHandler cosmeticStacksHandler = stacksHandler.getCosmeticStacks();
@@ -87,6 +81,7 @@ public class CuriosCompat {
     }
 
     @Deprecated
+    @SuppressWarnings("removal")
     public static void interModQueue(InterModEnqueueEvent e) {
         for (PackData pack : AddonPackManager.getInstance().getPacks()) {
             if (pack.getCustomData().has("curios")) {
@@ -128,21 +123,6 @@ public class CuriosCompat {
                     });
                 }
             }
-        }
-    }
-
-    public static class Provider implements ICapabilityProvider {
-
-        final LazyOptional<ICurio> capability;
-
-        Provider(ICurio curio) {
-            this.capability = LazyOptional.of(() -> curio);
-        }
-
-        @NotNull
-        @Override
-        public <T> LazyOptional<T> getCapability(@NotNull net.neoforged.neoforge.common.capabilities.Capability<T> cap, @Nullable Direction side) {
-            return CuriosCapability.ITEM.orEmpty(cap, this.capability);
         }
     }
 

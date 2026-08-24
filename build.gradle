@@ -132,6 +132,9 @@ dependencies {
 
     compileOnly "maven.modrinth:pehkui:${pehkui_version}"
     localRuntime "maven.modrinth:pehkui:${pehkui_version}"
+
+    compileOnly "maven.modrinth:curios:${curios_version}"
+    localRuntime "maven.modrinth:curios:${curios_version}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
