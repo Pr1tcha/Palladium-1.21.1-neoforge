@@ -2,6 +2,7 @@ package net.threetag.palladium.compat.kubejs;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.plugin.builtin.event.EntityEvents;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -35,6 +36,7 @@ public class PalladiumKubeJSPlugin implements KubeJSPlugin {
 
     @Override
     public void registerEvents(EventGroupRegistry registry) {
+        EntityEvents.GROUP.getHandlers().putIfAbsent("hurt", EntityEvents.BEFORE_HURT);
         registry.register(PalladiumJSEvents.GROUP);
     }
 
