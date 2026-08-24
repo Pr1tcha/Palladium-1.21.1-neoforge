@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.PalladiumConfig;
 import net.threetag.palladium.condition.AbilityWheelCondition;
 import net.threetag.palladium.condition.Condition;
+import net.threetag.palladium.condition.ConditionSerializer;
 import net.threetag.palladium.condition.CooldownType;
 import net.threetag.palladium.network.SyncAbilityEntryPropertyMessage;
 import net.threetag.palladium.network.SyncAbilityStateMessage;
@@ -194,16 +195,21 @@ public class AbilityInstance {
     }
 
     private boolean evaluateConditions(List<Condition> conditions, LivingEntity entity) {
-        for (Condition condition : conditions) {
-            if (!condition.active(DataContext.forAbility(entity, this))) {
-                return false;
-            }
+        if (conditions.isEmpty()) {
+            return true;
         }
-        return true;
+
+        DataContext context = DataContext.forAbility(entity, this);
+        return ConditionSerializer.checkConditions(conditions, context);
     }
 
     public void syncState(LivingEntity entity) {
-        getSyncStateMessage(entity).sendToDimension(entity.level());
+        var message = getSyncStateMessage(entity);
+        if (entity instanceof ServerPlayer serverPlayer) {
+            message.sendToTrackingAndSelf(serverPlayer);
+        } else {
+            message.sendToTracking(entity);
+        }
     }
 
     public SyncAbilityStateMessage getSyncStateMessage(LivingEntity entity) {

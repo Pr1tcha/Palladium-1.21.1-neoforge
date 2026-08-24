@@ -1,6 +1,5 @@
 package net.threetag.palladium.power;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,6 +8,7 @@ import net.threetag.palladium.network.UpdatePowersMessage;
 import net.threetag.palladium.power.provider.PowerProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +18,8 @@ public class PowerHandler implements IPowerHandler {
     private final Map<ResourceLocation, IPowerHolder> powers = new HashMap<>();
     private final LivingEntity entity;
     private CompoundTag powerData = new CompoundTag();
+    private final List<IPowerHolder> tickRemoveBuffer = new ArrayList<>();
+    private final List<DefaultPowerHolder> tickAddBuffer = new ArrayList<>();
 
     public PowerHandler(LivingEntity entity) {
         this.entity = entity;
@@ -25,19 +27,20 @@ public class PowerHandler implements IPowerHandler {
 
     @Override
     public Map<ResourceLocation, IPowerHolder> getPowerHolders() {
-        return ImmutableMap.copyOf(this.powers);
+        return Collections.unmodifiableMap(this.powers);
     }
 
     @Override
     public void tick() {
         if (!this.entity.level().isClientSide) {
-            List<IPowerHolder> toRemove = new ArrayList<>();
-            PowerCollector collector = new PowerCollector(this.entity, this, toRemove);
+            this.tickRemoveBuffer.clear();
+            this.tickAddBuffer.clear();
+            PowerCollector collector = new PowerCollector(this.entity, this, this.tickRemoveBuffer, this.tickAddBuffer);
 
             // Find invalid
             for (IPowerHolder holder : this.powers.values()) {
                 if (holder.isInvalid()) {
-                    toRemove.add(holder);
+                    this.tickRemoveBuffer.add(holder);
                 }
             }
 
@@ -47,18 +50,20 @@ public class PowerHandler implements IPowerHandler {
             }
 
             // Remove old ones
-            for (IPowerHolder holder : toRemove) {
+            for (IPowerHolder holder : this.tickRemoveBuffer) {
                 this.removePowerHolder(holder.getPower());
             }
 
             // Add new ones
-            for (DefaultPowerHolder holder : collector.getAdded()) {
+            for (DefaultPowerHolder holder : this.tickAddBuffer) {
                 this.setPowerHolder(holder.getPower(), holder);
             }
 
             // Sync
-            if (!toRemove.isEmpty() || !collector.getAdded().isEmpty()) {
-                var msg = new UpdatePowersMessage(this.entity, toRemove.stream().map(p -> p.getPower().getId()).toList(), collector.getAdded().stream().map(p -> p.getPower().getId()).toList());
+            if (!this.tickRemoveBuffer.isEmpty() || !this.tickAddBuffer.isEmpty()) {
+                var removed = this.tickRemoveBuffer.stream().map(p -> p.getPower().getId()).toList();
+                var added = this.tickAddBuffer.stream().map(p -> p.getPower().getId()).toList();
+                var msg = new UpdatePowersMessage(this.entity, removed, added);
                 if (this.entity instanceof ServerPlayer serverPlayer) {
                     msg.sendToTrackingAndSelf(serverPlayer);
                 } else {
@@ -93,7 +98,6 @@ public class PowerHandler implements IPowerHandler {
         if (this.hasPower(power)) {
             this.powers.put(power.getId(), holder);
         } else {
-            this.removePowerHolder(power);
             this.powers.put(power.getId(), holder);
             holder.fromNBT(this.powerData.getCompound(power.getId().toString()));
             holder.firstTick();
@@ -105,19 +109,15 @@ public class PowerHandler implements IPowerHandler {
     }
 
     public void removePowerHolder(ResourceLocation powerId) {
-        if (this.powers.containsKey(powerId)) {
-            var holder = this.powers.get(powerId);
+        var holder = this.powers.remove(powerId);
+        if (holder != null) {
             boolean isStillValid = !holder.getPower().isInvalid();
             boolean hasPersistentData = holder.getPower().hasPersistentData();
             holder.lastTick();
 
             if (hasPersistentData) {
                 this.savePowerNbt(holder);
-            }
-
-            this.powers.remove(powerId);
-
-            if (isStillValid && !hasPersistentData) {
+            } else if (isStillValid) {
                 this.powerData.remove(powerId.toString());
             }
         }

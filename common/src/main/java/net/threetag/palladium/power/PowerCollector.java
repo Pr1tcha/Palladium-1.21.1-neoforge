@@ -2,7 +2,6 @@ package net.threetag.palladium.power;
 
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -11,12 +10,13 @@ public class PowerCollector {
     private final LivingEntity entity;
     private final IPowerHandler handler;
     private final List<IPowerHolder> toRemove;
-    private final List<DefaultPowerHolder> powerHolders = new ArrayList<>();
+    private final List<DefaultPowerHolder> powerHolders;
 
-    public PowerCollector(LivingEntity entity, IPowerHandler handler, List<IPowerHolder> toRemove) {
+    public PowerCollector(LivingEntity entity, IPowerHandler handler, List<IPowerHolder> toRemove, List<DefaultPowerHolder> powerHolders) {
         this.entity = entity;
         this.handler = handler;
         this.toRemove = toRemove;
+        this.powerHolders = powerHolders;
     }
 
     public void addPower(Power power, Supplier<IPowerValidator> validatorSupplier) {
