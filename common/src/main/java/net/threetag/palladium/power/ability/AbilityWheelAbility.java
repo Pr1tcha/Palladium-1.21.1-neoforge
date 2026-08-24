@@ -19,12 +19,14 @@ public class AbilityWheelAbility extends Ability {
     public static final PalladiumProperty<TextureReference> TEXTURE = new TextureReferenceProperty("texture").configurable("Lets you use a custom texture for the wheel. If left null it will use the default rendering.").sync(SyncType.SELF);
     public static final PalladiumProperty<Boolean> DISABLE_MOUSE_SCROLLING = new BooleanProperty("disable_mouse_scrolling").configurable("Disables the ability to use the mouse wheel to scroll between the options.").sync(SyncType.SELF);
     public static final PalladiumProperty<Boolean> DISABLE_CENTER_ICON = new BooleanProperty("disable_center_icon").configurable("Disables the rendering of the icon in the middle of the wheel.").sync(SyncType.SELF);
+    public static final PalladiumProperty<Boolean> HIDE_LOCKED = new BooleanProperty("hide_locked").configurable("Hides ability slots for locked abilities, reducing the wheel size dynamically.").sync(SyncType.SELF);
 
     public AbilityWheelAbility() {
         this.withProperty(ABILITIES, new String[]{"example_ability"})
                 .withProperty(TEXTURE, null)
                 .withProperty(DISABLE_MOUSE_SCROLLING, false)
-                .withProperty(DISABLE_CENTER_ICON, false);
+                .withProperty(DISABLE_CENTER_ICON, false)
+                .withProperty(HIDE_LOCKED, false);
     }
 
     @Override
@@ -46,9 +48,10 @@ public class AbilityWheelAbility extends Ability {
         if (entity == Minecraft.getInstance().player) {
             List<AbilityInstance> list = new ArrayList<>();
 
+            boolean hideLocked = instance.getProperty(HIDE_LOCKED);
             for (String s : instance.getProperty(ABILITIES)) {
                 AbilityInstance ability = holder.getAbilities().get(s);
-                if (ability != null) {
+                if (ability != null && (!hideLocked || ability.isUnlocked())) {
                     list.add(ability);
                 }
             }
