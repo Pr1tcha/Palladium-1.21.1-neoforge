@@ -11,17 +11,16 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
-import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -31,14 +30,17 @@ import net.threetag.palladium.network.PalladiumNetwork;
 import net.threetag.palladium.network.RightClickAttackMessage;
 import net.threetag.palladium.power.ability.Abilities;
 import net.threetag.palladium.power.ability.AbilityUtil;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.entity.PartEntity;
 
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Function;
 
 public class DualWieldingPlayerHandler {
 
-    protected static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     @SuppressWarnings("unchecked")
     public static Function<Player, AttributeMap> ATTRIBUTE_MAP_FACTORY = player -> new AttributeMap(DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) player.getType()));
     private final Player player;
@@ -66,14 +68,18 @@ public class DualWieldingPlayerHandler {
     }
 
     public void attackWithOffHand(Entity target) {
+        if (!CommonHooks.onPlayerAttackTarget(this.player, target)) {
+            return;
+        }
+
         if (target.isAttackable()) {
             if (!target.skipAttackInteraction(this.player)) {
                 float f = (float) getOffHandAttackStrength(this.player);
-                float g;
-                if (target instanceof LivingEntity) {
-                    g = EnchantmentHelper.getDamageBonus(this.player.getOffhandItem(), ((LivingEntity) target).getMobType());
-                } else {
-                    g = EnchantmentHelper.getDamageBonus(this.player.getOffhandItem(), MobType.UNDEFINED);
+                ItemStack weapon = this.player.getOffhandItem();
+                DamageSource damageSource = this.player.damageSources().playerAttack(this.player);
+                float g = 0.0F;
+                if (this.player.level() instanceof ServerLevel serverLevel) {
+                    g = EnchantmentHelper.modifyDamage(serverLevel, weapon, target, damageSource, f) - f;
                 }
 
                 float h = getOffHandAttackStrengthScale(0.5F);
@@ -83,8 +89,9 @@ public class DualWieldingPlayerHandler {
                 if (f > 0.0F || g > 0.0F) {
                     boolean bl = h > 0.9F;
                     boolean bl2 = false;
-                    int i = 0;
-                    i += EnchantmentHelper.getKnockbackBonus(this.player);
+                    float i = this.player.level() instanceof ServerLevel serverLevel
+                            ? EnchantmentHelper.modifyKnockback(serverLevel, weapon, target, damageSource, 0.0F)
+                            : 0.0F;
                     if (this.player.isSprinting() && bl) {
                         this.player.level().playSound(null, this.player.getX(), this.player.getY(), this.player.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, this.player.getSoundSource(), 1.0F, 1.0F);
                         ++i;
@@ -100,33 +107,29 @@ public class DualWieldingPlayerHandler {
                             && !this.player.isPassenger()
                             && target instanceof LivingEntity;
                     bl3 = bl3 && !this.player.isSprinting();
+                    f += weapon.getItem().getAttackDamageBonus(target, f, damageSource);
+                    var criticalHit = CommonHooks.fireCriticalHit(this.player, target, bl3, bl3 ? 1.5F : 1.0F);
+                    bl3 = criticalHit.isCriticalHit();
                     if (bl3) {
-                        f *= 1.5F;
+                        f *= criticalHit.getDamageMultiplier();
                     }
 
                     f += g;
                     boolean bl4 = false;
                     double d = this.player.walkDist - this.player.walkDistO;
-                    if (bl && !bl3 && !bl2 && this.player.onGround() && d < (double) this.player.getSpeed()) {
-                        ItemStack itemStack = this.player.getItemInHand(InteractionHand.OFF_HAND);
-                        if (itemStack.getItem() instanceof SwordItem) {
-                            bl4 = true;
-                        }
+                    boolean criticalBlocksSweep = criticalHit.isCriticalHit() && criticalHit.disableSweep();
+                    if (bl && !criticalBlocksSweep && !bl2 && this.player.onGround() && d < (double) this.player.getSpeed()) {
+                        bl4 = weapon.canPerformAction(ItemAbilities.SWORD_SWEEP);
                     }
+                    bl4 = CommonHooks.fireSweepAttack(this.player, target, bl4).isSweeping();
 
                     float j = 0.0F;
-                    boolean bl5 = false;
-                    int k = EnchantmentHelper.getFireAspect(this.player);
                     if (target instanceof LivingEntity) {
                         j = ((LivingEntity) target).getHealth();
-                        if (k > 0 && !target.isOnFire()) {
-                            bl5 = true;
-                            target.setSecondsOnFire(1);
-                        }
                     }
 
                     Vec3 vec3 = target.getDeltaMovement();
-                    boolean bl6 = target.hurt(this.player.damageSources().playerAttack(this.player), f);
+                    boolean bl6 = target.hurt(damageSource, f);
                     if (bl6) {
                         this.swing();
 
@@ -151,18 +154,24 @@ public class DualWieldingPlayerHandler {
                         }
 
                         if (bl4) {
-                            float l = 1.0F + EnchantmentHelper.getSweepingDamageRatio(this.player) * f;
+                            float l = 1.0F + (float) getOffHandAttributeValue(this.player, Attributes.SWEEPING_DAMAGE_RATIO) * f;
 
-                            for (LivingEntity livingEntity : this.player.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0, 0.25, 1.0))) {
+                            for (LivingEntity livingEntity : this.player.level().getEntitiesOfClass(LivingEntity.class, weapon.getSweepHitBox(this.player, target))) {
                                 if (livingEntity != this.player
                                         && livingEntity != target
                                         && !this.player.isAlliedTo(livingEntity)
                                         && (!(livingEntity instanceof ArmorStand) || !((ArmorStand) livingEntity).isMarker())
-                                        && this.player.distanceToSqr(livingEntity) < 9.0) {
+                                        && this.player.distanceToSqr(livingEntity) < Mth.square(this.player.entityInteractionRange())) {
                                     livingEntity.knockback(
                                             0.4F, Mth.sin(this.player.getYRot() * (float) (Math.PI / 180.0)), -Mth.cos(this.player.getYRot() * (float) (Math.PI / 180.0))
                                     );
-                                    livingEntity.hurt(this.player.damageSources().playerAttack(this.player), l);
+                                    float sweepingDamage = this.player.level() instanceof ServerLevel serverLevel
+                                            ? EnchantmentHelper.modifyDamage(serverLevel, weapon, livingEntity, damageSource, l) * h
+                                            : l;
+                                    livingEntity.hurt(damageSource, sweepingDamage);
+                                    if (this.player.level() instanceof ServerLevel serverLevel) {
+                                        EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, livingEntity, damageSource, weapon);
+                                    }
                                 }
                             }
 
@@ -194,20 +203,27 @@ public class DualWieldingPlayerHandler {
                         }
 
                         this.player.setLastHurtMob(target);
-                        if (target instanceof LivingEntity) {
-                            EnchantmentHelper.doPostHurtEffects((LivingEntity) target, this.player);
-                        }
-
-                        EnchantmentHelper.doPostDamageEffects(this.player, target);
                         ItemStack itemStack2 = this.player.getOffhandItem();
                         Entity entity = target;
-                        if (target instanceof EnderDragonPart) {
-                            entity = ((EnderDragonPart) target).parentMob;
+                        if (target instanceof PartEntity<?> partEntity) {
+                            entity = partEntity.getParent();
                         }
 
-                        if (!this.player.level().isClientSide && !itemStack2.isEmpty() && entity instanceof LivingEntity) {
-                            itemStack2.hurtEnemy((LivingEntity) entity, this.player);
+                        boolean damageWeapon = false;
+                        ItemStack originalWeapon = itemStack2.copy();
+                        if (this.player.level() instanceof ServerLevel serverLevel) {
+                            if (entity instanceof LivingEntity livingEntity) {
+                                damageWeapon = itemStack2.hurtEnemy(livingEntity, this.player);
+                            }
+                            EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, damageSource, itemStack2);
+                        }
+
+                        if (!this.player.level().isClientSide && !itemStack2.isEmpty() && entity instanceof LivingEntity livingEntity) {
+                            if (damageWeapon) {
+                                itemStack2.postHurtEnemy(livingEntity, this.player);
+                            }
                             if (itemStack2.isEmpty()) {
+                                EventHooks.onPlayerDestroyItem(this.player, originalWeapon, InteractionHand.OFF_HAND);
                                 this.player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
                             }
                         }
@@ -215,10 +231,6 @@ public class DualWieldingPlayerHandler {
                         if (target instanceof LivingEntity) {
                             float m = j - ((LivingEntity) target).getHealth();
                             this.player.awardStat(Stats.DAMAGE_DEALT, Math.round(m * 10.0F));
-                            if (k > 0) {
-                                target.setSecondsOnFire(k * 4);
-                            }
-
                             if (this.player.level() instanceof ServerLevel && m > 2.0F) {
                                 int n = (int) ((double) m * 0.5);
                                 ((ServerLevel) this.player.level()).sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), n, 0.1, 0.0, 0.1, 0.2);
@@ -228,9 +240,6 @@ public class DualWieldingPlayerHandler {
                         this.player.causeFoodExhaustion(0.1F);
                     } else {
                         this.player.level().playSound(null, this.player.getX(), this.player.getY(), this.player.getZ(), SoundEvents.PLAYER_ATTACK_NODAMAGE, this.player.getSoundSource(), 1.0F, 1.0F);
-                        if (bl5) {
-                            target.clearFire();
-                        }
                     }
                 }
             }
@@ -246,28 +255,35 @@ public class DualWieldingPlayerHandler {
     }
 
     public static double getOffHandAttackStrength(Player player) {
-        var attributeMap = ATTRIBUTE_MAP_FACTORY.apply(player);
-        var attackDamage = Objects.requireNonNull(attributeMap.getInstance(Attributes.ATTACK_DAMAGE));
+        return getOffHandAttributeValue(player, Attributes.ATTACK_DAMAGE);
+    }
 
-        if (player.getAttributes().hasAttribute(Attributes.ATTACK_DAMAGE)) {
-            for (AttributeModifier modifier : Objects.requireNonNull(player.getAttributes().getInstance(Attributes.ATTACK_DAMAGE)).getModifiers()) {
-                if (!modifier.getId().equals(BASE_ATTACK_DAMAGE_UUID)) {
-                    attackDamage.addTransientModifier(modifier);
+    public static double getOffHandAttributeValue(Player player, net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute) {
+        var attributeMap = ATTRIBUTE_MAP_FACTORY.apply(player);
+        var result = Objects.requireNonNull(attributeMap.getInstance(attribute));
+        var mainHandModifierIds = new HashSet<net.minecraft.resources.ResourceLocation>();
+        player.getMainHandItem().forEachModifier(EquipmentSlot.MAINHAND, (modifierAttribute, modifier) -> {
+            if (modifierAttribute.equals(attribute)) {
+                mainHandModifierIds.add(modifier.id());
+            }
+        });
+
+        if (player.getAttributes().hasAttribute(attribute)) {
+            for (AttributeModifier modifier : Objects.requireNonNull(player.getAttributes().getInstance(attribute)).getModifiers()) {
+                if (!mainHandModifierIds.contains(modifier.id())) {
+                    result.addOrUpdateTransientModifier(modifier);
                 }
             }
         }
 
         var stack = player.getOffhandItem();
-        var itemAttributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
-
-        if (itemAttributes.containsKey(Attributes.ATTACK_DAMAGE)) {
-            for (AttributeModifier modifier : itemAttributes.get(Attributes.ATTACK_DAMAGE)) {
-                attackDamage.addTransientModifier(modifier);
+        stack.forEachModifier(EquipmentSlot.MAINHAND, (modifierAttribute, modifier) -> {
+            if (modifierAttribute.equals(attribute)) {
+                result.addOrUpdateTransientModifier(modifier);
             }
-        }
+        });
 
-
-        return attackDamage.getValue();
+        return result.getValue();
     }
 
     @Environment(EnvType.CLIENT)
