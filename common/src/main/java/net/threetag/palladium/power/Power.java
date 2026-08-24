@@ -10,6 +10,7 @@ import net.threetag.palladium.client.dynamictexture.TextureReference;
 import net.threetag.palladium.power.ability.AbilityConfiguration;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladium.power.energybar.EnergyBarConfiguration;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladium.util.icon.IIcon;
 import net.threetag.palladium.util.icon.IconSerializer;
 import net.threetag.palladium.util.json.GsonUtil;
@@ -120,7 +121,7 @@ public class Power {
     }
 
     public void toBuffer(FriendlyByteBuf buf) {
-        buf.writeComponent(this.name);
+        ComponentUtil.write(buf, this.name);
         buf.writeNbt(IconSerializer.serializeNBT(this.icon));
         buf.writeBoolean(this.background != null);
         if (this.background != null) {
@@ -142,7 +143,7 @@ public class Power {
     }
 
     public static Power fromBuffer(ResourceLocation id, FriendlyByteBuf buf) {
-        Power power = new Power(id, buf.readComponent(), IconSerializer.parseNBT(Objects.requireNonNull(buf.readNbt())), buf.readBoolean() ? TextureReference.fromBuffer(buf) : null, buf.readBoolean() ? TextureReference.fromBuffer(buf) : null, new Color(buf.readInt()), new Color(buf.readInt()), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), GuiDisplayType.values()[buf.readInt()]);
+        Power power = new Power(id, ComponentUtil.read(buf), IconSerializer.parseNBT(Objects.requireNonNull(buf.readNbt())), buf.readBoolean() ? TextureReference.fromBuffer(buf) : null, buf.readBoolean() ? TextureReference.fromBuffer(buf) : null, new Color(buf.readInt()), new Color(buf.readInt()), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), GuiDisplayType.values()[buf.readInt()]);
 
         List<AbilityConfiguration> configurations = buf.readList(AbilityConfiguration::fromBuffer);
         for (AbilityConfiguration configuration : configurations) {
@@ -158,7 +159,7 @@ public class Power {
     }
 
     public static Power fromJSON(ResourceLocation id, JsonObject json) {
-        Component name = Component.Serializer.fromJson(json.get("name"));
+        Component name = ComponentUtil.fromJson(json.get("name"));
         TextureReference background = GsonUtil.getAsTextureReference(json, "background", null);
         TextureReference abilityBarTexture = GsonUtil.getAsTextureReference(json, "ability_bar_texture", null);
         GuiDisplayType displayType = GuiDisplayType.getByName(GsonHelper.getAsString(json, "gui_display_type", "auto"));

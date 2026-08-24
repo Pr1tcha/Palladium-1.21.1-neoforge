@@ -11,6 +11,7 @@ import net.threetag.palladium.Palladium;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 import net.threetag.palladium.condition.*;
 import net.threetag.palladium.power.energybar.EnergyBarUsage;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladium.util.icon.IIcon;
 import net.threetag.palladium.util.icon.IconSerializer;
 import net.threetag.palladium.util.json.GsonUtil;
@@ -318,13 +319,13 @@ public class AbilityConfiguration {
         public UnlockData(FriendlyByteBuf buf) {
             this.icon = IconSerializer.parseNBT(Objects.requireNonNull(buf.readAnySizeNbt()));
             this.amount = buf.readInt();
-            this.description = buf.readComponent();
+            this.description = ComponentUtil.read(buf);
         }
 
         public void toBuffer(FriendlyByteBuf buf) {
             buf.writeNbt(IconSerializer.serializeNBT(this.icon));
             buf.writeInt(this.amount);
-            buf.writeComponent(this.description);
+            ComponentUtil.write(buf, this.description);
         }
     }
 }

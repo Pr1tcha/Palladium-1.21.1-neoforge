@@ -15,6 +15,7 @@ import net.threetag.palladium.addonpack.builder.AddonBuilder;
 import net.threetag.palladium.addonpack.builder.CreativeModeTabBuilder;
 import net.threetag.palladium.documentation.HTMLBuilder;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladium.util.json.GsonUtil;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class CreativeModeTabParser extends AddonParser<CreativeModeTab> {
         builder.itemIconId(GsonUtil.getAsResourceLocation(json, "icon"));
 
         if (GsonHelper.isValidNode(json, "title")) {
-            builder.title(Component.Serializer.fromJson(json.get("title")));
+            builder.title(ComponentUtil.fromJson(json.get("title")));
         }
 
         if (GsonHelper.isValidNode(json, "items")) {

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.threetag.palladium.util.ComponentUtil;
 
 public class AbilityDescription {
 
@@ -26,30 +27,30 @@ public class AbilityDescription {
 
     public static AbilityDescription fromJson(JsonElement jsonElement) {
         if (jsonElement.isJsonPrimitive()) {
-            return new AbilityDescription(Component.Serializer.fromJson(jsonElement));
+            return new AbilityDescription(ComponentUtil.fromJson(jsonElement));
         } else if (jsonElement.isJsonObject()) {
             var obj = jsonElement.getAsJsonObject();
 
             if (obj.has("locked") && obj.has("unlocked")) {
                 return new AbilityDescription(
-                        Component.Serializer.fromJson(obj.get("locked")),
-                        Component.Serializer.fromJson(obj.get("unlocked"))
+                        ComponentUtil.fromJson(obj.get("locked")),
+                        ComponentUtil.fromJson(obj.get("unlocked"))
                 );
             } else {
-                return new AbilityDescription(Component.Serializer.fromJson(jsonElement));
+                return new AbilityDescription(ComponentUtil.fromJson(jsonElement));
             }
         } else {
-            return new AbilityDescription(Component.Serializer.fromJson(jsonElement));
+            return new AbilityDescription(ComponentUtil.fromJson(jsonElement));
         }
     }
 
     public JsonElement toJson() {
         if (this.lockedDescription == this.unlockedDescription) {
-            return Component.Serializer.toJsonTree(this.lockedDescription);
+            return ComponentUtil.toJsonTree(this.lockedDescription);
         } else {
             JsonObject json = new JsonObject();
-            json.add("locked", Component.Serializer.toJsonTree(this.lockedDescription));
-            json.add("unlocked", Component.Serializer.toJsonTree(this.unlockedDescription));
+            json.add("locked", ComponentUtil.toJsonTree(this.lockedDescription));
+            json.add("unlocked", ComponentUtil.toJsonTree(this.unlockedDescription));
             return json;
         }
     }
@@ -59,33 +60,33 @@ public class AbilityDescription {
         var unlocked = nbt.getString("Unlocked");
 
         if (locked.equals(unlocked)) {
-            return new AbilityDescription(Component.Serializer.fromJson(locked));
+            return new AbilityDescription(ComponentUtil.fromJson(locked));
         } else {
-            return new AbilityDescription(Component.Serializer.fromJson(locked), Component.Serializer.fromJson(unlocked));
+            return new AbilityDescription(ComponentUtil.fromJson(locked), ComponentUtil.fromJson(unlocked));
         }
     }
 
     public CompoundTag toNbt() {
         var nbt = new CompoundTag();
-        nbt.putString("Locked", Component.Serializer.toJson(this.lockedDescription));
-        nbt.putString("Unlocked", Component.Serializer.toJson(this.unlockedDescription));
+        nbt.putString("Locked", ComponentUtil.toJson(this.lockedDescription));
+        nbt.putString("Unlocked", ComponentUtil.toJson(this.unlockedDescription));
         return nbt;
     }
 
     public static AbilityDescription fromBuffer(FriendlyByteBuf buf) {
         boolean same = buf.readBoolean();
         if (same) {
-            return new AbilityDescription(buf.readComponent());
+            return new AbilityDescription(ComponentUtil.read(buf));
         } else {
-            return new AbilityDescription(buf.readComponent(), buf.readComponent());
+            return new AbilityDescription(ComponentUtil.read(buf), ComponentUtil.read(buf));
         }
     }
 
     public void toBuffer(FriendlyByteBuf buf) {
         buf.writeBoolean(this.lockedDescription == this.unlockedDescription);
-        buf.writeComponent(this.lockedDescription);
+        ComponentUtil.write(buf, this.lockedDescription);
         if (this.lockedDescription != this.unlockedDescription) {
-            buf.writeComponent(this.unlockedDescription);
+            ComponentUtil.write(buf, this.unlockedDescription);
         }
     }
 

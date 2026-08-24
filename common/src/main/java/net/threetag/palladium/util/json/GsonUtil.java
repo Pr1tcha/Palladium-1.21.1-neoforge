@@ -18,6 +18,7 @@ import net.threetag.palladium.accessory.AccessorySlot;
 import net.threetag.palladium.client.dynamictexture.TextureReference;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladium.power.energybar.EnergyBarReference;
+import net.threetag.palladium.util.ComponentUtil;
 import net.threetag.palladium.util.ItemStackDataUtil;
 import net.threetag.palladium.util.ModelLayerLocationUtil;
 import org.jetbrains.annotations.Nullable;
@@ -368,7 +369,7 @@ public class GsonUtil {
 
     public static Component getAsComponent(JsonObject json, String memberName) {
         if (GsonHelper.isValidNode(json, memberName)) {
-            return Component.Serializer.fromJson(json.get(memberName));
+            return ComponentUtil.fromJson(json.get(memberName));
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Text Component definition");
         }
@@ -384,12 +385,12 @@ public class GsonUtil {
     public static List<Component> getAsComponentList(JsonObject json, String memberName) {
         if (GsonHelper.isValidNode(json, memberName)) {
             if (json.get(memberName).isJsonPrimitive() || json.get(memberName).isJsonObject()) {
-                return List.of(Objects.requireNonNull(Component.Serializer.fromJson(json.get(memberName))));
+                return List.of(Objects.requireNonNull(ComponentUtil.fromJson(json.get(memberName))));
             }
             JsonArray array = GsonHelper.convertToJsonArray(json.get(memberName), memberName);
             List<Component> list = new ArrayList<>();
             for (int i = 0; i < array.size(); i++) {
-                list.add(Component.Serializer.fromJson(array.get(i)));
+                list.add(ComponentUtil.fromJson(array.get(i)));
             }
             return list;
         } else {
