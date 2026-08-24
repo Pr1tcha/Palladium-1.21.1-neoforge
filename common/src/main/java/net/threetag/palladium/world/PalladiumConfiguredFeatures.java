@@ -2,7 +2,7 @@ package net.threetag.palladium.world;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
@@ -30,7 +30,7 @@ public class PalladiumConfiguredFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> ORE_LEAD = registerKey("ore_lead");
     public static final ResourceKey<ConfiguredFeature<?, ?>> UNDERGROUND_VIBRANIUM_METEORITE = registerKey("underground_vibranium_meteorite");
 
-    public static void bootstrap(BootstapContext<ConfiguredFeature<?, ?>> context) {
+    public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> context) {
         register(context, ORE_LEAD, Feature.ORE, new OreConfiguration(LEAD_ORE_REPLACEMENTS.get(), 9));
         register(context, UNDERGROUND_VIBRANIUM_METEORITE, PalladiumFeatures.UNDERGROUND_VIBRANIUM_METEORITE.get(), new OreConfiguration(METEORITE_REPLACEMENTS.get(), 3));
     }
@@ -39,7 +39,7 @@ public class PalladiumConfiguredFeatures {
         return ResourceKey.create(Registries.CONFIGURED_FEATURE, Palladium.id(name));
     }
 
-    private static <FC extends FeatureConfiguration, F extends Feature<FC>> void register(BootstapContext<ConfiguredFeature<?, ?>> context,
+    private static <FC extends FeatureConfiguration, F extends Feature<FC>> void register(BootstrapContext<ConfiguredFeature<?, ?>> context,
                                                                                           ResourceKey<ConfiguredFeature<?, ?>> key, F feature, FC configuration) {
         context.register(key, new ConfiguredFeature<>(feature, configuration));
     }
