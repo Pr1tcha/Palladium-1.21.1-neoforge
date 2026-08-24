@@ -107,7 +107,7 @@ public class PalladiumForge {
         PalladiumBlockTagsProvider blockTagsProvider = new PalladiumBlockTagsProvider(output, e.getLookupProvider(), e.getExistingFileHelper());
         e.getGenerator().addProvider(e.includeServer(), blockTagsProvider);
         e.getGenerator().addProvider(e.includeServer(), new PalladiumItemTagsProvider(output, e.getLookupProvider(), e.getExistingFileHelper()));
-        e.getGenerator().addProvider(e.includeServer(), new PalladiumRecipeProvider(output));
+        e.getGenerator().addProvider(e.includeServer(), new PalladiumRecipeProvider(output, e.getLookupProvider()));
         e.getGenerator().addProvider(e.includeServer(), new PalladiumLootTableProvider(output));
         e.getGenerator().addProvider(e.includeServer(), new PalladiumWorldGenProvider(output, e.getLookupProvider()));
         e.getGenerator().addProvider(e.includeServer(), new PalladiumDamageTypeProvider(output, e.getLookupProvider(), e.getExistingFileHelper()));

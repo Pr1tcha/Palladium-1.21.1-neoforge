@@ -2,6 +2,8 @@ package net.threetag.palladium.data.forge;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -10,20 +12,19 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.block.PalladiumBlocks;
 import net.threetag.palladium.item.PalladiumItems;
+import net.threetag.palladium.item.recipe.MultiversalExtrapolatorCloningRecipe;
+import net.threetag.palladium.item.recipe.MultiversalExtrapolatorTransferRecipe;
 import net.threetag.palladium.item.recipe.PalladiumRecipeSerializers;
 import net.threetag.palladium.tags.PalladiumItemTags;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("NullableProblems")
 public class PalladiumRecipeProvider extends RecipeProvider {
@@ -32,12 +33,12 @@ public class PalladiumRecipeProvider extends RecipeProvider {
     private static final ImmutableList<ItemLike> TITANIUM_SMELTABLES = ImmutableList.of(PalladiumItems.RAW_TITANIUM.get(), PalladiumItems.TITANIUM_ORE.get());
     private static final ImmutableList<ItemLike> VIBRANIUM_SMELTABLES = ImmutableList.of(PalladiumItems.RAW_VIBRANIUM.get(), PalladiumItems.VIBRANIUM_ORE.get());
 
-    public PalladiumRecipeProvider(PackOutput packOutput) {
-        super(packOutput);
+    public PalladiumRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(packOutput, lookupProvider);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, PalladiumItems.SUIT_STAND.get()).pattern(" B ").pattern("SBS").pattern("SXS").define('B', PalladiumItemTags.QUARTZ).define('S', Ingredient.of(Blocks.QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ_SLAB)).define('X', Blocks.SMOOTH_STONE_SLAB).unlockedBy(getHasName(Items.ARMOR_STAND), has(Items.ARMOR_STAND)).save(consumer);
 
         oreSmelting(consumer, LEAD_SMELTABLES, RecipeCategory.MISC, PalladiumItems.LEAD_INGOT.get(), 0.7F, 200, "lead_ingot");
@@ -78,42 +79,11 @@ public class PalladiumRecipeProvider extends RecipeProvider {
         }
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()).requires(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()).requires(PalladiumItems.QUARTZ_CIRCUIT.get()).unlockedBy(getHasName(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get()), has(PalladiumItems.MULTIVERSAL_EXTRAPOLATOR.get())).save(consumer, Palladium.id("multiversal_extrapolator_reset"));
-        SpecialRecipeBuilder.special(PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_TRANSFER.get()).save(consumer, PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_TRANSFER.getId().toString());
-        SpecialRecipeBuilder.special(PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_CLONING.get()).save(consumer, PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_CLONING.getId().toString());
-    }
-
-    protected static void oreSmelting(Consumer<FinishedRecipe> finishedRecipeConsumer, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTIme, String group) {
-        oreCooking(finishedRecipeConsumer, RecipeSerializer.SMELTING_RECIPE, ingredients, category, result, experience, cookingTIme, group, "_from_smelting");
-    }
-
-    protected static void oreBlasting(Consumer<FinishedRecipe> finishedRecipeConsumer, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group) {
-        oreCooking(finishedRecipeConsumer, RecipeSerializer.BLASTING_RECIPE, ingredients, category, result, experience, cookingTime, group, "_from_blasting");
-    }
-
-    protected static void oreCooking(Consumer<FinishedRecipe> finishedRecipeConsumer, RecipeSerializer<? extends AbstractCookingRecipe> cookingSerializer, List<ItemLike> ingredients, RecipeCategory category, ItemLike result, float experience, int cookingTime, String group, String recipeName) {
-        for (ItemLike itemlike : ingredients) {
-            SimpleCookingRecipeBuilder.generic(Ingredient.of(itemlike), category, result, experience, cookingTime, cookingSerializer).group(group).unlockedBy(getHasName(itemlike), has(itemlike)).save(finishedRecipeConsumer, Palladium.id(getItemName(result) + recipeName + "_" + getItemName(itemlike)));
-        }
-    }
-
-    protected static void nineBlockStorageRecipes(Consumer<FinishedRecipe> finishedRecipeConsumer, RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed) {
-        nineBlockStorageRecipes(finishedRecipeConsumer, unpackedCategory, unpacked, packedCategory, packed, getSimpleRecipeName(packed), null, getSimpleRecipeName(unpacked), null);
-    }
-
-    protected static void nineBlockStorageRecipesWithCustomPacking(Consumer<FinishedRecipe> finishedRecipeConsumer, RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String packedName, String packedGroup) {
-        nineBlockStorageRecipes(finishedRecipeConsumer, unpackedCategory, unpacked, packedCategory, packed, packedName, packedGroup, getSimpleRecipeName(unpacked), null);
-    }
-
-    protected static void nineBlockStorageRecipesRecipesWithCustomUnpacking(Consumer<FinishedRecipe> finishedRecipeConsumer, RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String unpackedName, String unpackedGroup) {
-        nineBlockStorageRecipes(finishedRecipeConsumer, unpackedCategory, unpacked, packedCategory, packed, getSimpleRecipeName(packed), null, unpackedName, unpackedGroup);
-    }
-
-    protected static void nineBlockStorageRecipes(Consumer<FinishedRecipe> finishedRecipeConsumer, RecipeCategory unpackedCategory, ItemLike unpacked, RecipeCategory packedCategory, ItemLike packed, String packedName, @javax.annotation.Nullable String packedGroup, String unpackedName, @javax.annotation.Nullable String unpackedGroup) {
-        ShapelessRecipeBuilder.shapeless(unpackedCategory, unpacked, 9).requires(packed).group(unpackedGroup).unlockedBy(getHasName(packed), has(packed)).save(finishedRecipeConsumer, Palladium.id(unpackedName));
-        ShapedRecipeBuilder.shaped(packedCategory, packed).define('#', unpacked).pattern("###").pattern("###").pattern("###").group(packedGroup).unlockedBy(getHasName(unpacked), has(unpacked)).save(finishedRecipeConsumer, Palladium.id(packedName));
+        SpecialRecipeBuilder.special(MultiversalExtrapolatorTransferRecipe::new).save(consumer, PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_TRANSFER.getId());
+        SpecialRecipeBuilder.special(MultiversalExtrapolatorCloningRecipe::new).save(consumer, PalladiumRecipeSerializers.MULTIVERSAL_EXTRAPOLATOR_CLONING.getId());
     }
 
     private static Item getWoolBlockByColor(DyeColor color) {
-        return ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(color.getName() + "_wool"));
+        return BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(color.getName() + "_wool"));
     }
 }
