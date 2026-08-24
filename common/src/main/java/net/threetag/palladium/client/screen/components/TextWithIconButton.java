@@ -30,7 +30,7 @@ public class TextWithIconButton extends Button {
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        guiGraphics.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+        guiGraphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = this.active ? 16777215 : 10526880;
 
@@ -41,17 +41,6 @@ public class TextWithIconButton extends Button {
         guiGraphics.drawString(minecraft.font, this.getMessage(), (int) (this.getX() + this.width / 2F - fullTextWidth / 2F), (int) (this.getY() + (this.getHeight() - 8) / 2F), color);
         guiGraphics.drawString(minecraft.font, this.suffix, (int) (this.getX() + this.width / 2F - fullTextWidth / 2F + prefixWidth + 16), (int) (this.getY() + (this.height - 8F) / 2F), color);
         this.icon.draw(minecraft, guiGraphics, DataContext.forEntity(minecraft.player), this.getX() + this.width / 2 - fullTextWidth / 2 + prefixWidth, this.getY() + (this.height - 8) / 2 - 4);
-    }
-
-    private int getTextureY() {
-        int i = 1;
-        if (!this.active) {
-            i = 0;
-        } else if (this.isHoveredOrFocused()) {
-            i = 2;
-        }
-
-        return 46 + i * 20;
     }
 
     public static Builder textWithIconBuilder(Component prefix, IIcon icon, Button.OnPress onPress) {

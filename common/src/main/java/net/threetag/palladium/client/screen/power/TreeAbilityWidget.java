@@ -18,6 +18,7 @@ import net.threetag.palladium.power.IPowerHolder;
 import net.threetag.palladium.power.ability.Ability;
 import net.threetag.palladium.power.ability.AbilityInstance;
 import net.threetag.palladium.util.context.DataContext;
+import net.threetag.palladium.util.GuiUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -215,16 +216,17 @@ public class TreeAbilityWidget {
 
         int n = 32 + this.description.size() * 9;
         if (!this.description.isEmpty()) {
+            RenderSystem.setShaderTexture(0, PowersScreen.WIDGETS);
             if (bl2) {
-                guiGraphics.blitNineSliced(PowersScreen.WIDGETS, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
+                GuiUtil.drawContinuousTexturedBox(guiGraphics.pose(), m, l + 26 - n, 0, 52, this.width, n, 200, 26, 10, 0F);
             } else {
-                guiGraphics.blitNineSliced(PowersScreen.WIDGETS, m, l, this.width, n, 10, 200, 26, 0, 52);
+                GuiUtil.drawContinuousTexturedBox(guiGraphics.pose(), m, l, 0, 52, this.width, n, 200, 26, 10, 0F);
             }
         }
 
-        guiGraphics.blit(PowersScreen.WIDGETS, m, l, 0, advancementWidgetType.getIndex() * 26, j, 26);
-        guiGraphics.blit(PowersScreen.WIDGETS, m + j, l, 200 - k, advancementWidgetType2.getIndex() * 26, k, 26);
-        guiGraphics.blit(PowersScreen.WIDGETS, x + this.x + 3, y + this.y, 0, 78 + advancementWidgetType3.getIndex() * 26, 26, 26);
+        guiGraphics.blit(PowersScreen.WIDGETS, m, l, 0, advancementWidgetType.ordinal() * 26, j, 26);
+        guiGraphics.blit(PowersScreen.WIDGETS, m + j, l, 200 - k, advancementWidgetType2.ordinal() * 26, k, 26);
+        guiGraphics.blit(PowersScreen.WIDGETS, x + this.x + 3, y + this.y, 0, 78 + advancementWidgetType3.ordinal() * 26, 26, 26);
         if (bl) {
             guiGraphics.drawString(this.minecraft.font, this.title, m + 5, y + this.y + 9, -1);
             if (string != null) {
