@@ -41,7 +41,7 @@ public class CustomProjectileRenderer extends EntityRenderer<CustomProjectile> {
                 poseStack.pushPose();
                 poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
                 poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
-                poseStack.translate(-0.5F, entity.dimensions.height / 2F, 0);
+                poseStack.translate(-0.5F, entity.dimensions.height() / 2F, 0);
                 poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
                 poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
                 var vertexConsumer = buffer.getBuffer(PalladiumRenderTypes.LASER);
@@ -51,7 +51,7 @@ public class CustomProjectileRenderer extends EntityRenderer<CustomProjectile> {
                 poseStack.pushPose();
                 poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
                 poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
-                poseStack.translate(-0.5F, entity.dimensions.height / 2F, 0);
+                poseStack.translate(-0.5F, entity.dimensions.height() / 2F, 0);
                 poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
                 poseStack.mulPose(Axis.XP.rotationDegrees(270.0F));
                 for (ResourceLocation id : renderLayers.renderLayers) {

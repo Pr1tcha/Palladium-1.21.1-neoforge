@@ -30,7 +30,7 @@ public class ItemModelPropertyVariable extends AbstractFloatTextureVariable {
         var item = context.getItem();
 
         if (!item.isEmpty()) {
-            ItemPropertyFunction itemProperty = ItemProperties.getProperty(item.getItem(), modelProperty);
+            ItemPropertyFunction itemProperty = ItemProperties.getProperty(item, modelProperty);
             if (itemProperty == null) {
                 return this.fallback;
             }

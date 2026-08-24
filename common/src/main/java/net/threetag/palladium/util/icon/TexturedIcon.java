@@ -4,14 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -43,24 +39,10 @@ public record TexturedIcon(TextureReference texture, Color tint) implements IIco
     @Override
     @Environment(EnvType.CLIENT)
     public void draw(Minecraft mc, GuiGraphics guiGraphics, DataContext context, int x, int y, int w, int h) {
-        var stack = guiGraphics.pose();
-        RenderSystem.setShaderTexture(0, this.texture.getTexture(context));
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-        var tesselator = Tesselator.getInstance();
-        var buffer = tesselator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        var m = stack.last().pose();
         var color = this.tint != null ? this.tint : Color.WHITE;
-        var r = color.getRed();
-        var g = color.getGreen();
-        var b = color.getBlue();
-        var a = color.getAlpha();
-        buffer.vertex(m, x, y + h, 0).color(r, g, b, a).uv(0, 1).endVertex();
-        buffer.vertex(m, x + w, y + h, 0).color(r, g, b, a).uv(1, 1).endVertex();
-        buffer.vertex(m, x + w, y, 0).color(r, g, b, a).uv(1, 0).endVertex();
-        buffer.vertex(m, x, y, 0).color(r, g, b, a).uv(0, 0).endVertex();
-        tesselator.end();
+        RenderSystem.setShaderColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+        guiGraphics.blit(this.texture.getTexture(context), x, y, 0, 0, w, h, w, h);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
     @Override
