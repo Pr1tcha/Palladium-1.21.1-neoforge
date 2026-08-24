@@ -194,7 +194,7 @@ public class PowersScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         int i = (this.width - WINDOW_WIDTH) / 2;
         int j = (this.height - WINDOW_HEIGHT) / 2;
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         this.renderInside(guiGraphics, mouseX, mouseY, i, j, partialTick);
         this.renderWindow(guiGraphics, i, j);
         this.renderTooltips(guiGraphics, mouseX, mouseY, i, j, partialTick);
@@ -333,7 +333,7 @@ public class PowersScreen extends Screen {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
             this.visible = !(this.screen instanceof CreativeModeInventoryScreen) || CreativeModeInventoryScreen.selectedTab == BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.INVENTORY);
 
             var pos = getPos(this.screen);
@@ -341,14 +341,14 @@ public class PowersScreen extends Screen {
                 this.setPosition(pos.x, pos.y);
             }
             this.active = this.visible && !PowerManager.getPowerHandler(Minecraft.getInstance().player).orElse(new PowerHandler(null)).getPowerHolders().isEmpty();
-            super.render(guiGraphics, mouseX, mouseY, partialTicks);
+            super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
         }
 
         public static Vector2i getPos(Screen screen) {
             if (screen instanceof InventoryScreen || screen.getClass().toString().equals("class top.theillusivec4.curios.client.gui.CuriosScreen")) {
-                return new Vector2i(((AbstractContainerScreen<?>) screen).leftPos + 134, screen.height / 2 - 23);
+                return new Vector2i(((AbstractContainerScreen<?>) screen).getGuiLeft() + 134, screen.height / 2 - 23);
             } else if (screen instanceof CreativeModeInventoryScreen) {
-                return new Vector2i(((AbstractContainerScreen<?>) screen).leftPos + 148, screen.height / 2 - 50);
+                return new Vector2i(((AbstractContainerScreen<?>) screen).getGuiLeft() + 148, screen.height / 2 - 50);
             }
             return null;
         }

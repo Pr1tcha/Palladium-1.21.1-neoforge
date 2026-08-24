@@ -19,6 +19,7 @@ import net.threetag.palladium.menu.MultiversalIteratorSuitStandMenu;
 import net.threetag.palladium.multiverse.Universe;
 import net.threetag.palladium.sound.PalladiumSoundEvents;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class MultiversalIteratorSuitStandScreen extends AbstractContainerScreen<MultiversalIteratorSuitStandMenu> implements ContainerListener {
 
@@ -67,7 +68,7 @@ public class MultiversalIteratorSuitStandScreen extends AbstractContainerScreen<
             this.menu.suitStand.yBodyRot = 210.0F;
             this.menu.suitStand.setXRot(25F);
             this.menu.getSelectedPage().pretend(this.menu.suitStand,
-                    armorStand -> InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + (this.imageWidth / 2), this.topPos + 105, 30, SUIT_STAND_ANGLE, null, armorStand));
+                    armorStand -> InventoryScreen.renderEntityInInventory(guiGraphics, this.leftPos + (this.imageWidth / 2F), this.topPos + 105F, 30F, new Vector3f(), SUIT_STAND_ANGLE, null, armorStand));
             this.menu.suitStand.yBodyRot = cachedYRot;
             this.menu.suitStand.setXRot(cachedXRot);
         }
@@ -75,7 +76,7 @@ public class MultiversalIteratorSuitStandScreen extends AbstractContainerScreen<
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }

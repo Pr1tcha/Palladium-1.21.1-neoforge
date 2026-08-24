@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class AddonPackLogScreen extends Screen {
 
@@ -54,14 +53,29 @@ public class AddonPackLogScreen extends Screen {
             this.addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, (button) -> Objects.requireNonNull(this.minecraft).setScreen(this.parent))
                     .bounds(this.width / 2 + 310 - 70, this.height - 28, 75, 20).build());
 
-        this.addRenderableWidget(new CheckboxButton(this.width / 2 - 310, this.height - 52, 70, 20, Component.literal("INFO").withStyle(AddonPackLogEntry.Type.INFO.getColor()), INFO_FILTER, b -> INFO_FILTER = b));
-        this.addRenderableWidget(new CheckboxButton(this.width / 2 - 35, this.height - 52, 70, 20, Component.literal("WARNING").withStyle(AddonPackLogEntry.Type.WARNING.getColor()), WARNINGS_FILTER, b -> WARNINGS_FILTER = b));
-        this.addRenderableWidget(new CheckboxButton(this.width / 2 + 310 - 50, this.height - 52, 70, 20, Component.literal("ERROR").withStyle(AddonPackLogEntry.Type.ERROR.getColor()), ERRORS_FILTER, b -> ERRORS_FILTER = b));
+        this.addRenderableWidget(Checkbox.builder(Component.literal("INFO").withStyle(AddonPackLogEntry.Type.INFO.getColor()), this.font)
+                .pos(this.width / 2 - 310, this.height - 52).maxWidth(70).selected(INFO_FILTER)
+                .onValueChange((checkbox, selected) -> {
+                    INFO_FILTER = selected;
+                    this.list.refreshList();
+                }).build());
+        this.addRenderableWidget(Checkbox.builder(Component.literal("WARNING").withStyle(AddonPackLogEntry.Type.WARNING.getColor()), this.font)
+                .pos(this.width / 2 - 35, this.height - 52).maxWidth(70).selected(WARNINGS_FILTER)
+                .onValueChange((checkbox, selected) -> {
+                    WARNINGS_FILTER = selected;
+                    this.list.refreshList();
+                }).build());
+        this.addRenderableWidget(Checkbox.builder(Component.literal("ERROR").withStyle(AddonPackLogEntry.Type.ERROR.getColor()), this.font)
+                .pos(this.width / 2 + 310 - 50, this.height - 52).maxWidth(70).selected(ERRORS_FILTER)
+                .onValueChange((checkbox, selected) -> {
+                    ERRORS_FILTER = selected;
+                    this.list.refreshList();
+                }).build());
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
         if (this.list != null)
             this.list.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -73,20 +87,12 @@ public class AddonPackLogScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-
-        if (this.textFieldWidget != null)
-            this.textFieldWidget.tick();
-    }
-
     public class DevLogList extends AbstractSelectionList<DevLogEntry> {
 
         private final int listWidth;
 
         public DevLogList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
-            super(mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
+            super(mcIn, widthIn, bottomIn - topIn, topIn, slotHeightIn);
             this.listWidth = 620;
             this.refreshList();
         }
@@ -116,7 +122,7 @@ public class AddonPackLogScreen extends Screen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
         }
     }
@@ -156,25 +162,4 @@ public class AddonPackLogScreen extends Screen {
         }
     }
 
-    public class CheckboxButton extends Checkbox {
-
-        private final Consumer<Boolean> consumer;
-
-        public CheckboxButton(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected, Consumer<Boolean> consumer) {
-            super(pX, pY, pWidth, pHeight, pMessage, pSelected, true);
-            this.consumer = consumer;
-        }
-
-        public CheckboxButton(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected, boolean pShowLabel, Consumer<Boolean> consumer) {
-            super(pX, pY, pWidth, pHeight, pMessage, pSelected, pShowLabel);
-            this.consumer = consumer;
-        }
-
-        @Override
-        public void onPress() {
-            super.onPress();
-            this.consumer.accept(this.selected());
-            AddonPackLogScreen.this.list.refreshList();
-        }
-    }
 }

@@ -72,7 +72,7 @@ public class AddonPackLogEntryScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 
         if (this.panel != null)
             this.panel.render(guiGraphics, mouseX, mouseY, partialTicks);
