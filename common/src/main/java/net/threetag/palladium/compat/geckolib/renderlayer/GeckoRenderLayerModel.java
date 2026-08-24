@@ -20,14 +20,13 @@ import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.cache.texture.AnimatableTexture;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.molang.MolangParser;
-import software.bernie.geckolib.core.molang.MolangQueries;
-import software.bernie.geckolib.core.object.Color;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.loading.math.MathParser;
+import software.bernie.geckolib.loading.math.MolangQueries;
+import software.bernie.geckolib.util.Color;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.util.RenderUtil;
 
 public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> implements GeoRenderer<GeckoLayerState> {
 
@@ -76,32 +75,32 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
             }
 
             @Override
-            public void applyMolangQueries(GeckoLayerState animatable, double animTime) {
-                MolangParser parser = MolangParser.INSTANCE;
+            public void applyMolangQueries(AnimationState<GeckoLayerState> animationState, double animTime) {
                 Minecraft mc = Minecraft.getInstance();
+                GeckoLayerState animatable = animationState.getAnimatable();
 
-                parser.setMemoizedValue(MolangQueries.LIFE_TIME, () -> animTime / 20d);
-                parser.setMemoizedValue(MolangQueries.ACTOR_COUNT, mc.level::getEntityCount);
-                parser.setMemoizedValue(MolangQueries.TIME_OF_DAY, () -> mc.level.getDayTime() / 24000f);
-                parser.setMemoizedValue(MolangQueries.MOON_PHASE, mc.level::getMoonPhase);
+                MathParser.setVariable(MolangQueries.LIFE_TIME, () -> animTime / 20d);
+                MathParser.setVariable(MolangQueries.ACTOR_COUNT, mc.level::getEntityCount);
+                MathParser.setVariable(MolangQueries.TIME_OF_DAY, () -> mc.level.getDayTime() / 24000f);
+                MathParser.setVariable(MolangQueries.MOON_PHASE, mc.level::getMoonPhase);
 
                 if (animatable.layer.getModel().currentEntity != null) {
                     var entity = animatable.layer.getModel().currentEntity;
-                    parser.setMemoizedValue(MolangQueries.DISTANCE_FROM_CAMERA, () -> mc.gameRenderer.getMainCamera().getPosition().distanceTo(entity.position()));
-                    parser.setMemoizedValue(MolangQueries.IS_ON_GROUND, () -> RenderUtils.booleanToFloat(entity.onGround()));
-                    parser.setMemoizedValue(MolangQueries.IS_IN_WATER, () -> RenderUtils.booleanToFloat(entity.isInWater()));
-                    parser.setMemoizedValue(MolangQueries.IS_IN_WATER_OR_RAIN, () -> RenderUtils.booleanToFloat(entity.isInWaterRainOrBubble()));
+                    MathParser.setVariable(MolangQueries.DISTANCE_FROM_CAMERA, () -> mc.gameRenderer.getMainCamera().getPosition().distanceTo(entity.position()));
+                    MathParser.setVariable(MolangQueries.IS_ON_GROUND, () -> RenderUtil.booleanToFloat(entity.onGround()));
+                    MathParser.setVariable(MolangQueries.IS_IN_WATER, () -> RenderUtil.booleanToFloat(entity.isInWater()));
+                    MathParser.setVariable(MolangQueries.IS_IN_WATER_OR_RAIN, () -> RenderUtil.booleanToFloat(entity.isInWaterRainOrBubble()));
 
                     if (entity instanceof LivingEntity livingEntity) {
-                        parser.setMemoizedValue(MolangQueries.HEALTH, livingEntity::getHealth);
-                        parser.setMemoizedValue(MolangQueries.MAX_HEALTH, livingEntity::getMaxHealth);
-                        parser.setMemoizedValue(MolangQueries.IS_ON_FIRE, () -> RenderUtils.booleanToFloat(livingEntity.isOnFire()));
-                        parser.setMemoizedValue(MolangQueries.GROUND_SPEED, () -> {
+                        MathParser.setVariable(MolangQueries.HEALTH, livingEntity::getHealth);
+                        MathParser.setVariable(MolangQueries.MAX_HEALTH, livingEntity::getMaxHealth);
+                        MathParser.setVariable(MolangQueries.IS_ON_FIRE, () -> RenderUtil.booleanToFloat(livingEntity.isOnFire()));
+                        MathParser.setVariable(MolangQueries.GROUND_SPEED, () -> {
                             Vec3 velocity = livingEntity.getDeltaMovement();
 
                             return Mth.sqrt((float) ((velocity.x * velocity.x) + (velocity.z * velocity.z)));
                         });
-                        parser.setMemoizedValue(MolangQueries.YAW_SPEED, () -> livingEntity.getViewYRot((float) animTime - livingEntity.getViewYRot((float) animTime - 0.1f)));
+                        MathParser.setVariable(MolangQueries.YAW_SPEED, () -> livingEntity.getViewYRot((float) animTime - livingEntity.getViewYRot((float) animTime - 0.1f)));
                     }
                 }
             }
@@ -120,7 +119,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
     }
 
     @Override
-    public void preRender(PoseStack poseStack, GeckoLayerState animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void preRender(PoseStack poseStack, GeckoLayerState animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int color) {
         this.entityRenderTranslations = new Matrix4f(poseStack.last().pose());
 
         applyBaseModel(this.baseModel);
@@ -130,14 +129,14 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         Minecraft mc = Minecraft.getInstance();
-        MultiBufferSource bufferSource = mc.levelRenderer.renderBuffers.bufferSource();
+        MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
 
         if (mc.levelRenderer.shouldShowEntityOutlines() && mc.shouldEntityAppearGlowing(this.currentEntity))
-            bufferSource = mc.levelRenderer.renderBuffers.outlineBufferSource();
+            bufferSource = mc.renderBuffers().outlineBufferSource();
 
-        float partialTick = mc.getFrameTime();
+        float partialTick = mc.getTimer().getGameTimeDeltaPartialTick(true);
         buffer = this.currentState.layer.renderType.createVertexConsumer(bufferSource, this.getTextureLocation(this.currentState), false);
 
         poseStack.pushPose();
@@ -150,7 +149,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         animationState.setData(DataTickets.TICK, this.currentState.getTick(this.currentEntity));
         animationState.setData(DataTickets.ENTITY, this.currentEntity);
         this.modelProvider.addAdditionalStateData(this.currentState, instanceId, animationState::setData);
-        this.modelProvider.handleAnimations(this.currentState, instanceId, animationState);
+        this.modelProvider.handleAnimations(this.currentState, instanceId, animationState, partialTick);
 
         defaultRender(poseStack, this.currentState, bufferSource, null, buffer,
                 0, partialTick, this.currentState.layer.renderType.getPackedLight(packedLight));
@@ -219,7 +218,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.head != null) {
             ModelPart headPart = super.head;
 
-            RenderUtils.matchModelPartRot(headPart, this.head);
+            RenderUtil.matchModelPartRot(headPart, this.head);
             copyScaleAndVisibility(headPart, this.head);
             this.head.updatePosition(headPart.x, -headPart.y, headPart.z);
         }
@@ -227,7 +226,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.body != null) {
             ModelPart bodyPart = super.body;
 
-            RenderUtils.matchModelPartRot(bodyPart, this.body);
+            RenderUtil.matchModelPartRot(bodyPart, this.body);
             copyScaleAndVisibility(bodyPart, this.body);
             this.body.updatePosition(bodyPart.x, -bodyPart.y, bodyPart.z);
         }
@@ -235,7 +234,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.rightArm != null) {
             ModelPart rightArmPart = super.rightArm;
 
-            RenderUtils.matchModelPartRot(rightArmPart, this.rightArm);
+            RenderUtil.matchModelPartRot(rightArmPart, this.rightArm);
             copyScaleAndVisibility(rightArmPart, this.rightArm);
             this.rightArm.updatePosition(rightArmPart.x + 5, 2 - rightArmPart.y, rightArmPart.z);
         }
@@ -243,7 +242,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.leftArm != null) {
             ModelPart leftArmPart = super.leftArm;
 
-            RenderUtils.matchModelPartRot(leftArmPart, this.leftArm);
+            RenderUtil.matchModelPartRot(leftArmPart, this.leftArm);
             copyScaleAndVisibility(leftArmPart, this.leftArm);
             this.leftArm.updatePosition(leftArmPart.x - 5f, 2f - leftArmPart.y, leftArmPart.z);
         }
@@ -251,7 +250,7 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.rightLeg != null) {
             ModelPart rightLegPart = super.rightLeg;
 
-            RenderUtils.matchModelPartRot(rightLegPart, this.rightLeg);
+            RenderUtil.matchModelPartRot(rightLegPart, this.rightLeg);
             copyScaleAndVisibility(rightLegPart, this.rightLeg);
             this.rightLeg.updatePosition(rightLegPart.x + 2, 12 - rightLegPart.y, rightLegPart.z);
         }
@@ -259,13 +258,13 @@ public class GeckoRenderLayerModel extends HumanoidModel<AbstractClientPlayer> i
         if (this.leftLeg != null) {
             ModelPart leftLegPart = super.leftLeg;
 
-            RenderUtils.matchModelPartRot(leftLegPart, this.leftLeg);
+            RenderUtil.matchModelPartRot(leftLegPart, this.leftLeg);
             copyScaleAndVisibility(leftLegPart, this.leftLeg);
             this.leftLeg.updatePosition(leftLegPart.x - 2, 12 - leftLegPart.y, leftLegPart.z);
         }
     }
 
-    public static void copyScaleAndVisibility(ModelPart from, CoreGeoBone to) {
+    public static void copyScaleAndVisibility(ModelPart from, GeoBone to) {
         to.setScaleX(from.xScale);
         to.setScaleY(from.yScale);
         to.setScaleZ(from.zScale);

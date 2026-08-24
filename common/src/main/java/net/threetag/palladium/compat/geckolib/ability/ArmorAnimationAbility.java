@@ -39,7 +39,7 @@ public class ArmorAnimationAbility extends Ability {
 
                 if (item instanceof AddonGeoArmorItem geo) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
-                        if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+                        if (slot.isArmor()) {
                             if (entity.getItemBySlot(slot).is(item) && !entity.getItemBySlot(slot).isEmpty()) {
                                 long geoId = GeoItem.getId(entity.getItemBySlot(slot)) + entity.getId();
                                 var controller = geo.getAnimatableInstanceCache().getManagerForId(geoId).getAnimationControllers().get(entry.getProperty(CONTROLLER));

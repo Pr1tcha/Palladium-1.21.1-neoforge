@@ -30,7 +30,7 @@ public final class ModEventBusRegistry {
         }
     }
 
-    static IEventBus get(String modId) {
+    public static IEventBus get(String modId) {
         IEventBus eventBus = MOD_EVENT_BUSES.get(modId);
         if (eventBus == null) {
             throw new IllegalStateException("Mod '" + modId + "' did not register its NeoForge event bus before registry initialization");

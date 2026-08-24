@@ -22,8 +22,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.threetag.palladium.Palladium;
 import net.threetag.palladium.compat.geckolib.ability.ArmorAnimationAbility;
 import net.threetag.palladium.compat.geckolib.ability.RenderLayerAnimationAbility;
 import net.threetag.palladium.compat.geckolib.armor.AddonGeoArmorItem;
@@ -32,11 +32,12 @@ import net.threetag.palladium.compat.geckolib.renderlayer.GeckoRenderLayerModel;
 import net.threetag.palladium.mixin.client.GeoArmorRendererInvoker;
 import net.threetag.palladium.power.ability.Ability;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.GeckoLibConstants;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.object.Color;
-import software.bernie.geckolib.util.RenderUtils;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.util.Color;
+import software.bernie.geckolib.util.RenderUtil;
+import net.threetag.palladiumcore.registry.ModEventBusRegistry;
 
 import java.util.function.Consumer;
 
@@ -44,12 +45,12 @@ import java.util.function.Consumer;
 public class GeckoLibCompatImpl {
 
     public static void init() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(GeckoLibCompatImpl::registerAbility);
+        ModEventBusRegistry.get(Palladium.MOD_ID).addListener(GeckoLibCompatImpl::registerAbility);
     }
 
     public static void registerAbility(RegisterEvent e) {
-        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "render_layer_animation"), RenderLayerAnimationAbility::new);
-        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "armor_animation"), ArmorAnimationAbility::new);
+        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLibConstants.MODID, "render_layer_animation"), RenderLayerAnimationAbility::new);
+        e.register(Ability.REGISTRY.getRegistryKey(), ResourceLocation.fromNamespaceAndPath(GeckoLibConstants.MODID, "armor_animation"), ArmorAnimationAbility::new);
     }
 
     public static AddonGeoArmorItem createArmorItem(Holder<ArmorMaterial> materialIn, ArmorItem.Type type, Item.Properties builder) {
@@ -64,18 +65,18 @@ public class GeckoLibCompatImpl {
             PlayerModel origModel = ((PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player)).getModel();
             GeckoArmorRenderer<AddonGeoArmorItem> renderer = (GeckoArmorRenderer<AddonGeoArmorItem>) rendererProvider.getHumanoidArmorModel(player, stack, EquipmentSlot.CHEST, origModel);
 
-            if (rendererProvider instanceof GeoArmorRendererInvoker invoker) {
+            if (renderer instanceof GeoArmorRendererInvoker invoker) {
                 invoker.invokeGrabRelevantBones(renderer.getGeoModel().getBakedModel(renderer.getGeoModel().getModelResource(gecko)));
             }
 
-            var bone = (rightArm ? renderer.getRightArmBone() : renderer.getLeftArmBone());
+            var bone = (rightArm ? renderer.getRightArmBone(renderer.getGeoModel()) : renderer.getLeftArmBone(renderer.getGeoModel()));
 
             if (bone != null) {
-                var partialTick = Minecraft.getInstance().getFrameTime();
+                var partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
                 RenderType renderType = renderer.getRenderType(gecko, renderer.getTextureLocation(gecko), bufferSource, partialTick);
-                VertexConsumer buffer = ItemRenderer.getArmorFoilBuffer(bufferSource, renderType, false, stack.hasFoil());
+                VertexConsumer buffer = ItemRenderer.getArmorFoilBuffer(bufferSource, renderType, stack.hasFoil());
 
-                RenderUtils.matchModelPartRot(rendererArm, bone);
+                RenderUtil.matchModelPartRot(rendererArm, bone);
                 GeckoRenderLayerModel.copyScaleAndVisibility(rendererArm, bone);
                 bone.updatePosition(rendererArm.x + (rightArm ? 5 : -5), 2 - rendererArm.y, rendererArm.z);
 
@@ -84,10 +85,6 @@ public class GeckoLibCompatImpl {
                 poseStack.scale(-1, -1, 1);
 
                 Color renderColor = renderer.getRenderColor(gecko, partialTick, combinedLight);
-                float red = renderColor.getRedFloat();
-                float green = renderColor.getGreenFloat();
-                float blue = renderColor.getBlueFloat();
-                float alpha = renderColor.getAlphaFloat();
                 int packedOverlay = renderer.getPackedOverlay(gecko, 0, partialTick);
 
                 AnimationState<AddonGeoArmorItem> animationState = new AnimationState<>(gecko, 0, 0, partialTick, false);
@@ -98,8 +95,8 @@ public class GeckoLibCompatImpl {
                 animationState.setData(DataTickets.ENTITY, player);
                 animationState.setData(DataTickets.EQUIPMENT_SLOT, EquipmentSlot.CHEST);
                 renderer.getGeoModel().addAdditionalStateData(gecko, instanceId, animationState::setData);
-                renderer.getGeoModel().handleAnimations(gecko, instanceId, animationState);
-                renderer.renderRecursively(poseStack, gecko, bone, renderType, bufferSource, buffer, false, partialTick, combinedLight, packedOverlay, red, green, blue, alpha);
+                renderer.getGeoModel().handleAnimations(gecko, instanceId, animationState, partialTick);
+                renderer.renderRecursively(poseStack, gecko, bone, renderType, bufferSource, buffer, false, partialTick, combinedLight, packedOverlay, renderColor.argbInt());
 
                 poseStack.popPose();
             }

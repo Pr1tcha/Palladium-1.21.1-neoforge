@@ -27,8 +27,8 @@ import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.object.Color;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.util.Color;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +84,7 @@ public class GeckoRenderLayer extends AbstractPackRenderLayer {
             this.cachedModel = this.modelLocation.get(living).getTexture(context);
             var rawColor = this.tint != null ? this.tint.getColor(context) : null;
             this.model.currentColor = rawColor != null ? Color.ofRGBA(rawColor.getRed(), rawColor.getGreen(), rawColor.getBlue(), rawColor.getAlpha()) : Color.WHITE;
-            this.model.renderToBuffer(poseStack, this.renderType.createVertexConsumer(bufferSource, this.cachedTexture, false), this.renderType.getPackedLight(packedLight), OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+            this.model.renderToBuffer(poseStack, this.renderType.createVertexConsumer(bufferSource, this.cachedTexture, false), this.renderType.getPackedLight(packedLight), OverlayTexture.NO_OVERLAY, this.model.currentColor.argbInt());
         }
     }
 
@@ -104,7 +104,7 @@ public class GeckoRenderLayer extends AbstractPackRenderLayer {
                 playerRenderer.getModel().copyPropertiesTo(this.model);
                 this.model.applyBaseTransformations(playerRenderer.getModel());
 
-                var partialTick = Minecraft.getInstance().getFrameTime();
+                var partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
                 VertexConsumer buffer = state.layer.renderType.createVertexConsumer(bufferSource, this.model.getTextureLocation(state), false);
 
                 poseStack.pushPose();
@@ -112,10 +112,6 @@ public class GeckoRenderLayer extends AbstractPackRenderLayer {
                 poseStack.scale(-1, -1, 1);
 
                 Color renderColor = this.model.getRenderColor(state, partialTick, this.renderType.getPackedLight(packedLight));
-                float red = renderColor.getRedFloat();
-                float green = renderColor.getGreenFloat();
-                float blue = renderColor.getBlueFloat();
-                float alpha = renderColor.getAlphaFloat();
                 int packedOverlay = this.model.getPackedOverlay(state, 0, partialTick);
 
                 AnimationState<GeckoLayerState> animationState = new AnimationState<>(state, 0, 0, partialTick, false);
@@ -125,8 +121,8 @@ public class GeckoRenderLayer extends AbstractPackRenderLayer {
                 animationState.setData(DataTickets.ENTITY, living);
                 animationState.setData(DataTickets.EQUIPMENT_SLOT, EquipmentSlot.CHEST);
                 this.model.getGeoModel().addAdditionalStateData(state, instanceId, animationState::setData);
-                this.model.getGeoModel().handleAnimations(state, instanceId, animationState);
-                this.model.renderRecursively(poseStack, state, bone, null, bufferSource, buffer, false, partialTick, this.renderType.getPackedLight(packedLight), packedOverlay, red, green, blue, alpha);
+                this.model.getGeoModel().handleAnimations(state, instanceId, animationState, partialTick);
+                this.model.renderRecursively(poseStack, state, bone, null, bufferSource, buffer, false, partialTick, this.renderType.getPackedLight(packedLight), packedOverlay, renderColor.argbInt());
 
                 poseStack.popPose();
             }

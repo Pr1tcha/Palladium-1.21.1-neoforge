@@ -20,12 +20,16 @@ public interface GeoRendererMixin {
      */
     @Overwrite
     default void createVerticesOfQuad(GeoQuad quad, Matrix4f poseState, Vector3f normal, VertexConsumer buffer,
-                                      int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+                                      int packedLight, int packedOverlay, int color) {
+        int alpha = color >>> 24;
+        int adjustedAlpha = Math.clamp((int) (alpha * HumanoidRendererModifications.ALPHA_MULTIPLIER), 0, 255);
+        int adjustedColor = color & 0x00FFFFFF | adjustedAlpha << 24;
+
         for (GeoVertex vertex : quad.vertices()) {
             Vector3f position = vertex.position();
             Vector4f vector4f = poseState.transform(new Vector4f(position.x(), position.y(), position.z(), 1.0f));
 
-            buffer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha * HumanoidRendererModifications.ALPHA_MULTIPLIER, vertex.texU(),
+            buffer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(), adjustedColor, vertex.texU(),
                     vertex.texV(), packedOverlay, packedLight, normal.x(), normal.y(), normal.z());
         }
     }

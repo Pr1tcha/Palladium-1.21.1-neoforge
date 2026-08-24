@@ -33,10 +33,10 @@ public class GeckoArmorRenderer<T extends AddonGeoArmorItem> extends GeoArmorRen
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         CURRENT_ENTITY = this.currentEntity;
         CURRENT_SLOT = this.currentSlot;
-        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
     @Override

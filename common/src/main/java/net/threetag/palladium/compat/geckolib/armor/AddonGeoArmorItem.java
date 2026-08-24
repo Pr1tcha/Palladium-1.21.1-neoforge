@@ -19,11 +19,11 @@ import net.threetag.palladium.documentation.JsonDocumentationBuilder;
 import net.threetag.palladium.item.AddonArmorItem;
 import net.threetag.palladium.item.IAddonItem;
 import net.threetag.palladium.util.json.GsonUtil;
-import software.bernie.geckolib.GeckoLib;
+import software.bernie.geckolib.GeckoLibConstants;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Arrays;
@@ -131,7 +131,7 @@ public class AddonGeoArmorItem extends AddonArmorItem implements GeoItem {
 
         @Override
         public ResourceLocation getId() {
-            return ResourceLocation.fromNamespaceAndPath(GeckoLib.MOD_ID, "armor");
+            return ResourceLocation.fromNamespaceAndPath(GeckoLibConstants.MODID, "armor");
         }
     }
 }

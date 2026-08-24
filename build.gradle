@@ -43,6 +43,12 @@ repositories {
     maven { url = 'https://maven.threetag.net' }
     maven { url = 'https://maven.latvian.dev/releases' }
     maven {
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroup 'software.bernie.geckolib'
+        }
+    }
+    maven {
         url = 'https://jitpack.io'
         content {
             includeModule 'com.github.rtyley', 'animated-gif-lib-for-java'
@@ -114,6 +120,9 @@ dependencies {
     compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
     compileOnly "dev.latvian.mods:rhino:${rhino_version}"
     localRuntime "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+
+    compileOnly "software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}"
+    localRuntime "software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
