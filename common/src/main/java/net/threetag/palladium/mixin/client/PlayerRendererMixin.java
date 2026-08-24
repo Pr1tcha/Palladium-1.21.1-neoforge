@@ -72,7 +72,7 @@ public class PlayerRendererMixin {
         }
 
         // Shrink Overlay
-        float scale = AnimationTimer.getValue(player, Abilities.SHRINK_BODY_OVERLAY.get(), Minecraft.getInstance().getFrameTime(), Easing.INOUTSINE);
+        float scale = AnimationTimer.getValue(player, Abilities.SHRINK_BODY_OVERLAY.get(), Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true), Easing.INOUTSINE);
 
         if (scale != 0F) {
             float f = -0.11F * scale;
@@ -121,7 +121,7 @@ public class PlayerRendererMixin {
 
         // Apply model animations in first person
         if (player instanceof PlayerModelCacheExtension ext) {
-            float partialTick = Minecraft.getInstance().getFrameTime();
+            float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
             float f = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot);
             float g = Mth.rotLerp(partialTick, player.yHeadRotO, player.yHeadRot);
             float h = g - f;

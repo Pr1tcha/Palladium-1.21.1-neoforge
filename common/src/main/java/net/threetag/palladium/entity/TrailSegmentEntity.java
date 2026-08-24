@@ -54,7 +54,7 @@ public class TrailSegmentEntity<T extends TrailRenderer.SegmentCache> extends Li
     public TrailSegmentEntity(Entity parent, TrailRenderer<T> trailRenderer) {
         this(PalladiumEntityTypes.TRAIL_SEGMENT.get(), parent.level());
 
-        float partialTick = Minecraft.getInstance().getFrameTime();
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         this.parent = parent;
         this.lifetime = trailRenderer.getLifetime();
         this.dimensions = EntityDimensions.fixed(parent.getBbWidth(), parent.getBbHeight());
@@ -134,7 +134,7 @@ public class TrailSegmentEntity<T extends TrailRenderer.SegmentCache> extends Li
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose pose) {
+    protected EntityDimensions getDefaultDimensions(Pose pose) {
         return this.dimensions;
     }
 
