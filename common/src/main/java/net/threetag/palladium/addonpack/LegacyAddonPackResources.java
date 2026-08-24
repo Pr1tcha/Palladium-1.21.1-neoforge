@@ -61,8 +61,10 @@ public class LegacyAddonPackResources implements PackResources {
     }
 
     private IoSupplier<InputStream> wrap(PackType type, ResourceLocation location, IoSupplier<InputStream> supplier) {
-        if (supplier == null || type != PackType.SERVER_DATA || !location.getPath().startsWith("damage_type/")
-                || !location.getPath().endsWith(".json")) {
+        boolean damageType = location.getPath().startsWith("damage_type/");
+        boolean dimensionType = location.getPath().startsWith("dimension_type/");
+        if (supplier == null || type != PackType.SERVER_DATA || !location.getPath().endsWith(".json")
+                || (!damageType && !dimensionType)) {
             return supplier;
         }
 
@@ -73,17 +75,30 @@ public class LegacyAddonPackResources implements PackResources {
             }
 
             JsonObject json = JsonParser.parseString(new String(original, StandardCharsets.UTF_8)).getAsJsonObject();
-            if (json.has("effects") && json.get("effects").isJsonPrimitive()
+            boolean changed = false;
+
+            if (damageType && json.has("effects") && json.get("effects").isJsonPrimitive()
                     && json.getAsJsonPrimitive("effects").isString()) {
                 String effects = json.get("effects").getAsString();
                 String trimmed = effects.trim();
                 if (!trimmed.equals(effects)) {
                     json.addProperty("effects", trimmed);
-                    return new ByteArrayInputStream(AddonParser.GSON.toJson(json).getBytes(StandardCharsets.UTF_8));
+                    changed = true;
                 }
             }
 
-            return new ByteArrayInputStream(original);
+            if (dimensionType && json.has("monster_spawn_light_level")
+                    && json.get("monster_spawn_light_level").isJsonObject()) {
+                JsonObject lightLevel = json.getAsJsonObject("monster_spawn_light_level");
+                if (lightLevel.has("type") && lightLevel.has("value") && lightLevel.get("value").isJsonObject()) {
+                    JsonObject value = lightLevel.remove("value").getAsJsonObject();
+                    value.entrySet().forEach(entry -> lightLevel.add(entry.getKey(), entry.getValue()));
+                    changed = true;
+                }
+            }
+
+            byte[] result = changed ? AddonParser.GSON.toJson(json).getBytes(StandardCharsets.UTF_8) : original;
+            return new ByteArrayInputStream(result);
         };
     }
 
