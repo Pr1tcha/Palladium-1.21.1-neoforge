@@ -1,8 +1,11 @@
 package net.threetag.palladium.entity;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -19,7 +22,6 @@ import net.threetag.palladiumcore.registry.RegistrySupplier;
 import net.threetag.palladiumcore.util.Platform;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class PalladiumAttributes {
 
@@ -36,7 +38,7 @@ public class PalladiumAttributes {
     public static final RegistrySupplier<Attribute> FALL_RESISTANCE = ATTRIBUTES.register("fall_resistance", () -> new RangedAttribute(name("fall_resistance"), 1.0, 0.0, 100D));
     public static final RegistrySupplier<Attribute> LEAPING = ATTRIBUTES.register("leaping", () -> new RangedAttribute(name("leaping"), 1.0, 0.0, 100D));
 
-    public static final UUID PUNCH_DAMAGE_MOD_UUID = UUID.fromString("b587e52f-6985-40f4-988e-48e3a7d3fdcb");
+    public static final ResourceLocation PUNCH_DAMAGE_MODIFIER_ID = Palladium.id("punch_damage");
 
     public static void init() {
         EntityAttributeRegistry.registerModification(() -> EntityType.PLAYER, FLIGHT_SPEED);
@@ -53,11 +55,11 @@ public class PalladiumAttributes {
 
         if (!Platform.isModLoaded("attributefix")) {
             LifecycleEvents.SETUP.register(() -> {
-                if (Attributes.ARMOR instanceof RangedAttributeAccessor accessor) {
+                if (Attributes.ARMOR.value() instanceof RangedAttributeAccessor accessor) {
                     accessor.palladium_setMaxValue(1024);
                 }
 
-                if (Attributes.ATTACK_KNOCKBACK instanceof RangedAttributeAccessor accessor) {
+                if (Attributes.ATTACK_KNOCKBACK.value() instanceof RangedAttributeAccessor accessor) {
                     accessor.palladium_setMaxValue(1024);
                 }
             });
@@ -66,24 +68,24 @@ public class PalladiumAttributes {
 
     private static void events() {
         LivingEntityEvents.TICK.register(entity -> {
-            if (entity.getAttributes().hasAttribute(PUNCH_DAMAGE.get())) {
-                var punchDmg = entity.getAttributeValue(PUNCH_DAMAGE.get());
+            if (entity.getAttributes().hasAttribute(holder(PUNCH_DAMAGE))) {
+                var punchDmg = entity.getAttributeValue(holder(PUNCH_DAMAGE));
                 var attackDmg = Objects.requireNonNull(entity.getAttribute(Attributes.ATTACK_DAMAGE));
-                var currentMod = attackDmg.getModifier(PUNCH_DAMAGE_MOD_UUID);
+                var currentMod = attackDmg.getModifier(PUNCH_DAMAGE_MODIFIER_ID);
 
-                if (currentMod != null && currentMod.getAmount() != punchDmg) {
-                    attackDmg.removeModifier(PUNCH_DAMAGE_MOD_UUID);
+                if (currentMod != null && currentMod.amount() != punchDmg) {
+                    attackDmg.removeModifier(PUNCH_DAMAGE_MODIFIER_ID);
                 }
 
-                if ((currentMod == null && punchDmg > 0D) || (currentMod != null && currentMod.getAmount() != punchDmg)) {
-                    attackDmg.addTransientModifier(new AttributeModifier(PUNCH_DAMAGE_MOD_UUID, "Punch Damage", punchDmg, AttributeModifier.Operation.ADDITION));
+                if ((currentMod == null && punchDmg > 0D) || (currentMod != null && currentMod.amount() != punchDmg)) {
+                    attackDmg.addTransientModifier(new AttributeModifier(PUNCH_DAMAGE_MODIFIER_ID, punchDmg, AttributeModifier.Operation.ADD_VALUE));
                 }
             }
         });
 
         LivingEntityEvents.JUMP.register(entity -> {
-            if (entity.getAttributes().hasAttribute(LEAPING.get())) {
-                double mul = entity.getAttributeValue(LEAPING.get());
+            if (entity.getAttributes().hasAttribute(holder(LEAPING))) {
+                double mul = entity.getAttributeValue(holder(LEAPING));
 
                 if (mul != 1F) {
                     Vec3 vec3 = entity.getDeltaMovement();
@@ -100,6 +102,14 @@ public class PalladiumAttributes {
 
     public static String name(String name) {
         return "attribute.name.generic." + Palladium.MOD_ID + "." + name;
+    }
+
+    public static Holder<Attribute> holder(RegistrySupplier<Attribute> attribute) {
+        return holder(attribute.get());
+    }
+
+    public static Holder<Attribute> holder(Attribute attribute) {
+        return BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
     }
 
 }

@@ -192,10 +192,9 @@ public class ItemParser extends AddonParser<Item> {
 
     public static AttributeModifier parseAttributeModifier(JsonObject json) {
         UUID uuid = GsonUtil.getAsUUID(json, "uuid");
-        String name = GsonHelper.getAsString(json, "name", "Addonpack Item Modifier");
         double amount = GsonHelper.getAsDouble(json, "amount");
-        AttributeModifier.Operation operation = AttributeModifier.Operation.fromValue(GsonUtil.getAsIntRanged(json, "operation", AttributeModifier.Operation.ADDITION.toValue(), AttributeModifier.Operation.MULTIPLY_TOTAL.toValue()));
-        return new AttributeModifier(uuid, name, amount, operation);
+        int operationId = GsonUtil.getAsIntRanged(json, "operation", AttributeModifier.Operation.ADD_VALUE.id(), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL.id());
+        return new AttributeModifier(Palladium.id(uuid.toString()), amount, AttributeModifier.Operation.BY_ID.apply(operationId));
     }
 
     public static void registerTypeSerializer(ItemTypeSerializer serializer) {

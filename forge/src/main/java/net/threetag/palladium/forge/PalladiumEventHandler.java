@@ -12,8 +12,8 @@ public class PalladiumEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onBreakSpeed(PlayerEvent.BreakSpeed e) {
-        if (e.getEntity().getAttributes().hasAttribute(PalladiumAttributes.DESTROY_SPEED.get())) {
-            e.setNewSpeed((float) (e.getNewSpeed() * e.getEntity().getAttributeValue(PalladiumAttributes.DESTROY_SPEED.get())));
+        if (e.getEntity().getAttributes().hasAttribute(PalladiumAttributes.holder(PalladiumAttributes.DESTROY_SPEED))) {
+            e.setNewSpeed((float) (e.getNewSpeed() * e.getEntity().getAttributeValue(PalladiumAttributes.holder(PalladiumAttributes.DESTROY_SPEED))));
         }
     }
 

@@ -51,7 +51,7 @@ public class LocalPlayerMixin {
     private void aiStepTop(CallbackInfo ci) {
         LocalPlayer player = (LocalPlayer) (Object) this;
         this.palladium$cachedMayFly = player.getAbilities().mayfly;
-        player.getAbilities().mayfly |= player.getAttributeValue(PalladiumAttributes.LEVITATION_SPEED.get()) > 0D || player.getAttributeValue(PalladiumAttributes.FLIGHT_SPEED.get()) > 0D;
+        player.getAbilities().mayfly |= player.getAttributeValue(PalladiumAttributes.holder(PalladiumAttributes.LEVITATION_SPEED)) > 0D || player.getAttributeValue(PalladiumAttributes.holder(PalladiumAttributes.FLIGHT_SPEED)) > 0D;
     }
 
     @Inject(method = "aiStep", at = @At("RETURN"))

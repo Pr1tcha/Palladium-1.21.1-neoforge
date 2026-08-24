@@ -37,8 +37,8 @@ public class AbilityEventHandler implements LivingEntityEvents.Hurt, LivingEntit
             }
         }
 
-        if (damageSource.is(DamageTypes.FALL) && entity.getAttributes().hasAttribute(PalladiumAttributes.FALL_RESISTANCE.get())) {
-            var resistance = entity.getAttributeValue(PalladiumAttributes.FALL_RESISTANCE.get());
+        if (damageSource.is(DamageTypes.FALL) && entity.getAttributes().hasAttribute(PalladiumAttributes.holder(PalladiumAttributes.FALL_RESISTANCE))) {
+            var resistance = entity.getAttributeValue(PalladiumAttributes.holder(PalladiumAttributes.FALL_RESISTANCE));
 
             if (resistance == 100D) {
                 return EventResult.cancel();
