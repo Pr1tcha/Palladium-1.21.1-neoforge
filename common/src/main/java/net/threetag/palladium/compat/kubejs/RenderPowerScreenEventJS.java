@@ -1,11 +1,11 @@
 package net.threetag.palladium.compat.kubejs;
 
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.threetag.palladium.client.screen.power.PowersScreen;
 
-public class RenderPowerScreenEventJS extends EventJS {
+public class RenderPowerScreenEventJS implements ClientKubeEvent {
 
     public final PowersScreen screen;
     public final GuiGraphics guiGraphics;

@@ -1,1 +1,2 @@
 net.threetag.palladium.compat.kubejs.PalladiumKubeJSPlugin
+net.threetag.palladium.compat.kubejs.PalladiumKubeJSClientPlugin client

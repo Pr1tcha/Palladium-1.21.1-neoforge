@@ -34,7 +34,7 @@ public final class PalladiumRegistry<T> implements Iterable<T> {
         return new PalladiumRegistry<>(registryKey, registry);
     }
 
-    public ResourceKey<? extends Registry<T>> getRegistryKey() {
+    public ResourceKey<Registry<T>> getRegistryKey() {
         return this.registryKey;
     }
 

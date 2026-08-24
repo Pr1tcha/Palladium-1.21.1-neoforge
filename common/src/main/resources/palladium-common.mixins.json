@@ -52,7 +52,6 @@
     "RangedAttributeAccessor",
     "ReloadableResourceManagerMixin",
     "ReloadableServerResourcesMixin",
-    "ScriptFileInfoMixin",
     "ScriptManagerMixin",
     "ServerScoreboardMixin",
     "SlotMixin",

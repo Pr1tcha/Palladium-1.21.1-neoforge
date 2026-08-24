@@ -1,10 +1,10 @@
 package net.threetag.palladium.compat.kubejs;
 
-import dev.latvian.mods.kubejs.entity.EntityEventJS;
+import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
 import net.minecraft.world.entity.Entity;
 import net.threetag.palladium.entity.CustomProjectile;
 
-public class ProjectileTickEventJS extends EntityEventJS {
+public class ProjectileTickEventJS implements KubeEntityEvent {
 
     private final CustomProjectile projectile;
 

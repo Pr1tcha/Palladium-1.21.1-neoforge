@@ -1,41 +1,41 @@
 package net.threetag.palladium.compat.kubejs;
 
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
+import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.threetag.palladium.client.model.animation.AnimationUtil;
-import net.threetag.palladium.client.model.animation.PalladiumAnimation;
 import net.threetag.palladium.compat.kubejs.ability.AbilityBuilder;
 import net.threetag.palladium.compat.kubejs.condition.ConditionBuilder;
-import net.threetag.palladium.condition.ConditionSerializer;
 import net.threetag.palladium.entity.CustomProjectile;
-import net.threetag.palladium.event.PalladiumClientEvents;
 import net.threetag.palladium.event.PalladiumEvents;
 import net.threetag.palladium.power.SuperpowerUtil;
 import net.threetag.palladium.power.ability.Ability;
 import net.threetag.palladium.power.ability.AbilityUtil;
 import net.threetag.palladium.util.Easing;
 import net.threetag.palladium.util.PlayerSlot;
-import net.threetag.palladiumcore.registry.client.OverlayRegistry;
 
-public class PalladiumKubeJSPlugin extends KubeJSPlugin {
+public class PalladiumKubeJSPlugin implements KubeJSPlugin {
 
-    public static RegistryInfo<Ability> ABILITY = RegistryInfo.of(Ability.REGISTRY.getRegistryKey(), Ability.class);
-    public static RegistryInfo<ConditionSerializer> CONDITION = RegistryInfo.of(ConditionSerializer.REGISTRY.getRegistryKey(), ConditionSerializer.class);
+    @Override
+    public void registerBuilderTypes(BuilderTypeRegistry registry) {
+        registry.of(Ability.REGISTRY.getRegistryKey(), callback ->
+                callback.add(KubeJS.id("basic"), AbilityBuilder.class, AbilityBuilder::new));
+        registry.of(net.threetag.palladium.condition.ConditionSerializer.REGISTRY.getRegistryKey(), callback ->
+                callback.add(KubeJS.id("basic"), ConditionBuilder.class, ConditionBuilder::new));
+    }
+
+    @Override
+    public void registerEvents(EventGroupRegistry registry) {
+        registry.register(PalladiumJSEvents.GROUP);
+    }
 
     @Override
     public void init() {
-        ABILITY.addType("basic", AbilityBuilder.class, AbilityBuilder::new);
-        CONDITION.addType("basic", ConditionBuilder.class, ConditionBuilder::new);
-
-        PalladiumJSEvents.GROUP.register();
         CustomProjectile.KUBEJS_EVENT_HANDLER = customProjectile -> PalladiumJSEvents.CUSTOM_PROJECTILE_TICK.post(new ProjectileTickEventJS(customProjectile));
 
         PalladiumEvents.REGISTER_PROPERTY.register(handler -> {
@@ -47,38 +47,18 @@ public class PalladiumKubeJSPlugin extends KubeJSPlugin {
         });
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
-    public void clientInit() {
-        PalladiumClientEvents.REGISTER_ANIMATIONS.register(registry -> {
-            PalladiumJSEvents.REGISTER_ANIMATIONS.post(new RegisterAnimationsEventJS(registry));
-            PalladiumJSEvents.REGISTER_GUI_OVERLAYS.post(new RegisterGuiOverlaysEventJS());
-        });
-
-        PalladiumClientEvents.RENDER_POWER_SCREEN.register((screen, guiGraphics, mouseX, mouseY, partialTick, tab) -> {
-            PalladiumJSEvents.RENDER_POWER_SCREEN.post(new RenderPowerScreenEventJS(screen, guiGraphics, mouseX, mouseY, partialTick, tab));
-        });
-
-        OverlayRegistry.registerOverlay("palladium/kube_js_overlays", new RegisterGuiOverlaysEventJS.Overlay());
+    public void registerBindings(BindingRegistry bindings) {
+        bindings.add("palladium", new PalladiumBinding());
+        bindings.add("superpowerUtil", SuperpowerUtil.class);
+        bindings.add("abilityUtil", AbilityUtil.class);
     }
 
     @Override
-    public void registerBindings(BindingsEvent event) {
-        event.add("palladium", event.getType() == ScriptType.CLIENT ? new PalladiumBindingClient() : new PalladiumBinding());
-        event.add("superpowerUtil", SuperpowerUtil.class);
-        event.add("abilityUtil", AbilityUtil.class);
-        if (event.getType() == ScriptType.CLIENT) {
-            event.add("animationUtil", AnimationUtil.class);
-            event.add("guiUtil", GuiUtilJS.class);
-        }
-    }
-
-    @Override
-    public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
-        if (type == ScriptType.CLIENT) {
-            typeWrappers.registerSimple(Easing.class, o -> Easing.fromString(o.toString()));
-            typeWrappers.registerSimple(PalladiumAnimation.PlayerModelPart.class, o -> PalladiumAnimation.PlayerModelPart.fromName(o.toString()));
-            typeWrappers.registerSimple(PlayerSlot.class, o -> PlayerSlot.get(o.toString()));
+    public void registerTypeWrappers(TypeWrapperRegistry registry) {
+        if (registry.scriptType().isClient()) {
+            registry.register(Easing.class, o -> Easing.fromString(o.toString()));
+            registry.register(PlayerSlot.class, o -> PlayerSlot.get(o.toString()));
         }
     }
 

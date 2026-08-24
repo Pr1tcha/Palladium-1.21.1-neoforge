@@ -41,6 +41,13 @@ repositories {
     maven { url = 'https://maven.neoforged.net/releases' }
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.threetag.net' }
+    maven { url = 'https://maven.latvian.dev/releases' }
+    maven {
+        url = 'https://jitpack.io'
+        content {
+            includeModule 'com.github.rtyley', 'animated-gif-lib-for-java'
+        }
+    }
 }
 
 neoForge {
@@ -101,6 +108,12 @@ dependencies {
     // The legacy common sources use Fabric's side annotations. They remain
     // compile-only during bootstrap and do not create a runtime Fabric dependency.
     compileOnly "net.fabricmc:fabric-loader:${fabric_loader_version}"
+
+    // KubeJS is Palladium's scripting API and is required by downstream addon
+    // packs. Keep it optional for consumers while making it available in dev runs.
+    compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+    compileOnly "dev.latvian.mods:rhino:${rhino_version}"
+    localRuntime "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
 }
 
 def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {

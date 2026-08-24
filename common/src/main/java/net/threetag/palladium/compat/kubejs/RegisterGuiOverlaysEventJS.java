@@ -1,7 +1,7 @@
 package net.threetag.palladium.compat.kubejs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,7 +10,7 @@ import net.threetag.palladiumcore.registry.client.OverlayRegistry;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterGuiOverlaysEventJS extends EventJS {
+public class RegisterGuiOverlaysEventJS implements ClientKubeEvent {
 
     public static final Map<String, OverlayRegistry.IngameOverlay> OVERLAYS = new HashMap<>();
 

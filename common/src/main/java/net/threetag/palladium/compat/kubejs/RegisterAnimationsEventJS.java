@@ -1,7 +1,7 @@
 package net.threetag.palladium.compat.kubejs;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +10,7 @@ import net.threetag.palladium.power.PowerUtil;
 
 import java.util.function.BiConsumer;
 
-public class RegisterAnimationsEventJS extends EventJS {
+public class RegisterAnimationsEventJS implements ClientKubeEvent {
 
     public final BiConsumer<ResourceLocation, PalladiumAnimation> registry;
 

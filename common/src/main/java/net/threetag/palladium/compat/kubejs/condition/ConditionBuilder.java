@@ -2,11 +2,9 @@ package net.threetag.palladium.compat.kubejs.condition;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
-import net.threetag.palladium.compat.kubejs.PalladiumKubeJSPlugin;
 import net.threetag.palladium.compat.kubejs.ability.AbilityBuilder;
 import net.threetag.palladium.condition.Condition;
 import net.threetag.palladium.condition.ConditionSerializer;
@@ -31,11 +29,6 @@ public class ConditionBuilder extends BuilderBase<ConditionSerializer> {
         this.test = null;
         this.documentationDescription = null;
         this.extraProperties = new ArrayList<>();
-    }
-
-    @Override
-    public RegistryInfo<ConditionSerializer> getRegistryType() {
-        return PalladiumKubeJSPlugin.CONDITION;
     }
 
     @Override

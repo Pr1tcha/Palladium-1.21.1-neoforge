@@ -1,6 +1,6 @@
 package net.threetag.palladium.compat.kubejs;
 
-import dev.latvian.mods.kubejs.level.LevelEventJS;
+import dev.latvian.mods.kubejs.level.KubeLevelEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -10,7 +10,7 @@ import net.threetag.palladium.util.property.PalladiumProperty;
 import net.threetag.palladium.util.property.PalladiumPropertyLookup;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class RegisterPalladiumPropertyEventJS extends LevelEventJS {
+public class RegisterPalladiumPropertyEventJS implements KubeLevelEvent {
 
     private final Entity entity;
     private final EntityPropertyHandler handler;

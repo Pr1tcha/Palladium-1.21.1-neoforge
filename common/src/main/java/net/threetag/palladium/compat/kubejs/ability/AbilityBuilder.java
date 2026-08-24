@@ -1,12 +1,10 @@
 package net.threetag.palladium.compat.kubejs.ability;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
-import net.threetag.palladium.compat.kubejs.PalladiumKubeJSPlugin;
 import net.threetag.palladium.power.IPowerHolder;
 import net.threetag.palladium.power.ability.Ability;
 import net.threetag.palladium.power.ability.AbilityInstance;
@@ -36,11 +34,6 @@ public class AbilityBuilder extends BuilderBase<Ability> {
         this.documentationDescription = null;
         this.extraProperties = new ArrayList<>();
         this.uniqueProperties = new ArrayList<>();
-    }
-
-    @Override
-    public RegistryInfo<Ability> getRegistryType() {
-        return PalladiumKubeJSPlugin.ABILITY;
     }
 
     @Override
