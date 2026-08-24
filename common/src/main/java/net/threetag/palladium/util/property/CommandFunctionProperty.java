@@ -2,9 +2,9 @@ package net.threetag.palladium.util.property;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import net.minecraft.commands.CommandFunction;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.functions.CommandFunction;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -97,7 +97,7 @@ public class CommandFunctionProperty extends PalladiumProperty<CommandFunctionPr
     public static class CommandFunctionParsing {
 
         private final List<String> lines;
-        private CommandFunction commandFunction;
+        private CommandFunction<CommandSourceStack> commandFunction;
         private boolean error = false;
 
         public CommandFunctionParsing(List<String> lines) {
@@ -108,7 +108,7 @@ public class CommandFunctionProperty extends PalladiumProperty<CommandFunctionPr
             this.lines = Collections.singletonList(line);
         }
 
-        public CommandFunction getCommandFunction(MinecraftServer server) {
+        public CommandFunction<CommandSourceStack> getCommandFunction(MinecraftServer server) {
             if (this.error) {
                 return null;
             }
