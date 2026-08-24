@@ -23,10 +23,14 @@ public class PalladiumKubeJSPlugin implements KubeJSPlugin {
 
     @Override
     public void registerBuilderTypes(BuilderTypeRegistry registry) {
-        registry.of(Ability.REGISTRY.getRegistryKey(), callback ->
-                callback.add(KubeJS.id("basic"), AbilityBuilder.class, AbilityBuilder::new));
-        registry.of(net.threetag.palladium.condition.ConditionSerializer.REGISTRY.getRegistryKey(), callback ->
-                callback.add(KubeJS.id("basic"), ConditionBuilder.class, ConditionBuilder::new));
+        registry.of(Ability.REGISTRY.getRegistryKey(), callback -> {
+            callback.addDefault(AbilityBuilder.class, AbilityBuilder::new);
+            callback.add(KubeJS.id("basic"), AbilityBuilder.class, AbilityBuilder::new);
+        });
+        registry.of(net.threetag.palladium.condition.ConditionSerializer.REGISTRY.getRegistryKey(), callback -> {
+            callback.addDefault(ConditionBuilder.class, ConditionBuilder::new);
+            callback.add(KubeJS.id("basic"), ConditionBuilder.class, ConditionBuilder::new);
+        });
     }
 
     @Override
