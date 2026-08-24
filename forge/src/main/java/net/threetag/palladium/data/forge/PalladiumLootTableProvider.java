@@ -1,10 +1,12 @@
 package net.threetag.palladium.data.forge;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
@@ -24,23 +26,23 @@ import net.threetag.palladiumcore.registry.RegistrySupplier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public class PalladiumLootTableProvider extends LootTableProvider {
 
-    public PalladiumLootTableProvider(PackOutput output) {
+    public PalladiumLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, BuiltInLootTables.all(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLoot::new, LootContextParamSets.BLOCK),
                 new LootTableProvider.SubProviderEntry(ChestLoot::new, LootContextParamSets.CHEST)
-        ));
+        ), lookupProvider);
     }
 
     public static class BlockLoot extends BlockLootSubProvider {
 
-        protected BlockLoot() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        protected BlockLoot(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override
@@ -49,9 +51,10 @@ public class PalladiumLootTableProvider extends LootTableProvider {
             this.add(PalladiumBlocks.DEEPSLATE_LEAD_ORE.get(), (block) -> createOreDrop(block, PalladiumItems.RAW_LEAD.get()));
             this.add(PalladiumBlocks.TITANIUM_ORE.get(), (block) -> createOreDrop(block, PalladiumItems.RAW_TITANIUM.get()));
             this.add(PalladiumBlocks.VIBRANIUM_ORE.get(), (block) -> createOreDrop(block, PalladiumItems.RAW_VIBRANIUM.get()));
-            this.add(PalladiumBlocks.REDSTONE_FLUX_CRYSTAL_GEODE.get(), (block) -> createSilkTouchDispatchTable(block, (LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES)))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
-            this.add(PalladiumBlocks.DEEPSLATE_REDSTONE_FLUX_CRYSTAL_GEODE.get(), (block) -> createSilkTouchDispatchTable(block, (LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES)))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
-            this.add(PalladiumBlocks.REDSTONE_FLUX_CRYSTAL_CLUSTER.get(), (block) -> createSilkTouchDispatchTable(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
+            var fortune = this.registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE);
+            this.add(PalladiumBlocks.REDSTONE_FLUX_CRYSTAL_GEODE.get(), (block) -> createSilkTouchDispatchTable(block, (LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(fortune)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES)))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
+            this.add(PalladiumBlocks.DEEPSLATE_REDSTONE_FLUX_CRYSTAL_GEODE.get(), (block) -> createSilkTouchDispatchTable(block, (LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(fortune)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES)))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
+            this.add(PalladiumBlocks.REDSTONE_FLUX_CRYSTAL_CLUSTER.get(), (block) -> createSilkTouchDispatchTable(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(4.0F))).apply(ApplyBonusCount.addOreBonusCount(fortune)).when(MatchTool.toolMatches(net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(ItemTags.CLUSTER_MAX_HARVESTABLES))).otherwise(applyExplosionDecay(block, LootItem.lootTableItem(PalladiumItems.REDSTONE_FLUX_CRYSTAL.get()).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2.0F)))))));
             this.dropWhenSilkTouch(PalladiumBlocks.SMALL_REDSTONE_FLUX_CRYSTAL_BUD.get());
             this.dropWhenSilkTouch(PalladiumBlocks.MEDIUM_REDSTONE_FLUX_CRYSTAL_BUD.get());
             this.dropWhenSilkTouch(PalladiumBlocks.LARGE_REDSTONE_FLUX_CRYSTAL_BUD.get());
@@ -75,9 +78,12 @@ public class PalladiumLootTableProvider extends LootTableProvider {
 
     public static class ChestLoot implements LootTableSubProvider {
 
+        public ChestLoot(HolderLookup.Provider registries) {
+        }
+
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> output) {
-            output.accept(Palladium.id("chests/ruined_multiverse_portal"),
+        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+            output.accept(ResourceKey.create(Registries.LOOT_TABLE, Palladium.id("chests/ruined_multiverse_portal")),
                     LootTable.lootTable()
                             .withPool(
                                     LootPool.lootPool()
@@ -107,8 +113,4 @@ public class PalladiumLootTableProvider extends LootTableProvider {
         }
     }
 
-    @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, @NotNull ValidationContext context) {
-        map.forEach((id, table) -> table.validate(context.setParams(table.getParamSet()).enterElement("{" + id + "}", new LootDataId<>(LootDataType.TABLE, id))));
-    }
 }
