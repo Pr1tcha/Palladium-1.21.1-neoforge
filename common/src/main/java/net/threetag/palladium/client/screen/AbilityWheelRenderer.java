@@ -127,10 +127,10 @@ public class AbilityWheelRenderer implements OverlayRegistry.IngameOverlay {
         VertexConsumer consumer = minecraft.renderBuffers().bufferSource().getBuffer(RenderType.gui());
 
         float opacity = 0.5F;
-        consumer.vertex(matrix, v1.x, v1.y, 0).color(r, g, b, opacity).endVertex();
-        consumer.vertex(matrix, v2.x, v2.y, 0).color(r, g, b, opacity).endVertex();
-        consumer.vertex(matrix, v3.x, v3.y, 0).color(r, g, b, opacity).endVertex();
-        consumer.vertex(matrix, v4.x, v4.y, 0).color(r, g, b, opacity).endVertex();
+        consumer.addVertex(matrix, v1.x, v1.y, 0).setColor(r, g, b, opacity);
+        consumer.addVertex(matrix, v2.x, v2.y, 0).setColor(r, g, b, opacity);
+        consumer.addVertex(matrix, v3.x, v3.y, 0).setColor(r, g, b, opacity);
+        consumer.addVertex(matrix, v4.x, v4.y, 0).setColor(r, g, b, opacity);
     }
 
     public static void setWheel(Wheel wheel) {
