@@ -3,8 +3,8 @@ package net.threetag.palladium.client.renderer.trail;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -43,7 +43,7 @@ public class GradientTrailRenderer extends TrailRenderer<TrailRenderer.SegmentCa
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, TrailSegmentEntityRenderer trailRenderer, Entity livingEntity, TrailSegmentEntity<SegmentCache> segment, float partialTick, float entityYaw) {
         if (livingEntity instanceof PalladiumEntityExtension ext) {
             var trails = ext.palladium$getTrailHandler().getTrails().get(this);

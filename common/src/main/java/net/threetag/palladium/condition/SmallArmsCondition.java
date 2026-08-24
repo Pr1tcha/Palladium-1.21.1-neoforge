@@ -1,8 +1,8 @@
 package net.threetag.palladium.condition;
 
 import com.google.gson.JsonObject;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.entity.player.Player;
 import net.threetag.palladium.util.PlayerUtil;
 import net.threetag.palladium.util.context.DataContext;
@@ -19,7 +19,7 @@ public class SmallArmsCondition extends Condition {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private boolean has(Player player) {
         return PlayerUtil.hasSmallArms(player);
     }

@@ -3,8 +3,8 @@ package net.threetag.palladium.client.renderer.trail;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -44,7 +44,7 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, TrailSegmentEntityRenderer trailRenderer, Entity livingEntity, TrailSegmentEntity<Cache> segment, float partialTick, float entityYaw) {
         if (livingEntity instanceof PalladiumEntityExtension ext) {
             var trails = ext.palladium$getTrailHandler().getTrails().get(this);
@@ -56,7 +56,7 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void renderSegmentWithChild(DataContext context, PoseStack poseStack, MultiBufferSource buffer, TrailSegmentEntity<Cache> segment, List<TrailSegmentEntity<?>> segments, float partialTick, int index) {
         if (index > 0) {
             var previousSegment = segments.get(index - 1);
@@ -101,7 +101,7 @@ public class LightningTrailRenderer extends TrailRenderer<LightningTrailRenderer
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static Vec3 getOffsetPos(Entity segment, Vec3 offset) {
         return new Vec3(offset.x * segment.getBbWidth(), (segment.getBbHeight() / 2D) + (offset.y * segment.getBbHeight()), offset.z * segment.getBbWidth());
     }

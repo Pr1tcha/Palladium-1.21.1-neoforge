@@ -1,7 +1,7 @@
 package net.threetag.palladium.compat.curiostinkets;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -83,7 +83,7 @@ public class CuriosTrinketsUtil {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void registerRenderer(Item item, CurioTrinketRenderer renderer) {
         // nothing
     }

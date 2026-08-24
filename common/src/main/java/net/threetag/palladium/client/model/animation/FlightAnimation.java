@@ -1,7 +1,7 @@
 package net.threetag.palladium.client.model.animation;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -18,7 +18,7 @@ import net.threetag.palladiumcore.event.ViewportEvents;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class FlightAnimation extends PalladiumAnimation implements ViewportEvents.ComputeCameraAngles {
 
     public FlightAnimation(int priority) {

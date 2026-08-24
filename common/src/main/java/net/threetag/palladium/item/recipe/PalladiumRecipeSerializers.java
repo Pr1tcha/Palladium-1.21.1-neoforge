@@ -13,7 +13,7 @@ public class PalladiumRecipeSerializers {
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Palladium.MOD_ID, Registries.RECIPE_TYPE);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Palladium.MOD_ID, Registries.RECIPE_SERIALIZER);
 
-    public static final RegistrySupplier<RecipeType<TailoringRecipe>> TAILORING = RECIPE_TYPES.register("tailoring", () -> new RecipeType<>() {
+    public static final RegistrySupplier<RecipeType<TailoringRecipe>> TAILORING = RECIPE_TYPES.register("tailoring", () -> new RecipeType<TailoringRecipe>() {
         public String toString() {
             return Palladium.id("tailoring").toString();
         }

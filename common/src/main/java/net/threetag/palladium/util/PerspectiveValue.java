@@ -2,8 +2,8 @@ package net.threetag.palladium.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.GsonHelper;
@@ -22,17 +22,17 @@ public record PerspectiveValue<T>(T firstPerson, T thirdPerson) {
         return firstPerson ? this.firstPerson() : this.thirdPerson();
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public T get(CameraType cameraType) {
         return this.get(cameraType == CameraType.FIRST_PERSON);
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public T get() {
         return this.get(Minecraft.getInstance().options.getCameraType());
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public T getForPlayer(Player player) {
         if (player == Minecraft.getInstance().player) {
             return this.get();

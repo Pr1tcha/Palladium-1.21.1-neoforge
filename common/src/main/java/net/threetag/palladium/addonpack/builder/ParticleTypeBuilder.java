@@ -1,7 +1,7 @@
 package net.threetag.palladium.addonpack.builder;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
@@ -72,7 +72,7 @@ public class ParticleTypeBuilder extends AddonBuilder<ParticleType<?>> {
         return this;
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class Particle extends TextureSheetParticle {
 
         private final ParticleTypeBuilder builder;
@@ -140,7 +140,7 @@ public class ParticleTypeBuilder extends AddonBuilder<ParticleType<?>> {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class Provider implements ParticleProvider<SimpleParticleType> {
 
         private final ParticleTypeBuilder builder;

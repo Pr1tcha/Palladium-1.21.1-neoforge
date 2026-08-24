@@ -1,7 +1,7 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -177,7 +177,7 @@ public class EnergyBeamAbility extends Ability implements AnimationTimer, Comman
                 .withSuppressedOutput();
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void spawnParticles(Level level, Vec3 pos, AbilityInstance entry) {
         var beam = EnergyBeamManager.INSTANCE.get(entry.getProperty(BEAM));
 

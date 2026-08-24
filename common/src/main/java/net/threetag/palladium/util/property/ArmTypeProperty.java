@@ -1,7 +1,7 @@
 package net.threetag.palladium.util.property;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.InteractionHand;
@@ -35,7 +35,7 @@ public class ArmTypeProperty extends EnumPalladiumProperty<ArmTypeProperty.ArmTy
         LEFT_ARM,
         BOTH;
 
-        @Environment(EnvType.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public ModelPart[] getModelPart(LivingEntity entity, HumanoidModel<?> model) {
             if (this == NONE) {
                 return new ModelPart[0];

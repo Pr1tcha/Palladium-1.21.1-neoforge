@@ -1,8 +1,8 @@
 package net.threetag.palladium.client.renderer.trail;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public abstract class TrailRenderer<T extends TrailRenderer.SegmentCache> {
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, TrailSegmentEntityRenderer trailRenderer, Entity livingEntity, TrailSegmentEntity<T> segment, float partialTick, float entityYaw) {
 
     }
@@ -35,7 +35,7 @@ public abstract class TrailRenderer<T extends TrailRenderer.SegmentCache> {
 
     public abstract boolean requiresMovement();
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void renderTrailsForEntity(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         if (!(entity instanceof PalladiumEntityExtension ext)) {
             return;

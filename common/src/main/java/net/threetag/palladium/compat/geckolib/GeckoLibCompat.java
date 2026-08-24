@@ -1,8 +1,8 @@
 package net.threetag.palladium.compat.geckolib;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -25,7 +25,7 @@ public class GeckoLibCompat {
         ItemParser.registerTypeSerializer(new AddonGeoArmorItem.Parser());
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void initClient() {
         PackRenderLayerManager.registerParser(ResourceLocation.fromNamespaceAndPath(GeckoLibConstants.MODID, "default"), GeckoRenderLayer::parse);
     }
@@ -34,7 +34,7 @@ public class GeckoLibCompat {
         return GeckoLibCompatImpl.createArmorItem(materialIn, type, builder);
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void renderFirstPerson(AbstractClientPlayer player, ItemStack stack, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, ModelPart rendererArm, boolean rightArm) {
         GeckoLibCompatImpl.renderFirstPerson(player, stack, poseStack, buffer, combinedLight, rendererArm, rightArm);
     }

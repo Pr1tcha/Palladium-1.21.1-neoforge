@@ -1,7 +1,7 @@
 package net.threetag.palladium.client.dynamictexture;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.threetag.palladium.util.context.DataContext;
@@ -20,7 +20,7 @@ public class TextureReference {
     }
 
     @Nullable
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public ResourceLocation getTexture(DataContext context) {
         if (this.dynamic) {
             var dyn = DynamicTextureManager.INSTANCE.get(this.path);

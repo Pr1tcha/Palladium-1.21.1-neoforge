@@ -1,7 +1,7 @@
 package net.threetag.palladium.menu;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,7 @@ public class PalladiumMenuTypes {
     public static final RegistrySupplier<MenuType<MultiversalIteratorMenu>> MULTIVERSAL_ITERATOR = MENU_TYPES.register("multiversal_iterator", () -> new MenuType<>(MultiversalIteratorMenu::new, FeatureFlags.VANILLA_SET));
     public static final RegistrySupplier<MenuType<MultiversalIteratorSuitStandMenu>> MULTIVERSAL_ITERATOR_SUIT_STAND = MENU_TYPES.register("multiversal_iterator_suit_stand", () -> ofExtended(MultiversalIteratorSuitStandMenu::new));
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(TAILORING.get(), TailoringScreen::new);
         event.register(MULTIVERSAL_ITERATOR.get(), MultiversalIteratorScreen::new);

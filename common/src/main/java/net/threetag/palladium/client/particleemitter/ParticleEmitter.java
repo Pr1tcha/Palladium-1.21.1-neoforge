@@ -1,8 +1,8 @@
 package net.threetag.palladium.client.particleemitter;
 
 import com.google.gson.JsonObject;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -18,7 +18,7 @@ import net.threetag.palladium.util.json.GsonUtil;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ParticleEmitter {
 
     @Nullable

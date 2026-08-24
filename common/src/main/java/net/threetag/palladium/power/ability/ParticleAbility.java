@@ -1,8 +1,8 @@
 package net.threetag.palladium.power.ability;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.ParticleOptions;
@@ -41,7 +41,7 @@ public class ParticleAbility extends Ability {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void tickClient(LivingEntity entity, AbilityInstance entry) {
         if (entity instanceof AbstractClientPlayer player) {
             try {

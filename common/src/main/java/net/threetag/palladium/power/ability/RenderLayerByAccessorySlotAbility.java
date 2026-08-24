@@ -1,7 +1,7 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +27,7 @@ public class RenderLayerByAccessorySlotAbility extends Ability implements Render
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IPackRenderLayer getRenderLayer(AbilityInstance entry, LivingEntity entity, PackRenderLayerManager manager) {
         AtomicReference<ResourceLocation> layerId = new AtomicReference<>(entry.getProperty(DEFAULT));
 

@@ -1,12 +1,12 @@
 package net.threetag.palladium.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.threetag.palladium.client.model.animation.PalladiumAnimation;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface PlayerModelCacheExtension {
 
     PlayerModel<AbstractClientPlayer> palladium$getCachedModel();

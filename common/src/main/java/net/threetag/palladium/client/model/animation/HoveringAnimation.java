@@ -1,7 +1,7 @@
 package net.threetag.palladium.client.model.animation;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
@@ -11,7 +11,7 @@ import net.threetag.palladium.entity.FlightHandler;
 import net.threetag.palladium.entity.PalladiumPlayerExtension;
 import net.threetag.palladium.util.Easing;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class HoveringAnimation extends PalladiumAnimation {
 
     public HoveringAnimation(int priority) {

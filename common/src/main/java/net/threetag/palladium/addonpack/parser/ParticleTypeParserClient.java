@@ -1,7 +1,7 @@
 package net.threetag.palladium.addonpack.parser;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleType;
 import net.threetag.palladium.addonpack.builder.AddonBuilder;
@@ -11,7 +11,7 @@ import net.threetag.palladiumcore.util.Platform;
 
 import java.util.function.Supplier;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ParticleTypeParserClient {
 
     @SuppressWarnings({"UnnecessaryLocalVariable", "rawtypes", "unchecked"})

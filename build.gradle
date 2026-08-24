@@ -115,17 +115,6 @@ configurations {
 }
 
 dependencies {
-    // Stage 1 only: use the released 1.20.1 API as a signature reference while
-    // equivalent in-tree compatibility classes are introduced subsystem by subsystem.
-    compileOnly files(
-            'libs/stage1-reference/palladiumcore-common-1.0.1+1.20.1.jar',
-            'libs/stage1-reference/palladiumcore-forge-1.0.1+1.20.1-forge.jar'
-    )
-
-    // The legacy common sources use Fabric's side annotations. They remain
-    // compile-only during bootstrap and do not create a runtime Fabric dependency.
-    compileOnly "net.fabricmc:fabric-loader:${fabric_loader_version}"
-
     // KubeJS is Palladium's scripting API and is required by downstream addon
     // packs. Keep it optional for consumers while making it available in dev runs.
     compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"

@@ -2,8 +2,8 @@ package net.threetag.palladium.util.json;
 
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
@@ -146,7 +146,7 @@ public class GsonUtil {
         return json.has(memberName) ? getAsTextureReference(json, memberName) : fallback;
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ModelLayerLocation convertToModelLayerLocation(JsonElement json, String memberName) {
         if (json.isJsonPrimitive()) {
             String[] s = json.getAsString().split("#", 2);
@@ -161,7 +161,7 @@ public class GsonUtil {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ModelLayerLocation getAsModelLayerLocation(JsonObject json, String memberName) {
         if (json.has(memberName)) {
             String[] s = GsonHelper.getAsString(json, memberName).split("#", 2);
@@ -176,7 +176,7 @@ public class GsonUtil {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ModelLayerLocation getAsModelLayerLocation(JsonObject json, String memberName, @Nullable ModelLayerLocation fallback) {
         return json.has(memberName) ? getAsModelLayerLocation(json, memberName) : fallback;
     }

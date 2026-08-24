@@ -1,7 +1,7 @@
 package net.threetag.palladium.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.threetag.palladium.client.screen.AbilityBarRenderer;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class PalladiumKeyMappings implements InputEvents.KeyPressed, ClientTickEvents.ClientTick, InputEvents.MouseScrolling {
 
     public static final String CATEGORY = "key.palladium.categories.abilities";

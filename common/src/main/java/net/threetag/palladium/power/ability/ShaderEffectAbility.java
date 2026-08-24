@@ -1,7 +1,7 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +39,7 @@ public class ShaderEffectAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void applyShader(LivingEntity entity, ResourceLocation shader) {
         var mc = Minecraft.getInstance();
 
@@ -48,7 +48,7 @@ public class ShaderEffectAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void removeShader(LivingEntity entity, ResourceLocation shader) {
         var mc = Minecraft.getInstance();
 
@@ -57,7 +57,7 @@ public class ShaderEffectAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static ResourceLocation get(Player player) {
         for (AbilityInstance entry : AbilityUtil.getEnabledEntries(player, Abilities.SHADER_EFFECT.get())) {
             return entry.getProperty(SHADER);

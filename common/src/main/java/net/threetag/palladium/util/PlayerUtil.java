@@ -1,7 +1,7 @@
 package net.threetag.palladium.util;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.core.Holder;
@@ -30,7 +30,7 @@ public class PlayerUtil {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static boolean hasSmallArms(Player player) {
         if (player instanceof AbstractClientPlayer)
             return ((AbstractClientPlayer) player).getSkin().model() == PlayerSkin.Model.SLIM;

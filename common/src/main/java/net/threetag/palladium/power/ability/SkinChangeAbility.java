@@ -1,7 +1,7 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.threetag.palladium.client.dynamictexture.TextureReference;
@@ -36,7 +36,7 @@ public class SkinChangeAbility extends Ability {
         return "Allows you to change a player's skin.";
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class SkinProvider implements PlayerSkinHandler.ISkinProvider {
 
         @Override

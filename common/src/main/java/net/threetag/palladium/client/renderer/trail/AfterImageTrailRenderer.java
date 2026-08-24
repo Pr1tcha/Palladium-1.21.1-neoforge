@@ -3,8 +3,8 @@ package net.threetag.palladium.client.renderer.trail;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -39,7 +39,7 @@ public class AfterImageTrailRenderer extends TrailRenderer<TrailRenderer.Segment
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, TrailSegmentEntityRenderer trailRenderer, Entity livingEntity, TrailSegmentEntity<SegmentCache> segment, float partialTick, float entityYaw) {
         HumanoidRendererModifications.ALPHA_MULTIPLIER = (1F - (segment.tickCount / (float) segment.lifetime)) * this.opacity;
         trailRenderer.renderModel(segment, entityYaw, segment.partialTick, poseStack, buffer, packedLight);

@@ -1,7 +1,7 @@
 package net.threetag.palladium.power.ability;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.client.dynamictexture.TextureReference;
@@ -43,7 +43,7 @@ public class AbilityWheelAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void setWheel(LivingEntity entity, AbilityInstance instance, IPowerHolder holder) {
         if (entity == Minecraft.getInstance().player) {
             List<AbilityInstance> list = new ArrayList<>();
@@ -60,7 +60,7 @@ public class AbilityWheelAbility extends Ability {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void resetWheel(LivingEntity entity) {
         if (entity == Minecraft.getInstance().player) {
             AbilityWheelRenderer.setWheel(null);
