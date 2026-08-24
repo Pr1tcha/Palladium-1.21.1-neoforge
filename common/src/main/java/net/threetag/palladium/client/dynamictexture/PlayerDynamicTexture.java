@@ -36,7 +36,7 @@ public class PlayerDynamicTexture extends DynamicTexture {
         }
 
         var skin = PlayerSkinFetcher.getOrLoadPlayerSkin(nameRef.get());
-        var texture = skin != null ? skin : DefaultPlayerSkin.getDefaultSkin();
+        var texture = skin != null ? skin : DefaultPlayerSkin.getDefaultTexture();
 
         if (this.transformers.isEmpty()) {
             return texture;

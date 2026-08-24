@@ -9,6 +9,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.threetag.palladium.client.model.animation.IAnimatablePlayer;
 import net.threetag.palladium.client.model.animation.PalladiumAnimation;
 import net.threetag.palladium.client.renderer.entity.PlayerSkinHandler;
@@ -40,7 +41,8 @@ public class AbstractClientPlayerMixin implements IAnimatablePlayer, PlayerModel
     @Inject(method = "tick", at = @At("RETURN"))
     private void tick(CallbackInfo ci) {
         AbstractClientPlayer player = (AbstractClientPlayer) (Object) this;
-        var defaultSkin = new PlayerSkinInfo(player.getModelName(), player.getSkinTextureLocation());
+        var skin = player.getSkin();
+        var defaultSkin = new PlayerSkinInfo(skin.model() == PlayerSkin.Model.SLIM ? "slim" : "default", skin.texture());
         var loop = defaultSkin;
 
         for (Pair<Integer, PlayerSkinHandler.ISkinProvider> pair : PlayerSkinHandler.PROVIDER) {

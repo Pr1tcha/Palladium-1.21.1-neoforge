@@ -45,11 +45,11 @@ public class WoodenLegAccessory extends Accessory {
                 p.setVisibility(shortened, true);
             }
 
-            var buffer = bufferSource.getBuffer(Objects.requireNonNull(getRenderType(player, player.getSkinTextureLocation(), renderLayerParent.getModel())));
-            shortened.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+            var buffer = bufferSource.getBuffer(Objects.requireNonNull(getRenderType(player, player.getSkin().texture(), renderLayerParent.getModel())));
+            shortened.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
 
             buffer = bufferSource.getBuffer(Objects.requireNonNull(getRenderType(player, TEXTURE, renderLayerParent.getModel())));
-            woodLegs.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 1F, 1F, 1F, 1F);
+            woodLegs.renderToBuffer(poseStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
         }
     }
 

@@ -3,9 +3,9 @@ package net.threetag.palladium.client.renderer.entity;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.threetag.palladium.Palladium;
@@ -71,7 +71,8 @@ public class PlayerSkinFetcher {
         if (mcPlayer != null && username.equalsIgnoreCase(mcPlayer.getGameProfile().getName())) {
             return CACHED_NAME_SKINS.computeIfAbsent(username.toLowerCase(Locale.ROOT), s -> {
                 var PlayerSkinInfo = new PlayerSkinInfo();
-                PlayerSkinInfo.set(mcPlayer.getModelName(), mcPlayer.getSkinTextureLocation());
+                var skin = mcPlayer.getSkin();
+                PlayerSkinInfo.set(getLegacyModelName(skin), skin.texture());
                 return PlayerSkinInfo;
             });
         }
@@ -81,16 +82,14 @@ public class PlayerSkinFetcher {
                 var profile = getGameProfile(username);
 
                 if (profile != null) {
-                    Minecraft.getInstance().getSkinManager().registerSkins(profile, (type, resourceLocation, minecraftProfileTexture) -> {
-                        if (type == MinecraftProfileTexture.Type.SKIN) {
-                            var skinModel = minecraftProfileTexture.getMetadata("model");
-                            if (skinModel == null) {
-                                skinModel = "default";
-                            }
-
-                            CACHED_NAME_SKINS.computeIfAbsent(profile.getName().toLowerCase(Locale.ROOT), (n) -> new PlayerSkinInfo()).set(skinModel, resourceLocation);
-                        }
-                    }, true);
+                    Minecraft.getInstance().getSkinManager().getOrLoad(profile).thenAccept(skin ->
+                            CACHED_NAME_SKINS.computeIfAbsent(profile.getName().toLowerCase(Locale.ROOT), n -> new PlayerSkinInfo())
+                                    .set(getLegacyModelName(skin), skin.texture())
+                    ).exceptionally(throwable -> {
+                        CACHED_NAME_SKINS.computeIfAbsent(username.toLowerCase(Locale.ROOT), n -> new PlayerSkinInfo()).setFailed();
+                        Palladium.LOGGER.warn("Failed to load skin for {}", username, throwable);
+                        return null;
+                    });
                 } else {
                     CACHED_NAME_SKINS.computeIfAbsent(username.toLowerCase(Locale.ROOT), (n) -> new PlayerSkinInfo()).setFailed();
                 }
@@ -134,6 +133,10 @@ public class PlayerSkinFetcher {
     private static UUID fromStringWithoutDashes(final @NotNull String uuid) {
         String correctedUUID = UUID_PATTERN.matcher(uuid).replaceAll("$1-$2-$3-$4-$5");
         return UUID.fromString(correctedUUID);
+    }
+
+    private static String getLegacyModelName(PlayerSkin skin) {
+        return skin.model() == PlayerSkin.Model.SLIM ? "slim" : "default";
     }
 
 }
