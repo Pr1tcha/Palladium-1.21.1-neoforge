@@ -27,7 +27,7 @@ public class AbilityFirstTickCondition extends Condition {
         if (dependency == null) {
             return false;
         } else {
-            return dependency.getEnabledTicks() == 1;
+            return !dependency.isPrevEnabled() && dependency.isEnabled();
         }
     }
 

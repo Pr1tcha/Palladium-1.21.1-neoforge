@@ -27,7 +27,7 @@ public class AbilityLastTickCondition extends Condition {
         if (dependency == null) {
             return false;
         } else {
-            return dependency.getPrevEnabledTicks() > dependency.getEnabledTicks();
+            return dependency.isPrevEnabled() && !dependency.isEnabled();
         }
     }
 

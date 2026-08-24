@@ -31,6 +31,7 @@ public class AbilityInstance {
     private int lifetime = 0;
     private int prevEnabledTicks = 0;
     private int enabledTicks = 0;
+    private boolean prevEnabled = false;
     public String id;
     private final PropertyManager propertyManager = new PropertyManager().setListener(new PropertyManager.Listener() {
         @Override
@@ -102,6 +103,10 @@ public class AbilityInstance {
         return this.prevEnabledTicks;
     }
 
+    public boolean isPrevEnabled() {
+        return this.prevEnabled;
+    }
+
     public void setClientState(LivingEntity entity, IPowerHolder powerHolder, boolean unlocked, boolean enabled, int maxCooldown, int cooldown, int maxActivationTimer, int activationTimer) {
         this.unlocked = unlocked;
         this.maxCooldown = maxCooldown;
@@ -122,6 +127,7 @@ public class AbilityInstance {
 
     public void tick(LivingEntity entity, IPowerHolder powerHolder) {
         this.prevEnabledTicks = this.enabledTicks;
+        this.prevEnabled = this.enabled;
 
         if (!entity.level().isClientSide) {
             if (this.lifetime == 0) {

@@ -45,7 +45,7 @@ public class TrailHandler {
                     }
                 }
 
-                trails = trails.stream().filter(LivingEntity::isAlive).collect(Collectors.toList());
+                trails = trails.stream().filter(segment -> segment.isAlive() && !segment.isRemoved()).collect(Collectors.toList());
             } else if (active.contains(renderer) && this.isMoving()) {
                 trails.add(this.spawnEntity(renderer));
             }

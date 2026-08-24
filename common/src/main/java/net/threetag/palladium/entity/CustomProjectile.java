@@ -110,7 +110,7 @@ public class CustomProjectile extends ThrowableProjectile implements ExtendedEnt
                 }
 
                 if (this.damage > 0F) {
-                    var damageType = entity.level().damageSources().thrown(this.getOwner(), this);
+                    var damageType = entity.level().damageSources().thrown(this, this.getOwner());
 
                     if (this.damageType != null) {
                         damageType = this.damageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, this.damageType), this.getOwner(), this);
