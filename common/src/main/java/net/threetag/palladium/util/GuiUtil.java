@@ -1,18 +1,10 @@
 package net.threetag.palladium.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -25,89 +17,11 @@ public class GuiUtil {
         }
 
         var mc = Minecraft.getInstance();
-        var itemRenderer = mc.getItemRenderer();
-        var bakedModel = itemRenderer.getModel(stack, null, mc.player, hash);
-
-        Minecraft.getInstance().getTextureManager().getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-        PoseStack modelViewStack = RenderSystem.getModelViewStack();
-        modelViewStack.pushPose();
-        modelViewStack.mulPoseMatrix(graphics.pose().last().pose());
-        // modelViewStack.translate(x, y, 100.0D + this.blitOffset);
-        modelViewStack.scale(1F, -1F, 1F);
-        modelViewStack.scale(16F, 16F, 16F);
-        RenderSystem.applyModelViewMatrix();
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        var flatLight = !bakedModel.usesBlockLight();
-
-        if (flatLight) {
-            Lighting.setupForFlatItems();
-        }
-
-        itemRenderer.render(stack, ItemDisplayContext.GUI, false, new PoseStack(), bufferSource, 0xF000F0, OverlayTexture.NO_OVERLAY, bakedModel);
-        bufferSource.endBatch();
-        RenderSystem.enableDepthTest();
-
-        if (flatLight) {
-            Lighting.setupFor3DItems();
-        }
-
-        modelViewStack.popPose();
-        RenderSystem.applyModelViewMatrix();
+        graphics.renderItem(stack, -8, -8, hash);
 
         if (renderOverlay) {
-            var t = Tesselator.getInstance();
-            var font = mc.font;
-
-            if (stack.getCount() != 1 || text != null) {
-                var s = text == null ? String.valueOf(stack.getCount()) : text;
-                graphics.pose().pushPose();
-                graphics.pose().translate(9D - font.width(s), 1D, 20D);
-                font.drawInBatch(s, 0F, 0F, 0xFFFFFF, true, graphics.pose().last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-                bufferSource.endBatch();
-                graphics.pose().popPose();
-            }
-
-            if (stack.isBarVisible()) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.disableBlend();
-                var barWidth = stack.getBarWidth();
-                var barColor = stack.getBarColor();
-                draw(graphics, t, -6, 5, 13, 2, 0, 0, 0, 255);
-                draw(graphics, t, -6, 5, barWidth, 1, barColor >> 16 & 255, barColor >> 8 & 255, barColor & 255, 255);
-                RenderSystem.enableBlend();
-                RenderSystem.enableDepthTest();
-            }
-
-            var cooldown = mc.player == null ? 0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), mc.getFrameTime());
-
-            if (cooldown > 0F) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                draw(graphics, t, -8, Mth.floor(16F * (1F - cooldown)) - 8, 16, Mth.ceil(16F * cooldown), 255, 255, 255, 127);
-                RenderSystem.enableDepthTest();
-            }
+            graphics.renderItemDecorations(mc.font, stack, -8, -8, text);
         }
-    }
-
-    private static void draw(GuiGraphics graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-        if (width <= 0 || height <= 0) {
-            return;
-        }
-
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var m = graphics.pose().last().pose();
-        var renderer = t.getBuilder();
-        renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        renderer.vertex(m, x, y, 0).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(m, x, y + height, 0).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(m, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(m, x + width, y, 0).color(red, green, blue, alpha).endVertex();
-        t.end();
     }
 
 
@@ -165,14 +79,13 @@ public class GuiUtil {
         final float uScale = 1f / 0x100;
         final float vScale = 1f / 0x100;
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder wr = tessellator.getBuilder();
-        wr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         Matrix4f matrix = poseStack.last().pose();
-        wr.vertex(matrix, x, y + height, zLevel).uv(u * uScale, ((v + height) * vScale)).endVertex();
-        wr.vertex(matrix, x + width, y + height, zLevel).uv((u + width) * uScale, ((v + height) * vScale)).endVertex();
-        wr.vertex(matrix, x + width, y, zLevel).uv((u + width) * uScale, (v * vScale)).endVertex();
-        wr.vertex(matrix, x, y, zLevel).uv(u * uScale, (v * vScale)).endVertex();
-        tessellator.end();
+        wr.addVertex(matrix, x, y + height, zLevel).setUv(u * uScale, ((v + height) * vScale));
+        wr.addVertex(matrix, x + width, y + height, zLevel).setUv((u + width) * uScale, ((v + height) * vScale));
+        wr.addVertex(matrix, x + width, y, zLevel).setUv((u + width) * uScale, (v * vScale));
+        wr.addVertex(matrix, x, y, zLevel).setUv(u * uScale, (v * vScale));
+        BufferUploader.drawWithShader(wr.buildOrThrow());
     }
 }

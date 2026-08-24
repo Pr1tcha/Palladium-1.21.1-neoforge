@@ -28,35 +28,40 @@ public class RenderUtil {
 
     public static void renderFilledBox(PoseStack stack, VertexConsumer vertexConsumer, AABB box, float red, float green, float blue, float alpha, int combinedLightIn) {
         Matrix4f matrix = stack.last().pose();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
 
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
 
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
 
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
 
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.maxX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
 
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.minY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
-        vertexConsumer.vertex(matrix, (float) box.minX, (float) box.maxY, (float) box.minZ).color(red, green, blue, alpha).uv2(combinedLightIn).endVertex();
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.minY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.maxZ, red, green, blue, alpha, combinedLightIn);
+        vertex(vertexConsumer, matrix, (float) box.minX, (float) box.maxY, (float) box.minZ, red, green, blue, alpha, combinedLightIn);
+    }
+
+    private static void vertex(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
+                               float red, float green, float blue, float alpha, int light) {
+        consumer.addVertex(matrix, x, y, z).setColor(red, green, blue, alpha).setLight(light);
     }
 
     public static void drawGlowingBox(PoseStack poseStack, VertexConsumer consumer, float length, float width, float red, float green, float blue, float alpha, int combinedLightIn) {
