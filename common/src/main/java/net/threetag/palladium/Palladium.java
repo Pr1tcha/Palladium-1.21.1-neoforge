@@ -48,6 +48,7 @@ import net.threetag.palladium.world.TrackedScoresManager;
 import net.threetag.palladiumcore.event.CommandEvents;
 import net.threetag.palladiumcore.event.LifecycleEvents;
 import net.threetag.palladiumcore.event.PlayerEvents;
+import net.threetag.palladiumcore.util.DataSyncUtil;
 import net.threetag.palladiumcore.util.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,6 +100,7 @@ public class Palladium {
         TrackedScoresManager.init();
         MultiverseManager.init();
         MultiversalItemVariantsManager.init();
+        DataSyncUtil.setupEvents();
 
         LifecycleEvents.SETUP.register(() -> {
             Palladium.generateDocumentation();
