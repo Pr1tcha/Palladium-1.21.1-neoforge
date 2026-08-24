@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(LivingEntityRenderer.class)
 public interface LivingEntityRendererInvoker {
 
+    @Invoker("getBob")
+    float palladium$getBob(LivingEntity entity, float partialTick);
+
     @Invoker("getRenderType")
     RenderType palladium$getRenderType(LivingEntity entity, boolean bodyVisible, boolean translucent, boolean glowing);
 

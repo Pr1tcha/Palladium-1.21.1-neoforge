@@ -10,7 +10,6 @@ import net.threetag.palladium.client.renderer.trail.TrailRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings({"rawtypes", "ConstantConditions"})
@@ -57,43 +56,6 @@ public abstract class LivingEntityRendererMixin {
         if ((Object) this instanceof LivingEntityRenderer renderer && renderer.getModel() instanceof HumanoidModel model) {
             HumanoidRendererModifications.postLayers(renderer, pEntity, model, pMatrixStack, pBuffer, pPackedLight, pPartialTicks);
         }
-    }
-
-    // Caching setupAnim arguments -------------------------------------------------------------------------------------
-
-    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V"), index = 1)
-    private float setupAnimArg1(float f) {
-        HumanoidRendererModifications.CACHED_LIMB_SWING = f;
-        return f;
-    }
-
-    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V"), index = 2)
-    private float setupAnimArg2(float f) {
-        HumanoidRendererModifications.CACHED_LIMB_SWING_AMOUNT = f;
-        return f;
-    }
-
-    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V"), index = 3)
-    private float setupAnimArg3(float f) {
-        HumanoidRendererModifications.CACHED_AGE_IN_TICKS = f;
-        return f;
-    }
-
-    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V"), index = 4)
-    private float setupAnimArg4(float f) {
-        HumanoidRendererModifications.CACHED_NET_HEAD_YAW = f;
-        return f;
-    }
-
-    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V"), index = 5)
-    private float setupAnimArg5(float f) {
-        HumanoidRendererModifications.CACHED_HEAD_PITCH = f;
-        return f;
     }
 
     @Inject(at = @At("RETURN"),

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,7 +51,44 @@ public class HumanoidRendererModifications {
         }
     }
 
+    public static void cacheAnimationValues(LivingEntityRenderer renderer, LivingEntity entity, float partialTick) {
+        boolean shouldSit = entity.isPassenger() && entity.getVehicle() != null;
+
+        float bodyRot = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        float headRot = Mth.rotLerp(partialTick, entity.yHeadRotO, entity.yHeadRot);
+        float netHeadYaw = headRot - bodyRot;
+
+        if (shouldSit && entity.getVehicle() instanceof LivingEntity vehicle) {
+            bodyRot = Mth.rotLerp(partialTick, vehicle.yBodyRotO, vehicle.yBodyRot);
+            netHeadYaw = headRot - bodyRot;
+            float wrapped = Mth.wrapDegrees(netHeadYaw);
+            if (wrapped < -85.0F) wrapped = -85.0F;
+            if (wrapped >= 85.0F) wrapped = 85.0F;
+            netHeadYaw = wrapped;
+        }
+
+        float headPitch = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
+        float ageInTicks = ((LivingEntityRendererInvoker) renderer).palladium$getBob(entity, partialTick);
+
+        float limbSwing = 0.0F;
+        float limbSwingAmount = 0.0F;
+        if (!shouldSit && entity.isAlive()) {
+            limbSwingAmount = entity.walkAnimation.speed(partialTick);
+            limbSwing = entity.walkAnimation.position(partialTick);
+            if (entity.isBaby()) limbSwing *= 3.0F;
+            if (limbSwingAmount > 1.0F) limbSwingAmount = 1.0F;
+        }
+
+        CACHED_LIMB_SWING = limbSwing;
+        CACHED_LIMB_SWING_AMOUNT = limbSwingAmount;
+        CACHED_AGE_IN_TICKS = ageInTicks;
+        CACHED_NET_HEAD_YAW = netHeadYaw;
+        CACHED_HEAD_PITCH = headPitch;
+    }
+
     public static void preRender(LivingEntityRenderer renderer, LivingEntity entity, HumanoidModel model, PoseStack poseStack, float partialTick) {
+        cacheAnimationValues(renderer, entity, partialTick);
+
         // animations
         if (!PalladiumAnimationRegistry.SKIP_ANIMATIONS) {
             PalladiumAnimationRegistry.applyAnimations(model, entity, CACHED_LIMB_SWING, CACHED_LIMB_SWING_AMOUNT, CACHED_AGE_IN_TICKS, CACHED_NET_HEAD_YAW, CACHED_HEAD_PITCH);
