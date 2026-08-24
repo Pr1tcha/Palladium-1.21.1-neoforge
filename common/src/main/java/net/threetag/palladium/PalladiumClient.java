@@ -65,6 +65,7 @@ import net.threetag.palladium.network.PalladiumNetwork;
 import net.threetag.palladium.power.ability.AbilityClientEventHandler;
 import net.threetag.palladium.power.ability.GuiOverlayAbility;
 import net.threetag.palladium.power.ability.PlaySoundAbility;
+import net.threetag.palladium.power.ability.TextOverlayAbility;
 import net.threetag.palladium.util.SupporterHandler;
 import net.threetag.palladium.util.icon.IIcon;
 import net.threetag.palladium.util.icon.TexturedIcon;
@@ -123,6 +124,7 @@ public class PalladiumClient {
         // Overlay Renderer
         OverlayRegistry.registerOverlay("palladium/ability_bar", new AbilityBarRenderer());
         OverlayRegistry.registerOverlay("palladium/gui_overlay_abilities", new GuiOverlayAbility.Renderer());
+        OverlayRegistry.registerOverlay("palladium/text_overlay_abilities", new TextOverlayAbility.Renderer());
         OverlayRegistry.registerOverlay("palladium/ability_wheel", new AbilityWheelRenderer());
 
         // Reload Listeners

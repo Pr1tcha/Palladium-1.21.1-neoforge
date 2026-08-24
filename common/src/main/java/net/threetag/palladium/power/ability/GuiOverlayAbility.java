@@ -46,7 +46,7 @@ public class GuiOverlayAbility extends Ability {
 
         @Override
         public void render(Minecraft minecraft, Gui gui, GuiGraphics guiGraphics, float partialTicks, int width, int height) {
-            List<AbilityInstance> entries = AbilityUtil.getEnabledEntries(minecraft.player, Abilities.GUI_OVERLAY.get()).stream().sorted((a1, a2) -> (int) (a1.getProperty(TRANSLATE).z - a2.getProperty(TRANSLATE).z)).toList();
+            List<AbilityInstance> entries = AbilityUtil.getEnabledInstances(minecraft.player, Abilities.GUI_OVERLAY.get()).stream().sorted((a1, a2) -> (int) (a1.getProperty(TRANSLATE).z - a2.getProperty(TRANSLATE).z)).toList();
             for (AbilityInstance entry : entries) {
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 RenderSystem.enableBlend();
