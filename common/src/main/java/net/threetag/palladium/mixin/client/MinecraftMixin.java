@@ -7,7 +7,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.threetag.palladium.client.PalladiumKeyMappings;
 import net.threetag.palladium.client.screen.AbilityWheelRenderer;
-import net.threetag.palladium.entity.DualWieldingPlayerHandler;
+import net.threetag.palladium.client.entity.DualWieldingClientHandler;
 import net.threetag.palladium.network.AbilityKeyPressedMessage;
 import net.threetag.palladium.power.ability.AbilityConfiguration;
 import net.threetag.palladium.power.ability.EntityGlowAbility;
@@ -124,7 +124,7 @@ public class MinecraftMixin {
             return;
         }
 
-        DualWieldingPlayerHandler.attackClient();
+        DualWieldingClientHandler.attack();
     }
 
     @Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)

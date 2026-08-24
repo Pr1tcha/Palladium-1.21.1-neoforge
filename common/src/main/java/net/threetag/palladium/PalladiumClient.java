@@ -38,6 +38,7 @@ import net.threetag.palladium.client.renderer.accessory.AccessoryRenderer;
 import net.threetag.palladium.client.renderer.entity.CustomProjectileRenderer;
 import net.threetag.palladium.client.renderer.entity.EffectEntityRenderer;
 import net.threetag.palladium.client.renderer.entity.SuitStandRenderer;
+import net.threetag.palladium.client.renderer.entity.SupporterCloakHandler;
 import net.threetag.palladium.client.renderer.entity.TrailSegmentEntityRenderer;
 import net.threetag.palladium.client.renderer.item.armor.ArmorRendererManager;
 import net.threetag.palladium.client.renderer.renderlayer.AccessoryRenderLayer;
@@ -83,6 +84,7 @@ public class PalladiumClient {
         PalladiumKeyMappings.init();
         PowersScreen.register();
         AccessoryScreen.addButton();
+        SupporterHandler.setCloakTextureLoader(SupporterCloakHandler::load);
         SupporterHandler.clientInit();
         setupDevLogButton();
         AbilityClientEventHandler.init();

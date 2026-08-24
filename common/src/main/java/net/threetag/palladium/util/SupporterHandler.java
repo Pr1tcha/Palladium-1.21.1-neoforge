@@ -5,13 +5,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +20,6 @@ import net.threetag.palladiumcore.util.Platform;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -34,11 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 public class SupporterHandler {
 
     private static final String BASE_URL = "https://squirrelcontrol.threetag.net/api/";
     private static final Map<UUID, PlayerData> DATA = Maps.newHashMap();
+    private static BiConsumer<PlayerData, String> CLOAK_TEXTURE_LOADER = (data, url) -> {
+    };
     private static boolean CHECK = false;
 
     public static void init() {
@@ -92,6 +90,10 @@ public class SupporterHandler {
             CHECK = true;
             Palladium.LOGGER.info("The supporter check has been enabled!");
         }
+    }
+
+    public static void setCloakTextureLoader(BiConsumer<PlayerData, String> loader) {
+        CLOAK_TEXTURE_LOADER = loader;
     }
 
     public static boolean isSupporterCheckEnabled() {
@@ -157,29 +159,18 @@ public class SupporterHandler {
 
             if (GsonHelper.isValidNode(json, "cloak")) {
                 this.hasCloak = true;
-                if (Platform.isClient()) {
-                    loadCloakTexture(GsonHelper.getAsString(json, "cloak"));
-                }
+                CLOAK_TEXTURE_LOADER.accept(this, GsonHelper.getAsString(json, "cloak"));
             } else {
                 this.hasCloak = false;
             }
         }
 
-        @Environment(EnvType.CLIENT)
-        public void loadCloakTexture(String url) {
-            if (RenderSystem.isOnRenderThread()) {
-                try {
-                    ResourceLocation resourceLocation = Palladium.id("cloaks/" + this.uuid.toString());
-                    Minecraft.getInstance().getTextureManager().release(resourceLocation);
-                    InputStream stream = new URL(url).openStream();
-                    NativeImage image = NativeImage.read(stream);
-                    Minecraft.getInstance().getTextureManager().register(resourceLocation, new DynamicTexture(image));
-                    stream.close();
-                    this.cloakTexture = resourceLocation;
-                } catch (IOException e) {
-                    Palladium.LOGGER.error("Error loading supporter cloak texture: " + e.getMessage());
-                }
-            }
+        public UUID getUuid() {
+            return this.uuid;
+        }
+
+        public void setCloakTexture(ResourceLocation cloakTexture) {
+            this.cloakTexture = cloakTexture;
         }
 
         public boolean hasModAccess() {

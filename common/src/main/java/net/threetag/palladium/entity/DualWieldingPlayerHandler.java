@@ -1,8 +1,5 @@
 package net.threetag.palladium.entity;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -22,14 +19,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.threetag.palladium.client.PalladiumKeyMappings;
-import net.threetag.palladium.network.PalladiumNetwork;
-import net.threetag.palladium.network.RightClickAttackMessage;
-import net.threetag.palladium.power.ability.Abilities;
-import net.threetag.palladium.power.ability.AbilityUtil;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.EventHooks;
@@ -284,30 +274,6 @@ public class DualWieldingPlayerHandler {
         });
 
         return result.getValue();
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static void attackClient() {
-        var mc = Minecraft.getInstance();
-
-        if (AbilityUtil.isTypeEnabled(mc.player, Abilities.DUAL_WIELDING.get()) && !PalladiumKeyMappings.DUAL_WIELDING_RIGHT_CLICK && mc.player instanceof PalladiumPlayerExtension ext) {
-            PalladiumKeyMappings.DUAL_WIELDING_RIGHT_CLICK = true;
-            var hitResult = mc.hitResult;
-
-            if (Objects.requireNonNull(hitResult).getType() == HitResult.Type.MISS) {
-                ext.palladium$getDualWieldingHandler().resetAttackStrengthTicker();
-                mc.gameRenderer.itemInHandRenderer.itemUsed(InteractionHand.OFF_HAND);
-                PalladiumNetwork.NETWORK.sendToServer(new RightClickAttackMessage(-1));
-            } else if (Objects.requireNonNull(hitResult).getType() == HitResult.Type.ENTITY) {
-                var target = ((EntityHitResult) hitResult).getEntity();
-                PalladiumNetwork.NETWORK.sendToServer(new RightClickAttackMessage(target.getId()));
-                ext.palladium$getDualWieldingHandler().attackWithOffHand(target);
-                ext.palladium$getDualWieldingHandler().resetAttackStrengthTicker();
-                mc.gameRenderer.itemInHandRenderer.itemUsed(InteractionHand.OFF_HAND);
-            } else {
-                PalladiumNetwork.NETWORK.sendToServer(new RightClickAttackMessage(-1));
-            }
-        }
     }
 
 }
