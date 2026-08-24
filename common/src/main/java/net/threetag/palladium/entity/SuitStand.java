@@ -40,6 +40,7 @@ public class SuitStand extends ArmorStand implements ExtendedEntitySpawnData {
     @SuppressWarnings("unchecked")
     public SuitStand(EntityType<?> entityType, Level level) {
         super((EntityType<? extends ArmorStand>) entityType, level);
+        this.entityData.set(DATA_CLIENT_FLAGS, this.setBit(this.entityData.get(DATA_CLIENT_FLAGS), 4, true));
         this.setLeftArmPose(DEFAULT_LEFT_ARM_POSE);
         this.setRightArmPose(DEFAULT_RIGHT_ARM_POSE);
         this.setLeftLegPose(DEFAULT_LEFT_LEG_POSE);
@@ -52,10 +53,9 @@ public class SuitStand extends ArmorStand implements ExtendedEntitySpawnData {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DYE_COLOR, (byte) 0);
-        this.entityData.set(DATA_CLIENT_FLAGS, this.setBit(this.entityData.get(DATA_CLIENT_FLAGS), 4, true));
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DYE_COLOR, (byte) 0);
     }
 
     private byte setBit(byte oldBit, int offset, boolean value) {
@@ -143,8 +143,10 @@ public class SuitStand extends ArmorStand implements ExtendedEntitySpawnData {
     }
 
     public void suitStandBrokenByPlayer(DamageSource damageSource) {
-        Block.popResource(this.level(), this.blockPosition(), new ItemStack(PalladiumItems.SUIT_STAND.get()));
-        this.brokenByAnything(damageSource);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            Block.popResource(serverLevel, this.blockPosition(), new ItemStack(PalladiumItems.SUIT_STAND.get()));
+            this.brokenByAnything(serverLevel, damageSource);
+        }
     }
 
     public void suitStandShowBreakingParticles() {
