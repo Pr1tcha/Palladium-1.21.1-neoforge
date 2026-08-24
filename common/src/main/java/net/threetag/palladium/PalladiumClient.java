@@ -255,9 +255,9 @@ public class PalladiumClient {
     }
 
     public static void setupDevLogButton() {
-        ScreenEvents.INIT_POST.register((screen) -> {
+        ScreenEvents.INIT_POST.register((screen, addListener) -> {
             if (PalladiumConfig.Client.ADDON_PACK_DEV_MODE.get() && (screen instanceof TitleScreen || screen instanceof PauseScreen)) {
-                screen.addRenderableWidget(IconButton.builder(ICON, button ->
+                addListener.accept(IconButton.builder(ICON, button ->
                                 Minecraft.getInstance().setScreen(new AddonPackLogScreen(AddonPackLog.getEntries(), screen)))
                         .pos(screen.width - 30, 10)
                         .tooltip(Tooltip.create(Component.translatable("gui.palladium.addon_pack_log"))).build());

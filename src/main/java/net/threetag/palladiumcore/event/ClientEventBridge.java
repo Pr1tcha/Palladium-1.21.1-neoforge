@@ -94,7 +94,7 @@ public final class ClientEventBridge {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void screenInitPost(ScreenEvent.Init.Post event) {
-        ScreenEvents.INIT_POST.invoker().screenInitPost(event.getScreen());
+        ScreenEvents.INIT_POST.invoker().screenInitPost(event.getScreen(), event::addListener);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

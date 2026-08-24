@@ -2,25 +2,18 @@ package net.threetag.palladium.client.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractSelectionList;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.SkinCustomizationScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.screens.options.SkinCustomizationScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -38,15 +31,19 @@ import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladiumcore.event.ScreenEvents;
 import net.threetag.palladiumcore.util.Platform;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class AccessoryScreen extends OptionsSubScreen {
+public class AccessoryScreen extends Screen {
+
+    private final Screen parent;
 
     public AccessoryScreen(Screen screen) {
-        super(screen, null, Component.translatable("gui.palladium.accessories"));
+        super(Component.translatable("gui.palladium.accessories"));
+        this.parent = screen;
     }
 
     public AccessorySlot currentSlot;
@@ -56,7 +53,7 @@ public class AccessoryScreen extends OptionsSubScreen {
     public float rotation = 180F;
 
     public static void addButton() {
-        ScreenEvents.INIT_POST.register((screen) -> {
+        ScreenEvents.INIT_POST.register((screen, addListener) -> {
             if (PalladiumConfig.Client.ACCESSORY_BUTTON.get()) {
                 Button button = null;
                 Component text = Component.translatable("gui.palladium.accessories");
@@ -66,22 +63,22 @@ public class AccessoryScreen extends OptionsSubScreen {
                 }
 
                 if (screen instanceof InventoryScreen inv) {
-                    button = new EditButton(inv.leftPos + 63, inv.topPos + 66, b -> Minecraft.getInstance().setScreen(new AccessoryScreen(screen))) {
+                    button = new EditButton(inv.getGuiLeft() + 63, inv.getGuiTop() + 66, b -> Minecraft.getInstance().setScreen(new AccessoryScreen(screen))) {
                         @Override
-                        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-                            this.setPosition(inv.leftPos + 63, inv.topPos + 66);
-                            super.render(guiGraphics, mouseX, mouseY, partialTick);
+                        public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                            this.setPosition(inv.getGuiLeft() + 63, inv.getGuiTop() + 66);
+                            super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
                         }
                     };
                     button.setTooltip(Tooltip.create(text));
                 }
 
                 if (screen instanceof CreativeModeInventoryScreen inv) {
-                    button = new EditButton(inv.leftPos + 93, inv.topPos + 37, b -> Minecraft.getInstance().setScreen(new AccessoryScreen(screen))) {
+                    button = new EditButton(inv.getGuiLeft() + 93, inv.getGuiTop() + 37, b -> Minecraft.getInstance().setScreen(new AccessoryScreen(screen))) {
                         @Override
-                        public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                        public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                             this.visible = CreativeModeInventoryScreen.selectedTab == BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.INVENTORY);
-                            super.render(guiGraphics, mouseX, mouseY, partialTick);
+                            super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
                         }
                     };
                     button.setTooltip(Tooltip.create(text));
@@ -89,7 +86,7 @@ public class AccessoryScreen extends OptionsSubScreen {
 
                 if (button != null) {
                     button.active = Minecraft.getInstance().player != null && !Accessory.getAvailableAccessories(SupporterHandler.getPlayerData(Minecraft.getInstance().player.getGameProfile().getId())).isEmpty();
-                    screen.addRenderableWidget(button);
+                    addListener.accept(button);
                 }
             }
         });
@@ -101,6 +98,11 @@ public class AccessoryScreen extends OptionsSubScreen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.setScreen(this.parent);
+    }
+
+    @Override
     protected void init() {
         super.init();
 
@@ -108,18 +110,18 @@ public class AccessoryScreen extends OptionsSubScreen {
         this.addRenderableWidget(this.rotationSlider = new RotationSlider(100 + (this.width - 150) / 2, this.height / 2 + this.height / 3 + 10, 100, 20, 0.5F));
 
         this.slotList = new AccessorySlotList(this.minecraft, this, 42, this.height, 20, this.height - 40, 36);
-        this.slotList.setLeftPos(6);
+        this.slotList.setX(6);
         this.addWidget(slotList);
 
         this.accessoryList = new AccessoryList(this.minecraft, this, 150, this.height, 20, this.height - 40, this.font.lineHeight + 8);
-        this.accessoryList.setLeftPos(48);
+        this.accessoryList.setX(48);
         this.addWidget(accessoryList);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
-        this.renderDirtBackground(0, 160);
+        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        this.renderDirtBackground(guiGraphics, 0, 160);
 
         if (this.accessoryList != null)
             this.accessoryList.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -142,7 +144,7 @@ public class AccessoryScreen extends OptionsSubScreen {
         player.setXRot(0);
         player.yHeadRot = player.getYRot();
         player.yHeadRotO = player.getYRot();
-        InventoryScreen.renderEntityInInventory(guiGraphics, 150 + (this.width - 150) / 2, this.height / 2 + this.height / 3, this.height / 3, quaternionf, null, player);
+        InventoryScreen.renderEntityInInventory(guiGraphics, 150 + (this.width - 150) / 2, this.height / 2 + this.height / 3, this.height / 3, new Vector3f(), quaternionf, null, player);
         player.yBodyRot = h;
         player.setYRot(i);
         player.setXRot(j);
@@ -153,30 +155,16 @@ public class AccessoryScreen extends OptionsSubScreen {
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
-    public void renderDirtBackground(int vOffset, int width) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        float f = 32.0F;
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferBuilder.vertex(0.0, this.height, 0.0).uv(0.0F, (float) this.height / 32.0F + (float) vOffset).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(width, this.height, 0.0)
-                .uv((float) width / 32.0F, (float) this.height / 32.0F + (float) vOffset)
-                .color(64, 64, 64, 255)
-                .endVertex();
-        bufferBuilder.vertex(width, 0.0, 0.0).uv((float) width / 32.0F, (float) vOffset).color(64, 64, 64, 255).endVertex();
-        bufferBuilder.vertex(0.0, 0.0, 0.0).uv(0.0F, (float) vOffset).color(64, 64, 64, 255).endVertex();
-        tesselator.end();
+    public void renderDirtBackground(GuiGraphics guiGraphics, int vOffset, int width) {
+        renderMenuBackgroundTexture(guiGraphics, MENU_BACKGROUND, 0, 0, 0.0F, vOffset, width, this.height);
     }
 
-    public static class AccessorySlotList extends AbstractSelectionList<SlotListEntry> {
+    public static class AccessorySlotList extends ObjectSelectionList<SlotListEntry> {
 
         private final int listWidth;
 
         public AccessorySlotList(Minecraft minecraft, AccessoryScreen parent, int width, int height, int top, int bottom, int slotHeight) {
-            super(minecraft, width, height, top, bottom, slotHeight);
+            super(minecraft, width, bottom - top, top, slotHeight);
 
             this.listWidth = width;
             var context = DataContext.forEntity(minecraft.player);
@@ -196,16 +184,11 @@ public class AccessoryScreen extends OptionsSubScreen {
 
         @Override
         protected int getScrollbarPosition() {
-            return this.listWidth;
-        }
-
-        @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
-
+            return this.getX() + this.listWidth - 6;
         }
     }
 
-    public static class SlotListEntry extends AbstractSelectionList.Entry<SlotListEntry> {
+    public static class SlotListEntry extends ObjectSelectionList.Entry<SlotListEntry> {
 
         private final AccessorySlot slot;
         private final AccessoryScreen parent;
@@ -241,15 +224,20 @@ public class AccessoryScreen extends OptionsSubScreen {
             this.parent.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return false;
         }
+
+        @Override
+        public Component getNarration() {
+            return this.slot.getDisplayName();
+        }
     }
 
-    public static class AccessoryList extends AbstractSelectionList<AccessoryListEntry> {
+    public static class AccessoryList extends ObjectSelectionList<AccessoryListEntry> {
 
         private final AccessoryScreen parent;
         private final int listWidth;
 
         public AccessoryList(Minecraft minecraft, AccessoryScreen parent, int width, int height, int top, int bottom, int slotHeight) {
-            super(minecraft, width, height, top, bottom, slotHeight);
+            super(minecraft, width, bottom - top, top, slotHeight);
             this.listWidth = width;
             this.parent = parent;
             this.refreshList();
@@ -274,22 +262,17 @@ public class AccessoryScreen extends OptionsSubScreen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput narrationElementOutput) {
-
-        }
-
-        @Override
         public int getRowWidth() {
             return this.listWidth;
         }
 
         @Override
         protected int getScrollbarPosition() {
-            return this.listWidth;
+            return this.getX() + this.listWidth - 6;
         }
     }
 
-    public static class AccessoryListEntry extends AbstractSelectionList.Entry<AccessoryListEntry> {
+    public static class AccessoryListEntry extends ObjectSelectionList.Entry<AccessoryListEntry> {
 
         private final Accessory accessory;
         private final AccessoryScreen parent;
@@ -322,6 +305,11 @@ public class AccessoryScreen extends OptionsSubScreen {
             new ToggleAccessoryMessage(this.parent.currentSlot, this.accessory).send();
             this.parent.minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return false;
+        }
+
+        @Override
+        public Component getNarration() {
+            return this.accessory.getDisplayName();
         }
     }
 
