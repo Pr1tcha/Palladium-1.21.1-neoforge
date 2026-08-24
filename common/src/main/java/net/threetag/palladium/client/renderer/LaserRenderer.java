@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.Sheep;
@@ -217,9 +218,7 @@ public class LaserRenderer {
             int l = j % k;
             int m = (j + 1) % k;
             float f = ((float) (ticks % rate) + partialTick) / (float) rate;
-            float[] fs = Sheep.getColorArray(DyeColor.byId(l));
-            float[] gs = Sheep.getColorArray(DyeColor.byId(m));
-            return new Color(fs[0] * (1.0F - f) + gs[0] * f, fs[1] * (1.0F - f) + gs[1] * f, fs[2] * (1.0F - f) + gs[2] * f);
+            return new Color(FastColor.ARGB32.lerp(f, Sheep.getColor(DyeColor.byId(l)), Sheep.getColor(DyeColor.byId(m))), true);
         } else {
             return this.glowColor.getColor(context);
         }
