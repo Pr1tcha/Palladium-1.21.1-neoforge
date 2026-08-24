@@ -134,6 +134,7 @@ public abstract class PalladiumLangProvider extends ExtendedLangProvider {
             this.addAbility(Abilities.REMOVE_BODY_PART, "Remove Body Part");
             this.addAbility(Abilities.SHADER_EFFECT, "Shader Effect");
             this.addAbility(Abilities.GUI_OVERLAY, "Gui Overlay");
+            this.addAbility(Abilities.TEXT_OVERLAY, "Text Overlay");
             this.addAbility(Abilities.SHOW_BOTH_ARMS, "Show Both Arms");
             this.addAbility(Abilities.DUAL_WIELDING, "Dual Wielding");
             this.addAbility(Abilities.PLAYER_ANIMATION, "Player Animation");
@@ -373,6 +374,7 @@ public abstract class PalladiumLangProvider extends ExtendedLangProvider {
             this.addAbility(Abilities.REMOVE_BODY_PART, "Körperteile entfernen");
             this.addAbility(Abilities.SHADER_EFFECT, "Shader Effekt");
             this.addAbility(Abilities.GUI_OVERLAY, "GUI-Overlay");
+            this.addAbility(Abilities.TEXT_OVERLAY, "Text-Overlay");
             this.addAbility(Abilities.SHOW_BOTH_ARMS, "Beide Arme zeigen");
             this.addAbility(Abilities.DUAL_WIELDING, "Zweihandkampf");
             this.addAbility(Abilities.PLAYER_ANIMATION, "Spieler-Animation");
@@ -612,6 +614,7 @@ public abstract class PalladiumLangProvider extends ExtendedLangProvider {
             this.addAbility(Abilities.REMOVE_BODY_PART, "Görperdeile entfernen");
             this.addAbility(Abilities.SHADER_EFFECT, "Shader Effekt");
             this.addAbility(Abilities.GUI_OVERLAY, "GUI-Overlay");
+            this.addAbility(Abilities.TEXT_OVERLAY, "Text-Overlay");
             this.addAbility(Abilities.SHOW_BOTH_ARMS, "Beide Arme zeijen");
             this.addAbility(Abilities.DUAL_WIELDING, "Zweihandkampf");
             this.addAbility(Abilities.PLAYER_ANIMATION, "Spieler-Animation");
