@@ -63,8 +63,9 @@ public class LegacyAddonPackResources implements PackResources {
     private IoSupplier<InputStream> wrap(PackType type, ResourceLocation location, IoSupplier<InputStream> supplier) {
         boolean damageType = location.getPath().startsWith("damage_type/");
         boolean dimensionType = location.getPath().startsWith("dimension_type/");
-        if (supplier == null || type != PackType.SERVER_DATA || !location.getPath().endsWith(".json")
-                || (!damageType && !dimensionType)) {
+        boolean commandFunction = location.getPath().startsWith("functions/") && location.getPath().endsWith(".mcfunction");
+        if (supplier == null || type != PackType.SERVER_DATA
+                || (!damageType && !dimensionType && !commandFunction)) {
             return supplier;
         }
 
@@ -72,6 +73,12 @@ public class LegacyAddonPackResources implements PackResources {
             byte[] original;
             try (InputStream stream = supplier.get()) {
                 original = stream.readAllBytes();
+            }
+
+            if (commandFunction) {
+                String commands = new String(original, StandardCharsets.UTF_8);
+                String normalized = LegacyCommandCompatibility.normalize(commands);
+                return new ByteArrayInputStream(normalized.getBytes(StandardCharsets.UTF_8));
             }
 
             JsonObject json = JsonParser.parseString(new String(original, StandardCharsets.UTF_8)).getAsJsonObject();

@@ -14,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.threetag.palladium.Palladium;
+import net.threetag.palladium.addonpack.LegacyCommandCompatibility;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class CommandFunctionProperty extends PalladiumProperty<CommandFunctionPr
             cmd = cmd.substring(1);
         }
 
-        return cmd;
+        return LegacyCommandCompatibility.normalize(cmd);
     }
 
     @Override

@@ -5,6 +5,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.threetag.palladium.addonpack.LegacyCommandCompatibility;
 import net.threetag.palladium.addonpack.log.AddonPackLog;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.context.DataContextType;
@@ -20,7 +21,7 @@ public class CommandResultCondition extends Condition implements CommandSource {
     private final boolean log;
 
     public CommandResultCondition(String command, String comparison, int compare_to, boolean log) {
-        this.command = command;
+        this.command = LegacyCommandCompatibility.normalize(command);
         this.comparison = comparison;
         this.compare_to = compare_to;
         this.log = log;
