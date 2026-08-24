@@ -106,7 +106,8 @@ public class TrailSegmentEntity<T extends TrailRenderer.SegmentCache> extends Li
 
     @Override
     public void tick() {
-        super.tick();
+        // Don't call super.tick() - this entity is never added to the world
+        ++this.tickCount;
 
         if (this.tickCount >= this.lifetime) {
             this.discard();

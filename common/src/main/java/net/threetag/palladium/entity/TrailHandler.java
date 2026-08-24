@@ -1,6 +1,5 @@
 package net.threetag.palladium.entity;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,24 +29,28 @@ public class TrailHandler {
             this.trails.putIfAbsent(renderer, new LinkedList<>());
         }
 
-        Map<TrailRenderer<?>, List<TrailSegmentEntity<?>>> toChange = new HashMap<>(this.trails);
+        Map<TrailRenderer<?>, List<TrailSegmentEntity<?>>> toChange = new HashMap<>();
 
         for (Map.Entry<TrailRenderer<?>, List<TrailSegmentEntity<?>>> entry : this.trails.entrySet()) {
             var renderer = entry.getKey();
-            List<TrailSegmentEntity<?>> trails = entry.getValue();
+            List<TrailSegmentEntity<?>> trails = new ArrayList<>(entry.getValue());
+
+            // Manually tick all segments (they are not in the world)
+            trails.forEach(TrailSegmentEntity::tick);
+
+            // Filter out expired/removed segments
+            trails = trails.stream().filter(segment -> segment.isAlive() && !segment.isRemoved()).collect(Collectors.toList());
 
             if (!trails.isEmpty()) {
                 if (active.contains(renderer)) {
                     var last = trails.get(trails.size() - 1);
 
                     if (last.position().distanceTo(this.entity.position()) >= entity.getBbWidth() * renderer.getSpacing()) {
-                        trails.add(this.spawnEntity(renderer));
+                        trails.add(this.createSegment(renderer));
                     }
                 }
-
-                trails = trails.stream().filter(segment -> segment.isAlive() && !segment.isRemoved()).collect(Collectors.toList());
             } else if (active.contains(renderer) && (!renderer.requiresMovement() || this.isMoving())) {
-                trails.add(this.spawnEntity(renderer));
+                trails.add(this.createSegment(renderer));
             }
 
             if (!active.contains(renderer) && trails.isEmpty()) {
@@ -60,10 +63,8 @@ public class TrailHandler {
         this.trails = toChange;
     }
 
-    private TrailSegmentEntity<?> spawnEntity(TrailRenderer<?> trailRenderer) {
-        var entity = new TrailSegmentEntity<>(this.entity, trailRenderer);
-        Objects.requireNonNull(Minecraft.getInstance().level).addEntity(entity);
-        return entity;
+    private TrailSegmentEntity<?> createSegment(TrailRenderer<?> trailRenderer) {
+        return new TrailSegmentEntity<>(this.entity, trailRenderer);
     }
 
     public Map<TrailRenderer<?>, List<TrailSegmentEntity<?>>> getTrails() {

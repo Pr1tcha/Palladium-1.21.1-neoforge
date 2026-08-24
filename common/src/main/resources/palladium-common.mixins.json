@@ -8,6 +8,7 @@
     "client.AgeableListModelInvoker",
     "client.ClientEntityMixin",
     "client.ClientPacketListenerMixin",
+    "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.GeoArmorRendererInvoker",
     "client.GeoArmorRendererMixin",
